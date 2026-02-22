@@ -1,0 +1,119 @@
+---
+title: 重要的数据库表
+description: 系统关键数据库表及其功能说明，包括账号、设备、策略、审计日志等
+---
+
+# 重要的数据库表
+
+## sys_account
+
+查看管理员、用户有效期等信息，修改admin密码过期时间。
+
+```sql
+select * from sys_account where id=1;
+
+su postgres
+psql -d sps_db
+update sys_account set password_expired_time='2025-12-31';
+select * from public.sys_account;
+```
+
+## system.device_info
+
+设备注册信息。
+
+```sql
+select * from system.device_info;
+```
+
+正常ucss的device_ip和masterip是同一个ip地址，如果不一致可能是寻找ucss的旧ip，这个master信息只会在导入授权的时候变化。
+
+解决办法：重新导入授权
+
+## system.auth_address
+
+查看授信地址。
+
+## system.global_configuration
+
+邮件通知模板表。
+
+## system.ep_monitoring_result
+
+终端列表设备。
+
+## system.audit_log - 审计日志
+
+相关字段对应的名称 (feature_type):
+
+| 代码 | 说明 |
+|------|------|
+| 9001 | 升级补丁 |
+| 3023 | 新增策略 |
+| 10501 | 修改WebService应用 |
+| 9002 | 升补丁时上传文件 |
+| 1003 | 修改密码 |
+| 8507 | 过滤导出文件 |
+| 6302 | 操作设备/服务，在ucss上重启 |
+| 10500 | 新增WebService应用 |
+| 3037 | 禁用策略 |
+| 8050 | 导授权许可 |
+| 6002 | 删除设备 |
+| 3024 | 修改策略 |
+| 1090 | syslog操作 |
+| 3019 | OCR设置 |
+| - | 登录 |
+| 13012 | 更新WebService Inspector |
+| 4502 | 更新规则 |
+| 4501 | 新增正则规则 |
+
+## system.discovery_task
+
+网络任务。
+
+## system.syslog
+
+系统日志，默认保存3个月。
+
+如果需要修改到更长时间，可以修改配置文件：
+
+```bash
+vi /var/skyguard/sps/program-data/config/dlp_*.properties
+# 找到 syslog 配置
+auto_del_syslog_month=3
+```
+
+## 策略相关表的创建者修改
+
+修改各表的creator字段为指定用户（如从 SKYGUARD_ERROR 改为 zwcy）：
+
+```sql
+-- 1、策略: plc_policies
+update plc_policies set creator='zwcy' where creator='SKYGUARD_ERROR';
+
+-- 2、策略元素-策略动作: plc_actions
+update plc_actions set creator='zwcy' where name='邮件工作流';
+
+-- 3、字典/文件类型组/正则表达式: plc_element_set
+update plc_element set creater='zwcy' where name='xxx';
+update plc_element set creater='zwcy' where name='ELF Executable';
+
+-- 4、指纹: plc_fingerprint
+update plc_fingerprint set creator='zwcy' where creator='SKYGUARD_ERROR';
+
+-- 5、基本设置-邮件告警: conf_email_alert
+update conf_email_alert set creator='zwcy' where name='邮件告警测试';
+
+-- 6、基本设置-syslog/SIM
+update syslog_setting set creator='zwcy' where name='邮件日志测试';
+
+-- 7、用户管理-分级对象: sys_hierarchic
+update sys_hierarchic set creator='zwcy' where name='endpoint';
+
+-- 8、账户管理-管理员: sys_account
+set search_path to public;  -- 切换路径
+update sys_account set creator='zwcy' where login_name='admin';
+
+-- 9、归档设置、归档空间大小对应的数据库表
+system.archive_config  -- 归档设置读取失败时可以查询该表
+```
