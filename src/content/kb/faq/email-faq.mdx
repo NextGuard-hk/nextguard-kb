@@ -1,0 +1,46 @@
+---
+title: "Email Gateway FAQ"
+description: "Frequently asked questions about Nextguard Email Security Gateway for anti-spam, anti-virus, and email protection."
+keywords: ["FAQ", "Email Gateway", "Anti-Spam", "Anti-Virus"]
+date: 2026-02-22
+---
+
+# Email Gateway FAQ
+
+## General
+
+**Q: What email protocols does the gateway support?**
+A: SMTP for inbound/outbound scanning. POP3/IMAP monitoring is supported in transparent mode.
+
+**Q: Can I use the Email Gateway with Microsoft 365?**
+A: Yes. Configure the gateway as an MX relay in front of Microsoft 365 for inbound filtering.
+
+**Q: What is the maximum email processing capacity?**
+A: Depends on model. The NG-3000 processes up to 500,000 emails per hour.
+
+## Anti-Spam
+
+**Q: What spam detection methods are used?**
+A: Multi-layer detection including reputation checks, content analysis, Bayesian filtering, sender verification (SPF/DKIM/DMARC), and machine learning.
+
+**Q: Can users manage their own quarantine?**
+A: Yes. End-user quarantine portal allows users to review, release, or delete quarantined messages.
+
+**Q: How do I whitelist a sender?**
+A: Navigate to Policy > Anti-Spam > Whitelist and add the sender email or domain.
+
+## Anti-Virus
+
+**Q: How many AV engines are used?**
+A: Dual-engine scanning with real-time cloud sandbox for zero-day threats.
+
+**Q: Are encrypted attachments scanned?**
+A: Password-protected archives are flagged. Known password patterns can be configured for automatic extraction.
+
+## Troubleshooting
+
+**Q: Legitimate emails are being marked as spam. What should I do?**
+A: Check sender reputation, add to whitelist, and review spam score thresholds under Policy > Anti-Spam > Sensitivity.
+
+**Q: Emails are delayed. What should I check?**
+A: Review mail queue under Monitoring > Mail Queue. Check for DNS resolution delays and upstream server connectivity.
