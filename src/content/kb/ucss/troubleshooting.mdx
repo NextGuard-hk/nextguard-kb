@@ -1,0 +1,84 @@
+---
+title: "Troubleshooting"
+description: "Common UCSS troubleshooting steps for connectivity issues, performance problems, and configuration errors."
+keywords: ["UCSS", "Troubleshooting", "Debug", "Support"]
+date: 2026-02-22
+---
+
+# UCSS Troubleshooting
+
+Common issues and solutions for the UCSS management platform.
+
+## Cannot Access Web UI
+
+**Symptoms**: Browser shows connection timeout or refused
+
+**Steps**:
+1. Verify management IP via console: `show interface mgmt`
+2. Check service status: `service ucss-web status`
+3. Verify firewall allows port 8443
+4. Clear browser cache and try incognito mode
+5. Restart web service: `service ucss-web restart`
+
+## Device Not Connecting
+
+**Symptoms**: Managed device shows offline in dashboard
+
+**Steps**:
+1. Verify network connectivity between UCSS and device
+2. Check device management port (default: 8443) is open
+3. Verify device credentials are correct
+4. Check TLS certificate validity on both sides
+5. Review device logs: **Devices > [Device] > Logs**
+
+## Policy Sync Failure
+
+**Symptoms**: Policy changes not applying to managed devices
+
+**Steps**:
+1. Check device connectivity status
+2. Review sync logs: **System > Logs > Policy Sync**
+3. Verify policy configuration has no errors
+4. Force manual sync: **Devices > [Device] > Force Sync**
+5. Check disk space on both UCSS and target device
+
+## High CPU/Memory Usage
+
+**Symptoms**: Slow dashboard, delayed alerts, timeout errors
+
+**Steps**:
+1. Check current resource usage: **Dashboard > System Health**
+2. Review running processes: `top` via console
+3. Check for large log files consuming disk space
+4. Verify no database corruption: `ucss-db check`
+5. Consider upgrading resources if consistently above 80%
+
+## Report Generation Failure
+
+**Symptoms**: Scheduled reports not delivered or empty
+
+**Steps**:
+1. Check SMTP configuration: **System > Mail Settings > Test**
+2. Verify report query returns data manually
+3. Check disk space for temporary report files
+4. Review report logs: **Reports > History > Failed**
+5. Ensure date range contains data
+
+## License Issues
+
+**Symptoms**: Features disabled, license expired warnings
+
+**Steps**:
+1. Check license status: **System > License**
+2. Verify system date/time is correct (NTP sync)
+3. For online activation, check internet connectivity
+4. Contact Nextguard support for license reissue
+
+## Collecting Diagnostic Data
+
+For Nextguard support escalation:
+
+1. Navigate to **System > Diagnostics > Generate Bundle**
+2. Select time range and modules to include
+3. Click **Generate** and download the bundle
+4. Submit to Nextguard support with ticket number
