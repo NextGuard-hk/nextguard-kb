@@ -1,0 +1,81 @@
+---
+title: "UCSS邮件日志故障排查"
+description: "邮件日志不上传、不生成、原文图片不显示、多条网络事件等问题汇总"
+category: "ucss"
+tags: ["UCSS", "邮件日志", "SEG", "故障排查", "MySQL", "swg_transfer"]
+version: "3.15"
+audience: "public"
+lastUpdated: "2025-02-23"
+order: 3
+---
+
+# UCSS邮件日志故障排查
+
+## 问题1：邮件日志和邮件连接日志不上传/不生成
+
+### 原因1：注册信息为空导致日志不上传
+
+检查注册信息：
+
+```bash
+cat /etc/trafficserver/ucssrvinfo  #发现注册信息为空会导致不生成邮件日志
+```
+
+实际上不是不生成邮件日志，而是生成的邮件日志被 `swg_transfer` 丢弃了。
+
+**场景描述：** 设备只有一块网卡的情况下完成了注册，但后来新增了4块网卡，由于注册信息为空，导致 `swg_transfer` 服务无法启动。
+
+**解决方法：** 手动重新注册设备，确保注册后服务正常。
+
+检查服务状态：
+
+```bash
+root@DSG3 [ats]:/var/spool/postfix/data/log/mail_log_rt/
+netstat -anp | grep swg_transfer
+# 确认端口 7514 正常监听
+```
+
+### 原因2：MySQL容器未初始化完整
+
+初始化时如果MySQL容器未初始化完整，可能导致无法生成邮件连接日志和邮件审批异常。
+
+检查MySQL数据目录：
+
+```bash
+ls /var/skyguard/mysql/data/
+```
+
+检查UCSS Token：
+
+```bash
+cat /etc/trafficserver/ucssrvinfo  #如果为空，说明未正常注册
+```
+
+**解决方法：**
+
+1. 停掉MySQL容器
+2. 删除 `/var/skyguard/mysql/data/` 下所有文件
+3. 重新初始化
+
+> 注意：初始化时系统IO忙可能导致MySQL长时间初始化不完，触发安全机制。
+
+## 问题2：邮件日志详情中邮件原文不显示图片
+
+**原因：** 邮件原文中图片使用 `Content-Disposition: inline` 模式嵌入，在web页面中无法直接显示。
+
+图片的MIME头信息：
+
+```
+Content-Type: image/x-png
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Content-ID: <incident_notification_email_company_logo>
+```
+
+这是因为inline模式的图片需要通过Content-ID引用显示，web页面无法解析此格式。
+
+## 问题3：邮件日志产生多条网络事件
+
+**现象：** A发邮件给B，抄送给C，命中DLP策略后，邮件日志里会显示2次命中DLP邮件，但只产生1条邮件日志。
+
+**正常行为：** 默认邮件日志详情里有几个信封收件人，就会显示几条“命中”记录。一封邮件不管基于源目标命中多少个DLP策略，最终都应该产生同一条网络事件。
