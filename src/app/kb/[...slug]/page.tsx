@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
@@ -117,12 +118,18 @@ function KBHeader() {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center">
-            <span className="text-white font-bold text-xs">N</span>
-          </div>
-          <span className="font-semibold text-sm">Nextguard KB</span>
-        </Link>
+        <Link href="/" className="flex items-center">
+              <Image
+                src="https://raw.githubusercontent.com/NextGuard-hk/nextguard-website/main/public/images/nextguard-logo.png"
+                alt="Nextguard"
+                width={160}
+                height={40}
+                className="h-8 w-auto"
+                unoptimized
+              />
+            </Link>
+            <span className="text-gray-400 mx-1 hidden sm:inline">/</span>
+            <span className="text-gray-300 text-sm hidden sm:inline">Knowledge Base</span>
         <nav className="hidden md:flex gap-5 text-sm">
           {NAV_STRUCTURE.slice(0,5).map(c => (
             <Link key={c.id} href={`/kb/${c.id}`} className="text-gray-600 hover:text-blue-600">{c.label.split(' ')[0]}</Link>
