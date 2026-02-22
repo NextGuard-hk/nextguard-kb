@@ -43,7 +43,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-6">
             <div className="flex items-center gap-3">
               <img
-                src="https://raw.githubusercontent.com/NextGuard-hk/nextguard-kb/main/public/nextguard-logo.png"
+                src="https://www.next-guard.com/images/nextguard-logo.png"
                 alt="NextGuard"
                 className="h-10 w-10 mix-blend-screen"
               />
