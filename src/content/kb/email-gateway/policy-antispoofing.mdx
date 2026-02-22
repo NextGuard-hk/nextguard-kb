@@ -1,0 +1,264 @@
+---
+title: "Anti-Spoofing Policy"
+description: "Configure SPF, DKIM, and DMARC anti-spoofing policies on NextGuard Email Security Gateway to prevent email domain impersonation and forgery."
+category: "email-gateway"
+order: 5
+---
+
+# Anti-Spoofing Policy
+
+Email spoofing is one of the most prevalent attack vectors, allowing attackers to impersonate legitimate senders. NextGuard Email Security Gateway enforces **SPF**, **DKIM**, and **DMARC** authentication standards to verify sender identity and protect your domain from being used in phishing and fraud campaigns.
+
+---
+
+## Understanding Email Authentication
+
+| Standard | Full Name | What It Validates |
+|----------|-----------|-------------------|
+| SPF | Sender Policy Framework | Authorized sending IP addresses for a domain |
+| DKIM | DomainKeys Identified Mail | Cryptographic signature of message integrity |
+| DMARC | Domain-based Message Authentication, Reporting & Conformance | Policy enforcement based on SPF/DKIM alignment |
+
+All three work together:
+- **SPF** tells receiving servers which IPs are allowed to send email for your domain
+- **DKIM** adds a digital signature to verify the message was not tampered with in transit
+- **DMARC** defines what to do when SPF/DKIM checks fail and where to send reports
+
+---
+
+## SPF Configuration
+
+### How SPF Works
+
+1. Your domain publishes a DNS TXT record listing authorized mail servers
+2. The receiving server checks if the sending IP matches the SPF record
+3. Result: Pass, Fail, SoftFail, Neutral, or None
+
+### Publishing Your SPF Record
+
+Add a TXT record to your domain's DNS:
+
+```dns
+v=spf1 ip4:203.0.113.10 ip4:203.0.113.20 include:_spf.nextguard.com ~all
+```
+
+| Parameter | Description |
+|-----------|-------------|
+| `v=spf1` | SPF version identifier |
+| `ip4:x.x.x.x` | Authorized IP address |
+| `include:domain` | Include another domain's SPF record |
+| `~all` | SoftFail for unauthorized senders (recommended for testing) |
+| `-all` | Fail for unauthorized senders (recommended for production) |
+
+### Configuring SPF Checking on NextGuard
+
+1. Navigate to **Policy > Anti-Spoofing > SPF**
+2. Enable **SPF Checking**
+3. Configure actions per SPF result:
+   - **Pass:** Deliver normally
+   - **SoftFail (~all):** Tag subject with `[SPF-SOFTFAIL]` or quarantine
+   - **Fail (-all):** Reject or quarantine
+   - **None (no SPF record):** Tag or pass (depends on risk tolerance)
+4. Enable **SPF Score Boost:** Add +30 to spam score on Fail
+5. Click **Save**
+
+---
+
+## DKIM Configuration
+
+### How DKIM Works
+
+1. Outbound emails are signed with a private key stored on your mail server
+2. The public key is published in your DNS as a TXT record
+3. Receiving servers retrieve the public key and verify the signature
+
+### Setting Up DKIM Signing (Outbound)
+
+1. Navigate to **Policy > Anti-Spoofing > DKIM > Signing**
+2. Click **Generate DKIM Key Pair**
+3. Configure:
+   - **Domain:** `yourdomain.com`
+   - **Selector:** `mail` (becomes `mail._domainkey.yourdomain.com`)
+   - **Key size:** 2048-bit (recommended)
+4. Click **Generate**
+5. Copy the generated **public key TXT record**
+6. Publish to DNS:
+```dns
+mail._domainkey.yourdomain.com  TXT  "v=DKIM1; k=rsa; p=MIIBIjANBgkq..."
+```
+7. Click **Enable DKIM Signing**
+8. Click **Save**
+
+### Configuring DKIM Verification (Inbound)
+
+1. Navigate to **Policy > Anti-Spoofing > DKIM > Verification**
+2. Enable **DKIM Verification** for inbound email
+3. Configure actions:
+   - **DKIM Pass:** Deliver normally, reduce spam score by 10
+   - **DKIM Fail:** Add +20 to spam score or quarantine
+   - **DKIM None (no signature):** No penalty (many legitimate senders don't use DKIM)
+4. Click **Save**
+
+### DKIM Key Rotation
+
+Rotate DKIM keys every 6–12 months:
+1. Generate a new key pair with a new selector (e.g., `mail2`)
+2. Publish the new public key to DNS
+3. Switch signing to the new key
+4. Leave the old DNS record in place for 48–72 hours (TTL propagation)
+5. Remove the old DNS record after propagation
+
+---
+
+## DMARC Configuration
+
+### How DMARC Works
+
+DMARC builds on SPF and DKIM by adding:
+- **Alignment checking:** Requires SPF/DKIM domains to align with the `From:` header domain
+- **Policy enforcement:** Specifies what to do with failing emails (none/quarantine/reject)
+- **Reporting:** Sends aggregate and forensic reports to specified email addresses
+
+### Publishing Your DMARC Record
+
+Add a TXT record at `_dmarc.yourdomain.com`:
+
+```dns
+_dmarc.yourdomain.com  TXT  "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@yourdomain.com; ruf=mailto:dmarc-forensic@yourdomain.com; pct=100; adkim=r; aspf=r"
+```
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `v=DMARC1` | Required | Version identifier |
+| `p=` | none/quarantine/reject | Policy for failing emails |
+| `rua=` | mailto: address | Aggregate report destination |
+| `ruf=` | mailto: address | Forensic report destination |
+| `pct=` | 1–100 | Percentage of mail to apply policy to |
+| `adkim=` | r (relaxed) / s (strict) | DKIM alignment mode |
+| `aspf=` | r (relaxed) / s (strict) | SPF alignment mode |
+
+### DMARC Deployment Strategy
+
+Deploy DMARC gradually to avoid blocking legitimate email:
+
+**Phase 1: Monitor (p=none)**
+```dns
+"v=DMARC1; p=none; rua=mailto:dmarc@yourdomain.com"
+```
+- No email is blocked
+- Aggregate reports reveal all sending sources
+- Duration: 2–4 weeks
+
+**Phase 2: Quarantine (p=quarantine)**
+```dns
+"v=DMARC1; p=quarantine; pct=25; rua=mailto:dmarc@yourdomain.com"
+```
+- Start with `pct=25` (25% of failing email quarantined)
+- Gradually increase to `pct=100`
+- Duration: 2–4 weeks
+
+**Phase 3: Reject (p=reject)**
+```dns
+"v=DMARC1; p=reject; rua=mailto:dmarc@yourdomain.com"
+```
+- All failing email is rejected
+- Maximum protection against domain spoofing
+
+### Configuring DMARC Enforcement on NextGuard
+
+1. Navigate to **Policy > Anti-Spoofing > DMARC**
+2. Enable **DMARC Policy Enforcement**
+3. Configure:
+   - **Honor DMARC p=quarantine:** Move to quarantine queue
+   - **Honor DMARC p=reject:** Reject at SMTP level
+   - **Override policy for internal senders:** Optional bypass for internal mail
+4. Enable **DMARC Reporting:** Forward aggregate reports to `dmarc@yourdomain.com`
+5. Click **Save**
+
+---
+
+## Display Name Spoofing Protection
+
+Attackers may use a legitimate-looking display name while using a different email address.
+
+### Configuring Display Name Protection
+
+1. Navigate to **Policy > Anti-Spoofing > Display Name Protection**
+2. Enable **Display Name Spoofing Detection**
+3. Add protected identities:
+   - Executive names: `CEO Name`, `CFO Name`, `IT Admin`
+   - Associated email: `ceo@yourdomain.com`
+4. Set action when display name matches but email domain differs:
+   - **Quarantine** (recommended)
+   - **Add warning banner to email**
+   - **Reject**
+5. Click **Save**
+
+---
+
+## Lookalike Domain Protection
+
+Protects against domains visually similar to yours (e.g., `nextgu4rd.com`, `nextguard-secure.com`).
+
+1. Navigate to **Policy > Anti-Spoofing > Lookalike Domains**
+2. Enable **Lookalike Domain Detection**
+3. Add your primary domain(s) to monitor
+4. The system automatically flags emails from:
+   - Typosquatting domains
+   - Homograph attacks (Unicode characters)
+   - Hyphenated variants
+5. Set action: **Quarantine** or **Reject**
+6. Click **Save**
+
+---
+
+## Inbound Anti-Spoofing Rules Summary
+
+| Check | Fail Action | Recommended Setting |
+|-------|------------|---------------------|
+| SPF Fail (-all) | Reject | Reject |
+| SPF SoftFail (~all) | Quarantine | Quarantine + Tag |
+| DKIM Fail | Score boost +20 | Quarantine if score > 70 |
+| DMARC p=reject | Reject | Honor policy |
+| DMARC p=quarantine | Quarantine | Honor policy |
+| Display Name Spoof | Quarantine | Quarantine + Alert |
+| Lookalike Domain | Quarantine | Quarantine |
+
+---
+
+## Outbound Email Signing Summary
+
+Ensure all outbound email is properly authenticated:
+
+1. **SPF:** Publish SPF record with `-all` for all sending domains
+2. **DKIM:** Enable DKIM signing on the NextGuard gateway
+3. **DMARC:** Start with `p=none`, progress to `p=reject`
+4. **Subdomains:** Add DMARC records for all subdomains (`sp=reject`)
+
+---
+
+## Monitoring and Reports
+
+### DMARC Aggregate Reports
+
+- Sent daily by receiving mail servers
+- Contains: source IPs, SPF/DKIM pass/fail counts, policy applied
+- Analyze using a DMARC report analyzer tool
+
+### Viewing Anti-Spoofing Logs
+
+1. Navigate to **Reports > Anti-Spoofing**
+2. View:
+   - SPF check results by sender domain
+   - DKIM verification results
+   - DMARC policy actions taken
+   - Display name spoofing detections
+
+---
+
+## Next Steps
+
+- [Quarantine & Mail Trace](/kb/email-gateway/quarantine-mail-trace)
+- [Logs & Reporting](/kb/email-gateway/logs-reporting)
+- [Anti-Spam Policy](/kb/email-gateway/policy-antispam)
+- [MTA / MX Deployment](/kb/email-gateway/deployment-mta)
