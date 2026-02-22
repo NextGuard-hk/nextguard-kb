@@ -1,0 +1,49 @@
+---
+title: "Web Gateway FAQ"
+description: "Frequently asked questions about Nextguard Web Security Gateway deployment, configuration, and troubleshooting."
+keywords: ["FAQ", "Web Gateway", "Proxy", "URL Filtering"]
+date: 2026-02-22
+---
+
+# Web Gateway FAQ
+
+## General
+
+**Q: What deployment modes does the Web Gateway support?**
+A: Inline (bridge), Explicit Proxy, Transparent Proxy, and Reverse Proxy modes are supported.
+
+**Q: Does the Web Gateway support HTTPS inspection?**
+A: Yes. SSL/TLS inspection is supported by deploying a trusted CA certificate to client machines.
+
+**Q: What is the maximum throughput?**
+A: Depends on the appliance model. The NG-5000 supports up to 10 Gbps with SSL inspection enabled.
+
+## Deployment
+
+**Q: Can I deploy in a high-availability configuration?**
+A: Yes. Active-passive and active-active HA modes are supported for Web Gateway appliances.
+
+**Q: Is WCCP supported for transparent deployment?**
+A: Yes. WCCP v2 is supported for integration with Cisco routers and switches.
+
+**Q: How do I handle certificate warnings during SSL inspection?**
+A: Deploy the Nextguard root CA certificate to all client machines via GPO, MDM, or manual installation.
+
+## Policy
+
+**Q: How many URL categories are available?**
+A: Over 120 pre-defined URL categories with daily database updates.
+
+**Q: Can I create custom URL categories?**
+A: Yes. Navigate to Policy > URL Categories > Custom to add your own categories and URLs.
+
+**Q: Does the gateway support cloud application control?**
+A: Yes. Over 3,000 cloud applications are recognized with granular control (allow, block, monitor, limit bandwidth).
+
+## Troubleshooting
+
+**Q: Users report slow browsing after deployment. What should I check?**
+A: Check CPU utilization, verify SSL inspection is not causing bottlenecks, and review concurrent connection limits.
+
+**Q: Some HTTPS sites are not loading. Why?**
+A: The site may use certificate pinning. Add it to the SSL inspection bypass list under Policy > SSL > Bypass.
