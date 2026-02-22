@@ -1,0 +1,82 @@
+---
+title: "Data Discovery"
+description: "Nextguard Data Discovery scans and classifies sensitive data across file servers, databases, SharePoint, and cloud storage to identify exposure risks."
+keywords: ["DLP", "Data Discovery", "Classification", "Sensitive Data"]
+date: 2026-02-22
+---
+
+# Data Discovery
+
+Nextguard **Data Discovery** enables organizations to locate, classify, and assess sensitive data across on-premises and cloud storage systems.
+
+## Overview
+
+Before enforcing DLP policies, you need to know where sensitive data resides. Data Discovery automatically scans your storage infrastructure to find regulated, confidential, and high-risk data assets.
+
+## Supported Data Sources
+
+- **File Servers** — Windows/Linux (SMB/CIFS, NFS)
+- **Databases** — Microsoft SQL, Oracle, MySQL, PostgreSQL
+- **SharePoint & OneDrive** — On-premises and Online
+- **Cloud Storage** — AWS S3, Azure Blob, Google Cloud Storage
+- **Email Archives** — Exchange, Gmail vaults
+- **Endpoints** — Local drives on managed devices
+
+## Scan Modes
+
+| Mode | Description |
+|------|-------------|
+| **Full Scan** | Complete scan of all target locations |
+| **Incremental Scan** | Scans only new or modified files since last run |
+| **Scheduled Scan** | Automated recurring scans (daily/weekly/monthly) |
+| **On-Demand Scan** | Manual trigger for immediate scanning |
+
+## Classification Engine
+
+Data Discovery uses multiple detection methods:
+
+- **Keyword Matching** — Identifies files containing specific terms
+- **Regular Expressions** — Detects patterns (credit cards, ID numbers, etc.)
+- **Fingerprinting** — Matches against registered sensitive documents
+- **Machine Learning** — AI-based classification for unstructured data
+- **OCR** — Extracts and classifies text from images and scanned PDFs
+
+## Risk Assessment
+
+Discovered data is categorized by risk level:
+
+1. **Critical** — PII, financial records, health data exposed without protection
+2. **High** — Sensitive business data in shared locations
+3. **Medium** — Internal documents accessible beyond intended audience
+4. **Low** — Non-sensitive data with minor policy deviations
+
+## Discovery Dashboard
+
+The centralized dashboard provides:
+
+- **Data Heatmaps** — Visual representation of sensitive data distribution
+- **Risk Scores** — Aggregated risk metrics per location/department
+- **Compliance Reports** — Pre-built reports for GDPR, HIPAA, PCI-DSS
+- **Trend Analysis** — Track data growth and exposure over time
+
+## Remediation Actions
+
+After discovery, administrators can:
+
+- **Quarantine** files to a secure location
+- **Encrypt** sensitive files in place
+- **Apply Labels** for downstream DLP policy enforcement
+- **Notify Owners** to take corrective action
+- **Delete** unauthorized copies of sensitive data
+
+## Integration with DLP Policies
+
+Discovery results feed directly into Nextguard DLP policy engine, enabling automatic policy creation based on discovered data patterns and locations.
+
+## Deployment
+
+Data Discovery requires the Nextguard Discovery Agent deployed on:
+- **On-premises** — Windows Server 2016+ or Linux (Ubuntu/CentOS)
+- **Cloud** — Lightweight connector for cloud storage APIs
+
+Configure scan targets via UCSS Management Console under **DLP > Discovery > Scan Targets**.
