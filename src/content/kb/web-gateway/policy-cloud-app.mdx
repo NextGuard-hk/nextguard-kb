@@ -1,0 +1,129 @@
+---
+title: Cloud App Management
+description: Control and monitor cloud application usage with the Nextguard Web Security Gateway.
+category: web-gateway
+tags: [Policy, Cloud Apps, SaaS, Shadow IT]
+version: "3.15"
+audience: public
+lastUpdated: 2026-02-22
+order: 8
+---
+
+## Overview
+
+The Nextguard WSG includes a **Cloud Application Control** module that identifies, categorizes, and controls access to over 5,000 cloud applications and SaaS services.
+
+**Use cases:**
+- Block unauthorized cloud storage (e.g., personal Dropbox)
+- Allow read-only access to certain apps
+- Prevent file upload to specific cloud services
+- Discover Shadow IT — unauthorized apps in use
+
+---
+
+## Cloud App Database
+
+Apps are categorized by type and risk level:
+
+| Category | Examples |
+|----------|----------|
+| Cloud Storage | Google Drive, Dropbox, OneDrive, Box |
+| Collaboration | Slack, Teams, Zoom, WeChat Work |
+| Email | Gmail, Yahoo Mail, Outlook.com |
+| Social Media | Facebook, LinkedIn, Twitter, Instagram |
+| Development | GitHub, GitLab, Jira, Confluence |
+| Finance | PayPal, banking apps |
+| AI Tools | ChatGPT, Claude, Gemini, Copilot |
+
+Each app has a **Risk Score** (1-10) based on security posture, data handling practices, and compliance.
+
+---
+
+## Configuring Cloud App Policies
+
+1. Navigate to **Policy > Cloud App Control**
+2. Click **Add App Policy**
+3. Configure:
+
+| Field | Description |
+|-------|-------------|
+| **App / Category** | Specific app or entire category |
+| **Users/Groups** | AD groups to apply policy to |
+| **Action** | Allow / Block / Read-Only / Upload-Restrict |
+| **Activity Control** | Granular: allow view, block upload/download |
+
+4. Click **Save & Apply**
+
+---
+
+## Granular Activity Controls
+
+For supported applications, you can control specific activities:
+
+| Activity | Description |
+|----------|-------------|
+| **Upload** | Prevent file uploads to the cloud app |
+| **Download** | Allow/block file downloads |
+| **Post/Share** | Control content sharing |
+| **Login** | Allow/block login to the service |
+| **Personal vs. Corporate** | Enforce corporate account only (e.g., corporate Google) |
+
+> **Example:** Allow Google Drive for work (corporate accounts) but block personal Google Drive accounts.
+
+---
+
+## Corporate vs. Personal Tenant Control
+
+For Google Workspace and Microsoft 365:
+
+1. Navigate to **Policy > Tenant Restriction**
+2. Configure allowed tenant IDs:
+   - Google: specify allowed `hd` (hosted domain)
+   - Microsoft: specify allowed `tenant ID`
+3. The WSG injects HTTP headers to enforce corporate-only access
+4. Users attempting to access personal accounts will be blocked
+
+---
+
+## Shadow IT Discovery
+
+View all cloud apps being used in your organization:
+
+1. Navigate to **Reports > Shadow IT**
+2. View:
+   - All discovered apps with risk scores
+   - Usage statistics (users, bandwidth, requests)
+   - Apps not covered by your current policies
+3. From this view, click any app to quickly create a policy
+4. Export the Shadow IT report for compliance review
+
+---
+
+## AI Tool Control
+
+To manage AI tool usage (ChatGPT, Copilot, etc.):
+
+1. Navigate to **Policy > Cloud App Control**
+2. Filter category: **AI & Machine Learning Tools**
+3. Set policy:
+   - Block all AI tools for sensitive departments
+   - Allow with DLP scanning enabled for others
+   - Restrict file upload to AI tools
+
+---
+
+## Bandwidth Control
+
+1. Navigate to **Policy > QoS / Bandwidth**
+2. Set bandwidth limits per app or category:
+   - Limit YouTube to 1 Mbps per user
+   - Prioritize business applications
+3. Enforce during work hours using schedules
+
+---
+
+## Next Steps
+
+- [URL Category Policy](/kb/web-gateway/policy-url-category)
+- [Logs & User Monitoring](/kb/web-gateway/logs-and-monitoring)
+- [Network DLP](/kb/dlp/network-dlp)
