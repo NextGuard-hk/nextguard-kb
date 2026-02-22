@@ -116,7 +116,7 @@ export default function KBPage({ params }: Props) {
 
 function KBHeader() {
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+          <header className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
         <Link href="/" className="flex items-center">
               <Image
@@ -124,7 +124,7 @@ function KBHeader() {
                 alt="Nextguard"
                 width={160}
                 height={40}
-                className="h-8 w-auto"
+                className="h-8 w-auto mix-blend-screen"
                 unoptimized
               />
             </Link>
