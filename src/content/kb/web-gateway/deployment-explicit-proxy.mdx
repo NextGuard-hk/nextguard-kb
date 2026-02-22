@@ -1,0 +1,118 @@
+---
+title: Explicit Proxy Deployment
+description: Guide for deploying the Nextguard Web Security Gateway in Explicit Proxy mode.
+category: web-gateway
+tags: [Deployment, Explicit Proxy]
+version: "3.15"
+audience: public
+lastUpdated: 2026-02-22
+order: 3
+---
+
+## Overview
+
+In Explicit Proxy mode, client browsers or system settings are configured to use the WSG as an HTTP/HTTPS proxy. The WSG receives traffic explicitly on a proxy port (typically 8080 or 3128).
+
+**Recommended for:** Environments with existing proxy infrastructure, or where inline mode is not physically feasible.
+
+---
+
+## Prerequisites
+
+- [ ] WSG deployed with management and at least one traffic interface
+- [ ] Proxy port (default: 8080) accessible from clients
+- [ ] DNS resolves WSG hostname from client machines
+- [ ] Firewall allows outbound HTTP/HTTPS from WSG
+
+---
+
+## Step 1: Enable Explicit Proxy Mode
+
+1. Log into the WSG management console
+2. Navigate to **Network > Deployment Mode**
+3. Select **Explicit Proxy**
+4. Set the proxy listening port (default: **8080**)
+5. Bind to the appropriate network interface
+6. Click **Apply**
+
+---
+
+## Step 2: Configure Client Proxy Settings
+
+### Option A: Manual Browser Configuration
+In browser settings (e.g., Chrome, Firefox):
+- Proxy type: HTTP
+- Proxy address: `[WSG IP address]`
+- Port: `8080`
+- Apply for both HTTP and HTTPS
+
+### Option B: Windows Group Policy (Recommended)
+1. Open **Group Policy Management Console**
+2. Edit a GPO applied to user or computer objects
+3. Navigate to: `User Configuration > Windows Settings > Internet Explorer > Connection > LAN Settings`
+4. Enable **Use a proxy server**
+5. Address: `[WSG IP]`, Port: `8080`
+6. Apply and force GPO update (`gpupdate /force`)
+
+### Option C: PAC File (Proxy Auto-Config)
+1. Create a PAC file hosted on a web server
+2. Configure WPAD or point browsers to the PAC URL
+3. Example PAC:
+```javascript
+function FindProxyForURL(url, host) {
+  if (isPlainHostName(host)) return "DIRECT";
+  if (shExpMatch(host, "*.internal.corp")) return "DIRECT";
+  return "PROXY 192.168.1.10:8080; DIRECT";
+}
+```
+
+---
+
+## Step 3: SSL Inspection Setup
+
+1. Navigate to **Policy > SSL Inspection**
+2. Enable **HTTPS Decryption**
+3. Download the CA Certificate
+4. Distribute the CA cert to clients (GPO or MDM)
+
+---
+
+## Step 4: Authentication Configuration
+
+For user-based policies, configure authentication:
+
+1. Navigate to **Authentication > Settings**
+2. Choose authentication method:
+   - **NTLM** — Transparent auth for domain clients (no login prompt)
+   - **Basic Auth** — Browser login popup
+   - **Kerberos** — SSO for domain environments
+3. Configure LDAP/AD connection details
+4. Test authentication
+
+---
+
+## Verification
+
+1. On a client machine, configure proxy settings
+2. Open a browser and visit `http://whatismyip.com`
+3. Verify the exit IP matches the WSG's outbound IP
+4. Check **Logs > Web Logs** in UCSS for traffic entries
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Browser shows "proxy refused connection" | Check proxy port firewall rules |
+| HTTPS sites fail | Ensure CA cert is installed on client |
+| Authentication loop | Check NTLM/Kerberos configuration |
+| Some sites bypass proxy | Verify proxy settings are applied to all browsers |
+
+---
+
+## Next Steps
+
+- [AD / LDAP Integration](/kb/web-gateway/ad-ldap-integration)
+- [URL Category Policy](/kb/web-gateway/policy-url-category)
+- [Logs & User Monitoring](/kb/web-gateway/logs-and-monitoring)
