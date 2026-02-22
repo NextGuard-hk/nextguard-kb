@@ -1,4 +1,5 @@
 # Nextguard Knowledge Base Portal
+> Live on Vercel: https://nextguard-kb.vercel.app
 
 A public-facing Knowledge Base (KB) portal for Nextguard Technology — built with **Next.js 14**, **MDX**, **Tailwind CSS**, and deployed on **Vercel**.
 
