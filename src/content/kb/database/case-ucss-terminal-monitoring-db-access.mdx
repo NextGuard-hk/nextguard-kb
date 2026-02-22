@@ -1,0 +1,88 @@
+---
+title: 案例4 - UCSS终端监控列表开放pg数据库相关数据
+category: database
+tags: [postgresql, 终端监控, 权限管理, 第三方对接]
+---
+
+# 案例4、UCSS终端监控列表开放pg数据库相关数据
+
+## 需求
+
+客户希望开放终端监控列表中关于终端信息的 API 接口相关数据，包括：登录账号、全域名 (FQDN)、连接状态、工作模式、运行状态、同步状态、发现状态、设备禁用状态、终端状态。
+
+## 配置步骤
+
+### 1. 创建只读用户
+
+```sql
+-- 备注：3.10环境需要在postgres用户下运行
+-- psql -h 127.0.0.1 -U postgres postgres
+create user ep_visitor password '123456';
+```
+
+### 2. 切换到 sps_db 并授权
+
+```sql
+\c sps_db
+
+-- 授权 schema 访问
+grant usage on schema system to ep_visitor;
+
+-- 授权表读取权限
+grant select on system.ep_monitoring_result to ep_visitor;
+
+-- 授权数据库连接
+grant connect on database sps_db to ep_visitor;
+```
+
+### 3. 查询终端信息
+
+```sql
+select login_user, hostname, terminal_status,
+  ep_profile_name, active_dm_server, sps_sync_time,
+  forbidden_devices, protection_status
+from system.ep_monitoring_result;
+```
+
+## 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| `terminal_status` | 连接状态（1=在线, 2=离线） |
+| `work_mode` | 工作模式（1=阻断, 2=仅监控） |
+| `display_mode` | 运行模式（1=隐性模式, 2=显性模式） |
+| `sync_result` | 同步状态（0=成功, 1=失败, 2=完成） |
+| `discovery_status` | 发现状态（1=禁用, 2=正在扫描） |
+| `forbidden_devices` | 设备禁用状态（32bit Int，0=启用, 1=禁用） |
+| `protection_status` | 终端状态（1=禁用, 2=启用） |
+
+## 开放远程访问（第三方平台对接）
+
+### 修改 postgresql.conf
+
+```
+listen_addresses = '*'
+```
+
+### 修改 pg_hba.conf
+
+添加允许访问的客户端 IP：
+
+```
+host  all  all  172.22.33.0/24  md5
+```
+
+### 3.10容器化环境映射端口
+
+在 docker-compose 配置中添加端口映射：
+
+```yaml
+pgsql:
+  image: "pgsql"
+  restart: always
+  networks:
+    internal:
+      ipv4_address: 169.254.253.4
+  ports:
+    - 5432:5432  #新增
+```
