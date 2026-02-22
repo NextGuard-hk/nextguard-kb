@@ -1,0 +1,57 @@
+---
+title: 数据库连接异常
+category: database
+tags: [postgresql, 故障排查, 数据库连接, 缺少列]
+---
+
+# 数据库连接异常
+
+## 现象
+
+管理平台登录时出现报错：**数据库连接异常，请联系管理员**
+
+## 原因分析
+
+### 1. 查看日志错误
+
+系统日志出现 PostgreSQL 报错：
+
+```
+Caused by: org.postgresql.util.PSQLException: ERROR: column
+Position: 177
+  at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse
+  at org.postgresql.core.v3.QueryExecutorImpl.processResults
+  ...
+```
+
+### 2. 发现缺失列
+
+查看测试环境与客户环境对比，发现客户环境 `system.crawl_file_source` 表少了三个列名：
+
+- `association_ad_group_id`
+- `exclude_ip`
+- `exclude_email`
+
+验证查询（查看 `system.sys_hierarchic` 表结构）：
+
+```sql
+select * from system.sys_hierarchic;
+```
+
+## 解决办法
+
+进入 PostgreSQL 容器，手动添加缺失列：
+
+```bash
+dcin pgsql
+su postgres
+psql -d sps_db
+```
+
+```sql
+alter table system.crawl_file_source add association_ad_group_id text;
+alter table system.crawl_file_source add exclude_ip text;
+alter table system.crawl_file_source add exclude_email text;
+```
+
+执行完毕后重新登录管理平台，问题解决。
