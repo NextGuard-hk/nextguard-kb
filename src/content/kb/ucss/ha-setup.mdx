@@ -1,0 +1,73 @@
+---
+title: "HA (High Availability) Deployment"
+description: "Configure UCSS active-passive high availability clustering for management continuity and disaster recovery."
+keywords: ["UCSS", "HA", "High Availability", "Clustering", "Failover"]
+date: 2026-02-22
+---
+
+# HA (High Availability) Deployment
+
+UCSS supports active-passive HA clustering to ensure management continuity in case of hardware or software failure.
+
+## Architecture
+
+- **Active Node** — Handles all management operations
+- **Passive Node** — Standby, synchronized with active node
+- **Heartbeat Link** — Dedicated network connection between nodes
+- **Virtual IP** — Shared management IP that floats between nodes
+
+## Prerequisites
+
+- Two identical UCSS appliances (hardware or VM)
+- Dedicated heartbeat network between nodes
+- Shared storage or database replication configured
+- Same firmware version on both nodes
+
+## Setup Steps
+
+### 1. Prepare Primary Node
+
+1. Complete initial UCSS setup on primary node
+2. Navigate to **System > High Availability**
+3. Select **Primary** role
+4. Configure heartbeat interface IP
+5. Set virtual management IP
+
+### 2. Prepare Secondary Node
+
+1. Install UCSS on secondary appliance
+2. Configure basic network (different IP from primary)
+3. Navigate to **System > High Availability**
+4. Select **Secondary** role
+5. Enter primary node heartbeat IP
+
+### 3. Establish Cluster
+
+1. On primary, click **Initialize Cluster**
+2. Enter secondary node credentials
+3. System synchronizes configuration and database
+4. Verify cluster status shows both nodes
+
+## Failover Behavior
+
+| Event | Action |
+|-------|--------|
+| Primary hardware failure | Automatic failover to secondary (~30 seconds) |
+| Primary software crash | Automatic restart, failover if restart fails |
+| Network partition | Split-brain prevention, primary retains VIP |
+| Manual failover | Administrator-initiated switchover |
+
+## Monitoring
+
+Monitor HA status under **System > High Availability > Status**:
+
+- Node health indicators
+- Sync status and lag time
+- Failover history log
+- Heartbeat connectivity
+
+## Maintenance
+
+- **Firmware Updates** — Rolling update: update secondary first, failover, then update primary
+- **Configuration Changes** — Automatically replicated to secondary
+- **Database Backup** — Taken from active node, covers entire cluster
