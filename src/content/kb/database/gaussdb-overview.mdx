@@ -1,0 +1,58 @@
+---
+title: GaussDB数据库概览
+description: GaussDB数据库登录方法、配置及账号锁定处理
+---
+
+# GaussDB数据库概览
+
+## 登录方法
+
+### 方式1：通过psql连接
+
+```bash
+root@UCSS3 [sps]:# psql -h 192.168.0.164 -U stolon -d sps_db
+Password for user stolon: Gauss@Skyguard
+psql (12.19 (Ubuntu 12.19-0ubuntu0.20.04.1), server 9.2.4)
+```
+
+### 方式2：通过gsql连接
+
+```bash
+root@sgapp:~# dcin gauss
+root@da398d848f80 [gauss]:/#
+su - omm
+omm@da398d848f80:~$ gsql -r sps_db
+```
+
+## 配置文件
+
+配置文件路径：`/tmp/db.ini`
+
+```ini
+ESPort = 9200
+PGPort = 5432
+ESPassWord = Elastic@SkyGuard
+PGIp = 192.168.0.164
+KafkaUserName = skyguard
+PGPassWord = Gauss@Skyguard
+ESIp = 192.168.0.164
+RedisIp = 192.168.0.164
+path = remote
+ha = enable
+KafkaIp = 192.168.0.164
+ESUserName = skyguard
+KafkaPassWord = kafka@SkyGuard
+RedisPassWord = Redis@SkyGuared253.2
+KafkaPort = 9092
+RedisPort = 6379
+PGUserName = stolon
+```
+
+## 账号锁定
+
+默认登录10次失败后，账号会被锁定。
+
+- 24小时后会自动解锁
+- 超级管理员可以手动解锁
+
+> **注意**：不建议随便操作数据库，有些命令搞错了可能就恢复不了了。
