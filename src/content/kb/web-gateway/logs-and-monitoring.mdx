@@ -1,0 +1,153 @@
+---
+title: Logs & User Monitoring
+description: View and analyze web traffic logs and user activity reports in the Nextguard Web Security Gateway.
+category: web-gateway
+tags: [Logs, Monitoring, Reports, Audit]
+version: "3.15"
+audience: public
+lastUpdated: 2026-02-22
+order: 9
+---
+
+## Overview
+
+The Nextguard WSG provides comprehensive logging of all web traffic, enabling security teams to monitor user activity, investigate incidents, and generate compliance reports.
+
+---
+
+## Log Types
+
+| Log Type | Description |
+|----------|-------------|
+| **Web Access Logs** | All HTTP/HTTPS requests with user, URL, action, category |
+| **Block Logs** | Requests blocked by policy |
+| **DLP Logs** | Data loss prevention incidents |
+| **SSL Inspection Logs** | SSL bypass and decryption events |
+| **Authentication Logs** | User login/logout and auth failures |
+| **System Logs** | Appliance health, configuration changes |
+
+---
+
+## Viewing Web Access Logs
+
+1. Navigate to **Logs > Web Access**
+2. Use filters to narrow results:
+   - **Date/Time Range:** Specify a time window
+   - **User / IP:** Filter by specific user or source IP
+   - **URL / Domain:** Search for specific sites
+   - **Category:** Filter by URL category
+   - **Action:** Show only blocked/allowed/monitored
+3. Click on any log entry for detailed information
+4. Export logs as CSV or send to SIEM
+
+### Log Entry Fields
+
+| Field | Description |
+|-------|-------------|
+| Timestamp | Date and time of the request |
+| Username | AD username (if authenticated) |
+| Source IP | Client IP address |
+| Destination | URL / Domain visited |
+| Category | URL category |
+| Action | Allow / Block / Monitor |
+| Bytes | Data transferred |
+| Duration | Session duration |
+| SSL | Decrypted / Bypassed |
+
+---
+
+## User Activity Reports
+
+1. Navigate to **Reports > User Activity**
+2. Select a user from the AD directory
+3. View:
+   - Browsing history (timeline view)
+   - Top sites visited
+   - Categories accessed
+   - Bandwidth usage
+   - Policy violations
+4. Export as PDF for HR or compliance review
+
+---
+
+## Department / Group Reports
+
+1. Navigate to **Reports > Group Activity**
+2. Select an AD group or department
+3. Compare activity across users within the group
+4. Identify outliers with unusual browsing patterns
+
+---
+
+## DLP Incident Monitoring
+
+1. Navigate to **Logs > DLP Incidents**
+2. View all Network DLP policy matches
+3. Each incident shows:
+   - User and timestamp
+   - Policy matched
+   - Data type detected (keyword, fingerprint, etc.)
+   - Action taken
+   - Content snippet (if enabled)
+4. Click to view full incident detail and take remediation action
+
+---
+
+## Real-Time Dashboard
+
+1. Navigate to **Dashboard > Web Traffic**
+2. View real-time metrics:
+   - Current active users
+   - Traffic throughput
+   - Top categories right now
+   - Recent blocks
+   - DLP incidents in progress
+3. Set refresh interval (5s, 30s, 1min)
+
+---
+
+## Scheduled Reports
+
+1. Navigate to **Reports > Scheduled Reports**
+2. Click **New Report**
+3. Configure:
+   - Report type (Web Summary, User Activity, DLP, etc.)
+   - Recipients (email addresses)
+   - Schedule (daily, weekly, monthly)
+   - Format (PDF, CSV, HTML)
+4. Click **Save**
+
+---
+
+## SIEM Integration
+
+Forward logs to your SIEM (Splunk, QRadar, ArcSight, etc.):
+
+1. Navigate to **System > Log Forwarding**
+2. Configure Syslog:
+   - Protocol: UDP/TCP/TLS
+   - Server: SIEM collector IP
+   - Port: 514 (syslog) or custom
+   - Format: CEF (Common Event Format) or JSON
+3. Select log types to forward
+4. Click **Save & Test**
+
+---
+
+## Log Retention
+
+| Log Type | Default Retention | Configurable |
+|----------|------------------|-------------|
+| Web Access | 90 days | Yes, 30-365 days |
+| DLP Incidents | 1 year | Yes |
+| System Logs | 180 days | Yes |
+
+Older logs are automatically purged or archived to external storage.
+
+---
+
+## Next Steps
+
+- [Troubleshooting](/kb/web-gateway/troubleshooting)
+- [URL Category Policy](/kb/web-gateway/policy-url-category)
+- [UCSS Scheduled Reports](/kb/ucss/scheduled-reports)
