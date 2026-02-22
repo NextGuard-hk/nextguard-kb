@@ -1,0 +1,114 @@
+---
+title: "v3.15 Release Notes"
+description: "Release notes for Nextguard v3.15, covering new features, improvements, and bug fixes across Web Gateway, Email Gateway, DLP, and UCSS."
+keywords: ["Release Notes", "v3.15", "Update", "Changelog"]
+date: 2026-02-22
+---
+
+# Nextguard v3.15 Release Notes
+
+**Release Date:** February 2026
+
+This release includes new features, performance improvements, and bug fixes across all Nextguard products.
+
+---
+
+## Web Security Gateway
+
+### New Features
+- **Cloud App Control 2.0** — Expanded coverage for 500+ cloud applications with granular action-level controls (upload, download, share, post)
+- **TLS 1.3 Full Inspection** — Complete support for TLS 1.3 traffic inspection with forward secrecy
+- **Dynamic URL Categorization** — Real-time URL classification using machine learning for uncategorized sites
+
+### Improvements
+- Improved inline deployment throughput by 30% for HTTP/2 traffic
+- Enhanced AD/LDAP sync performance for directories with 50,000+ users
+- Reduced memory usage for SSL decryption sessions
+
+### Bug Fixes
+- Fixed intermittent connection drops during transparent proxy failover
+- Resolved issue where URL category overrides were not applied to HTTPS sites
+- Fixed log export timeout for large date ranges
+
+---
+
+## Email Security Gateway
+
+### New Features
+- **DMARC Aggregate Reporting** — Built-in DMARC report generation and analysis dashboard
+- **Attachment Sandboxing** — Cloud-based sandbox analysis for suspicious email attachments
+- **Quarantine Digest** — Automated quarantine summary emails sent to end users on configurable schedule
+
+### Improvements
+- Improved anti-spam engine detection rate by 15%
+- Enhanced MTA deployment wizard with automatic DNS validation
+- Added support for Office 365 journal-based integration
+
+### Bug Fixes
+- Fixed false positive rate for legitimate marketing emails
+- Resolved mail trace search issue with special characters in subject lines
+- Fixed quarantine release not working for messages exceeding 25MB
+
+---
+
+## DLP / MDLP
+
+### New Features
+- **OCR for Image-based DLP** — Detect sensitive data embedded in images, screenshots, and scanned documents
+- **Data Discovery 2.0** — Scheduled scans for network file shares with incremental scanning support
+- **Mobile DLP Agent for iOS** — Extend DLP policies to managed iOS devices via MDM integration
+
+### Improvements
+- Fingerprinting engine now supports structured and unstructured data sources
+- Network DLP throughput increased by 40% for inline deployments
+- Added 20 new industry-specific policy templates (healthcare, legal, government)
+
+### Bug Fixes
+- Fixed endpoint agent high CPU usage during large file transfers
+- Resolved false positives in credit card number detection for test data patterns
+- Fixed policy sync delay between UCSS and DLP engines
+
+---
+
+## UCSS Management Platform
+
+### New Features
+- **Multi-Tenant Dashboard** — Manage multiple organizations from a single UCSS console
+- **REST API v2** — Enhanced API with pagination, filtering, and webhook support
+- **Scheduled Compliance Reports** — Automated compliance report generation for PCI-DSS, HIPAA, and GDPR
+
+### Improvements
+- Dashboard load time reduced by 50% for large-scale deployments
+- Enhanced HA failover to sub-30-second switchover
+- Added bulk device registration via CSV import
+
+### Bug Fixes
+- Fixed scheduled report delivery failure for SMTP servers requiring STARTTLS
+- Resolved role-based access issue where read-only users could modify alert thresholds
+- Fixed device health status not updating after network recovery
+
+---
+
+## System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| CPU | 4 cores | 8 cores |
+| RAM | 8 GB | 16 GB |
+| Storage | 200 GB | 500 GB SSD |
+| OS | Custom Linux appliance | — |
+
+## Upgrade Instructions
+
+1. Back up current configuration via **System > Backup > Create Backup**
+2. Download v3.15 update package from the Nextguard Support Portal
+3. Navigate to **System > Update > Upload Package**
+4. Review pre-update compatibility check results
+5. Confirm and start the update process
+6. System will reboot automatically — estimated downtime: 5–10 minutes
+
+> **Note:** For HA deployments, update the standby node first, perform failover, then update the former active node.
+
+## Known Limitations
+
+See [Known Issues](/kb/release-notes/known-issues) for current known issues and workarounds.
