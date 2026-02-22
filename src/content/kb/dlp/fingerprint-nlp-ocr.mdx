@@ -1,0 +1,117 @@
+---
+title: "Detection Technologies (Fingerprint/NLP/OCR/ML)"
+description: "Nextguard DLP uses advanced detection technologies including document fingerprinting, NLP, OCR, and machine learning for accurate sensitive data identification."
+keywords: ["DLP", "Fingerprint", "NLP", "OCR", "Machine Learning", "Detection"]
+date: 2026-02-22
+---
+
+# Detection Technologies
+
+Nextguard DLP employs multiple detection technologies to accurately identify and classify sensitive data across all channels.
+
+## Document Fingerprinting
+
+Fingerprinting creates unique digital signatures of sensitive documents for exact and partial matching.
+
+### How It Works
+
+1. **Registration** — Upload source documents (contracts, financial templates, design files)
+2. **Hash Generation** — System creates multi-level hash fingerprints
+3. **Real-time Matching** — All outbound data is compared against the fingerprint database
+4. **Partial Match Detection** — Identifies even fragments or modified versions of registered documents
+
+### Supported Formats
+
+- Microsoft Office (Word, Excel, PowerPoint)
+- PDF documents
+- Plain text and CSV files
+- CAD and engineering drawings
+- Source code files
+
+### Configuration
+
+Manage fingerprints via **UCSS > DLP > Fingerprint Library**:
+- Organize by department or data classification
+- Set sensitivity thresholds (exact match, 80%, 60%)
+- Schedule automatic re-fingerprinting for updated documents
+
+## Natural Language Processing (NLP)
+
+NLP enables context-aware detection that understands the meaning of text, not just pattern matching.
+
+### Capabilities
+
+- **Entity Recognition** — Identifies names, addresses, organizations, financial data
+- **Sentiment Analysis** — Detects confidential tone or intent in communications
+- **Context Classification** — Distinguishes between casual mention and actual sensitive data
+- **Multi-language Support** — English, Chinese (Traditional/Simplified), Japanese, Korean
+
+### Use Cases
+
+| Scenario | NLP Action |
+|----------|------------|
+| Employee sends resume externally | Detects job-seeking intent |
+| Financial data in email body | Identifies monetary values in context |
+| Customer PII in support tickets | Recognizes personal identifiers |
+| Trade secrets in chat messages | Flags confidential business terminology |
+
+## Optical Character Recognition (OCR)
+
+OCR extracts text from images and scanned documents for DLP policy evaluation.
+
+### Supported Sources
+
+- **Screenshots** — Detect sensitive data captured via screen capture
+- **Scanned PDFs** — Extract text from document scans
+- **Photos** — Camera captures of screens or documents
+- **Embedded Images** — Images within Office documents or emails
+
+### OCR Pipeline
+
+1. Image pre-processing (deskew, contrast enhancement)
+2. Text extraction using neural network engine
+3. Language detection and character recognition
+4. Extracted text passed to DLP policy engine
+5. Policy action applied to original file
+
+### Performance
+
+- Recognition accuracy: 98%+ for printed text
+- Handwriting recognition: 85%+ for standard handwriting
+- Processing speed: ~2 seconds per page
+- Supported languages: 40+
+
+## Machine Learning Classification
+
+ML models provide adaptive, self-improving detection for complex data patterns.
+
+### Pre-trained Models
+
+Nextguard includes industry-specific models:
+
+- **Financial Services** — Account numbers, trading data, compliance documents
+- **Healthcare** — Patient records, prescriptions, lab results
+- **Legal** — Contracts, litigation documents, privileged communications
+- **Technology** — Source code, API keys, architecture diagrams
+
+### Custom Model Training
+
+Organizations can train custom models:
+
+1. Provide labeled sample data (minimum 500 documents recommended)
+2. System trains classification model
+3. Validation phase with accuracy reporting
+4. Deploy to production DLP policies
+5. Continuous learning from administrator feedback
+
+## Combined Detection Strategy
+
+For maximum accuracy, Nextguard recommends layering multiple technologies:
+
+- **Layer 1** — Regular expressions for known patterns (credit cards, IDs)
+- **Layer 2** — Fingerprinting for registered sensitive documents
+- **Layer 3** — NLP for context-aware text analysis
+- **Layer 4** — OCR for image-based data extraction
+- **Layer 5** — ML for adaptive classification of unstructured data
+
+Configure detection technologies per policy in **UCSS > DLP > Policy > Detection Methods**.
