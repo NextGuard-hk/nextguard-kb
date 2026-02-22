@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { NAV_STRUCTURE } from '@/lib/navigation'
@@ -15,8 +16,15 @@ const CATEGORY_ICONS: Record<string, string> = {
   'release-notes': '\ud83d\udcdd',
 }
 
-export default function BrowseAllPage() {
-  const [query, setQuery] = useState('')
+function BrowseContent() {
+  const searchParams = useSearchParams()
+  const initialQuery = searchParams.get('q') || ''
+  const [query, setQuery] = useState(initialQuery)
+
+  useEffect(() => {
+    const q = searchParams.get('q') || ''
+    if (q) setQuery(q)
+  }, [searchParams])
 
   const allArticles = NAV_STRUCTURE.flatMap((cat) =>
     cat.items.map((item) => ({
@@ -34,7 +42,7 @@ export default function BrowseAllPage() {
           a.slug.toLowerCase().includes(query.toLowerCase()) ||
           a.categoryLabel.toLowerCase().includes(query.toLowerCase())
       )
-    : allArticles
+    : null
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,7 +62,7 @@ export default function BrowseAllPage() {
                 />
               </Link>
               <span className="text-gray-400 mx-1 hidden sm:inline">/</span>
-              <span className="text-gray-300 text-sm hidden sm:inline">Knowledge Base</span>
+              <Link href="/" className="text-gray-300 text-sm hidden sm:inline hover:text-white">Knowledge Base</Link>
             </div>
             <nav className="hidden md:flex items-center gap-6 text-sm">
               <Link href="/kb" className="text-white font-medium">Browse All</Link>
@@ -65,54 +73,45 @@ export default function BrowseAllPage() {
         </div>
       </header>
 
-      {/* Search Section */}
-      <section className="bg-white border-b border-gray-200 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Browse All Articles</h1>
-          <div className="relative">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search articles, guides, FAQs..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-              autoFocus
-            />
-          </div>
-          <p className="text-sm text-gray-500 mt-3">
-            {filtered.length} {filtered.length === 1 ? 'article' : 'articles'} {query.trim() ? 'found' : 'total'}
-          </p>
-        </div>
-      </section>
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Browse All Articles</h1>
 
-      {/* Results */}
-      <section className="max-w-4xl mx-auto px-4 py-8">
-        {query.trim() ? (
-          /* Search results - flat list */
+        {/* Search */}
+        <div className="relative mb-4">
+          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search articles, guides, FAQs..."
+            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            autoFocus={!!initialQuery}
+          />
+        </div>
+
+        <p className="text-sm text-gray-500 mb-8">
+          {filtered ? `${filtered.length} articles found` : `${allArticles.length} articles total`}
+        </p>
+
+        {filtered ? (
+          /* Search results — flat list */
           <div className="space-y-2">
-            {filtered.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-gray-500 text-lg">No articles found for "{query}"</p>
-                <p className="text-gray-400 text-sm mt-2">Try different keywords</p>
-              </div>
-            ) : (
-              filtered.map((article) => (
-                <Link key={article.slug} href={`/kb/${article.slug}`}>
-                  <div className="bg-white rounded-lg px-5 py-4 border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-900 font-medium">{article.title}</p>
-                      <p className="text-sm text-gray-500 mt-1">{article.categoryIcon} {article.categoryLabel}</p>
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+            {filtered.map((item) => (
+              <Link key={item.slug} href={`/kb/${item.slug}`}>
+                <div className="bg-white rounded-lg px-5 py-3 border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center justify-between">
+                  <div>
+                    <span className="text-gray-700">{item.title}</span>
+                    <span className="ml-2 text-xs text-gray-400">{item.categoryIcon} {item.categoryLabel}</span>
                   </div>
-                </Link>
-              ))
-            )}
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </Link>
+            ))}
           </div>
         ) : (
           /* Grouped by category */
@@ -140,7 +139,7 @@ export default function BrowseAllPage() {
             ))}
           </div>
         )}
-      </section>
+      </main>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 text-sm py-8 mt-8">
@@ -149,5 +148,13 @@ export default function BrowseAllPage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+export default function BrowseAllPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><p>Loading...</p></div>}>
+      <BrowseContent />
+    </Suspense>
   )
 }
