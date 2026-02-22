@@ -1,0 +1,106 @@
+---
+title: "Industry Templates"
+description: "Nextguard DLP provides pre-built industry compliance templates for financial services, healthcare, government, and more to accelerate DLP deployment."
+keywords: ["DLP", "Templates", "Compliance", "GDPR", "HIPAA", "PCI-DSS"]
+date: 2026-02-22
+---
+
+# Industry Templates
+
+Nextguard DLP includes pre-configured policy templates designed for specific industries and compliance requirements, enabling rapid deployment.
+
+## Available Templates
+
+### Financial Services
+
+| Template | Description |
+|----------|-------------|
+| **PCI-DSS** | Detects and protects credit card numbers, CVVs, cardholder data |
+| **SOX Compliance** | Monitors financial reporting data and audit trails |
+| **Banking Regulations** | Protects account numbers, SWIFT codes, transaction data |
+| **Anti-Money Laundering** | Flags suspicious financial communication patterns |
+
+### Healthcare
+
+| Template | Description |
+|----------|-------------|
+| **HIPAA** | Protects PHI (Protected Health Information) across all channels |
+| **Patient Records** | Detects medical record numbers, diagnoses, prescriptions |
+| **Clinical Trial Data** | Safeguards research and trial participant information |
+
+### Government & Public Sector
+
+| Template | Description |
+|----------|-------------|
+| **PDPO (Hong Kong)** | Compliance with Personal Data Privacy Ordinance |
+| **China PIPL** | Personal Information Protection Law compliance |
+| **GDPR** | EU General Data Protection Regulation requirements |
+| **Classified Information** | Government document classification enforcement |
+
+### Technology & Manufacturing
+
+| Template | Description |
+|----------|-------------|
+| **Source Code Protection** | Detects code snippets, repository data, API keys |
+| **IP Protection** | Safeguards patents, trade secrets, design documents |
+| **CAD/Engineering** | Protects technical drawings and specifications |
+
+### Legal
+
+| Template | Description |
+|----------|-------------|
+| **Attorney-Client Privilege** | Protects privileged communications |
+| **Contract Data** | Safeguards contract terms and negotiation documents |
+| **Litigation Hold** | Prevents destruction of litigation-relevant data |
+
+## Template Components
+
+Each template includes:
+
+- **Detection Rules** — Pre-configured patterns, keywords, and classifiers
+- **Policy Actions** — Recommended block/alert/encrypt actions
+- **Severity Levels** — Risk-based classification
+- **Notification Templates** — User and admin alert messages
+- **Exception Rules** — Common legitimate use case exclusions
+
+## Using Templates
+
+### Quick Start
+
+1. Navigate to **UCSS > DLP > Policy Templates**
+2. Select the desired industry template
+3. Click **Apply Template**
+4. Review and customize detection rules as needed
+5. Assign to target user groups or departments
+6. Enable the policy
+
+### Customization
+
+Templates can be modified after deployment:
+
+- Add or remove detection patterns
+- Adjust sensitivity thresholds
+- Modify policy actions (block, alert, log, encrypt)
+- Add custom keywords specific to your organization
+- Create exceptions for approved workflows
+
+## Regional Compliance
+
+Nextguard templates include region-specific patterns:
+
+- **Hong Kong** — HKID numbers, MPF account numbers, PDPO compliance
+- **China Mainland** — Resident ID numbers, UnionPay cards, PIPL requirements
+- **Taiwan** — National ID format, local banking data patterns
+- **Southeast Asia** — Regional ID formats, local financial data patterns
+- **Global** — Passport numbers, international credit cards, universal PII
+
+## Template Updates
+
+Templates are updated quarterly via UCSS to reflect:
+
+- New regulatory requirements
+- Updated detection patterns
+- Enhanced ML models
+- Community-contributed rules
+
+Check for updates in **UCSS > System > Template Updates**.
