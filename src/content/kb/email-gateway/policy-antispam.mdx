@@ -1,0 +1,282 @@
+---
+title: "Anti-Spam Policy"
+description: "Configure anti-spam policies on NextGuard Email Security Gateway to detect and block unsolicited bulk email, phishing, and spam."
+category: "email-gateway"
+order: 4
+---
+
+# Anti-Spam Policy
+
+The NextGuard Email Security Gateway provides multi-layer anti-spam protection using reputation databases, content analysis, machine learning scoring, and real-time blacklists (RBL). This guide covers how to configure spam detection rules, scoring thresholds, and remediation actions.
+
+---
+
+## Overview
+
+Spam filtering operates on inbound email and uses a composite scoring engine:
+
+| Layer | Technology | Description |
+|-------|-----------|-------------|
+| 1 | IP Reputation | Checks sender IP against RBL/DNSBL databases |
+| 2 | Domain Reputation | Evaluates sending domain reputation and history |
+| 3 | Content Analysis | Scans subject, body, and headers for spam patterns |
+| 4 | Bayesian Filter | Machine-learning model trained on known spam corpus |
+| 5 | URL Reputation | Checks embedded URLs against threat intelligence feeds |
+| 6 | SPF / DKIM / DMARC | Validates email authentication records |
+
+Each layer contributes to a **spam score** (0–100). Emails exceeding configured thresholds are acted upon according to policy.
+
+---
+
+## Accessing Spam Policy Settings
+
+1. Log in to the **NextGuard Admin Console**
+2. Navigate to **Email Gateway > Policy > Anti-Spam**
+3. Select the policy profile to configure (default: **Global Spam Policy**)
+
+---
+
+## Spam Score Thresholds
+
+### Recommended Threshold Settings
+
+| Action | Score Range | Recommended Threshold |
+|--------|------------|----------------------|
+| Pass | 0–39 | < 40 |
+| Tag as Spam | 40–69 | 40–69 |
+| Quarantine | 70–89 | 70–89 |
+| Reject / Block | 90–100 | ≥ 90 |
+
+### Configuring Thresholds
+
+1. Navigate to **Policy > Anti-Spam > Scoring**
+2. Set threshold values:
+   - **Tag threshold:** 40 (adds `[SPAM]` prefix to subject)
+   - **Quarantine threshold:** 70
+   - **Reject threshold:** 90
+3. Click **Save**
+
+---
+
+## Spam Actions
+
+For each threshold band, configure the following actions:
+
+### Tag (Score 40–69)
+
+- **Subject prefix:** Add `[SPAM]` or `[BULK]` to the email subject
+- **Header insertion:** Add `X-Spam-Score` and `X-Spam-Flag` headers
+- **Delivery:** Deliver to recipient's inbox
+- **Use case:** Allows end users to filter tagged emails using mail client rules
+
+### Quarantine (Score 70–89)
+
+- **Action:** Move to quarantine queue
+- **Notification:** Optionally notify recipient with quarantine digest
+- **Retention period:** 14 days (configurable)
+- **Release:** Admin or end-user can release from quarantine portal
+
+### Reject (Score ≥ 90)
+
+- **Action:** Reject email at SMTP level (550 response)
+- **Bounce notification:** None (silent drop) or NDR to sender
+- **Log:** Full rejection entry in spam logs
+
+---
+
+## Real-Time Blackhole Lists (RBL)
+
+RBLs check the sender's IP against known spam source databases.
+
+### Enabling RBL Checks
+
+1. Navigate to **Policy > Anti-Spam > RBL Settings**
+2. Enable the following recommended RBL providers:
+   - `zen.spamhaus.org` — Spamhaus ZEN (SBL + XBL + PBL)
+   - `bl.spamcop.net` — SpamCop Blocking List
+   - `b.barracudacentral.org` — Barracuda Reputation Block List
+3. Set **RBL match action:**
+   - **Score boost:** +50 points added to spam score
+   - **Or:** Set to **Reject** for immediate block
+4. Click **Save**
+
+### Custom RBL / DNSBL
+
+To add a custom blacklist:
+1. Navigate to **Policy > Anti-Spam > Custom RBL**
+2. Click **Add RBL**
+3. Enter:
+   - **DNS zone:** e.g., `dnsbl.example.com`
+   - **Match action:** Score boost or Reject
+   - **Weight:** Score value to add on match
+4. Click **Save**
+
+---
+
+## Allow List and Block List
+
+### Global Allow List (Whitelist)
+
+Emails from allow-listed senders bypass all spam checks.
+
+1. Navigate to **Policy > Anti-Spam > Allow List**
+2. Add entries by:
+   - **Email address:** `sender@trusted-domain.com`
+   - **Domain:** `@partner-company.com`
+   - **IP address or CIDR:** `203.0.113.0/24`
+3. Click **Add** then **Save**
+
+> **Warning:** Use allow lists sparingly. Whitelisting entire domains can bypass critical security checks.
+
+### Global Block List (Blacklist)
+
+Emails from block-listed senders are rejected immediately.
+
+1. Navigate to **Policy > Anti-Spam > Block List**
+2. Add sender email, domain, or IP to block
+3. Set action: **Reject** or **Quarantine**
+4. Click **Save**
+
+---
+
+## Greylisting
+
+Greylisting temporarily rejects emails from unknown senders. Legitimate mail servers will retry; spam bots typically will not.
+
+### Enabling Greylisting
+
+1. Navigate to **Policy > Anti-Spam > Greylisting**
+2. Enable **Greylisting**
+3. Configure:
+   - **Initial delay:** 300 seconds (5 minutes)
+   - **Retry window:** 4 hours
+   - **Auto-whitelist after:** 3 successful deliveries
+4. Click **Save**
+
+> **Note:** Greylisting may cause a delay of 5–30 minutes for first-time senders. Not recommended if your organization requires real-time email delivery.
+
+---
+
+## Bulk Mail / Newsletter Handling
+
+Configure separate handling for bulk marketing emails and newsletters:
+
+1. Navigate to **Policy > Anti-Spam > Bulk Mail**
+2. Enable **Bulk Mail Detection**
+3. Set action:
+   - **Tag:** Add `[BULK]` prefix to subject
+   - **Separate folder:** Deliver to a dedicated bulk mail folder
+   - **Quarantine:** Move to bulk quarantine queue
+4. Configure bulk score threshold (recommended: 60–70)
+5. Click **Save**
+
+---
+
+## Per-User Spam Preferences
+
+Allow individual users to manage their own spam settings via the self-service portal:
+
+1. Navigate to **Policy > Anti-Spam > End-User Settings**
+2. Enable **Per-User Spam Preferences**
+3. Configure permissions:
+   - **Allow users to:** Add personal allow/block lists
+   - **Allow users to:** Adjust personal spam sensitivity (low/medium/high)
+   - **Allow users to:** Release their own quarantined mail
+4. Click **Save**
+
+### User Self-Service Portal
+
+Users can access their spam quarantine and preferences at:
+```
+https://<gateway-hostname>/user-portal
+```
+
+---
+
+## Quarantine Digest Notifications
+
+Send periodic summaries of quarantined emails to users:
+
+1. Navigate to **Policy > Anti-Spam > Quarantine Digest**
+2. Enable **Digest Notifications**
+3. Configure:
+   - **Frequency:** Daily (recommended) or Twice daily
+   - **Delivery time:** 08:00 (morning digest)
+   - **From address:** `noreply@yourdomain.com`
+   - **Include:** List of quarantined messages with release links
+4. Click **Save**
+
+---
+
+## Anti-Phishing Settings
+
+### Phishing Detection
+
+1. Navigate to **Policy > Anti-Spam > Anti-Phishing**
+2. Enable **Phishing Detection**
+3. Configure:
+   - **URL scanning:** Check embedded links against phishing databases
+   - **Domain spoofing detection:** Flag emails mimicking your domain
+   - **Lookalike domain detection:** Flag domains visually similar to your organization
+   - **Credential phishing protection:** Detect login page impersonation
+4. Set action for detected phishing:
+   - **Block (Reject):** Recommended
+   - **Quarantine:** With admin notification
+5. Click **Save**
+
+### Spear Phishing / BEC Protection
+
+Business Email Compromise (BEC) protection:
+
+1. Navigate to **Policy > Anti-Spam > BEC Protection**
+2. Enable **Executive Impersonation Protection**
+3. Add protected executives (CEO, CFO, etc.) by name and email
+4. Set action: **Quarantine** + **Admin Alert**
+5. Enable **Display Name Spoofing Detection**
+6. Click **Save**
+
+---
+
+## Spam Reporting and Logs
+
+### Viewing Spam Logs
+
+1. Navigate to **Reports > Anti-Spam**
+2. View:
+   - Total spam detected (by day, sender, domain)
+   - Spam score distribution
+   - RBL match statistics
+   - False positive / false negative rates
+
+### Reporting False Positives / Negatives
+
+To improve filtering accuracy:
+
+1. Navigate to **Policy > Anti-Spam > Training**
+2. Submit misclassified emails:
+   - **False Positive:** Legitimate email classified as spam
+   - **False Negative:** Spam email that passed through
+3. The Bayesian engine retrains automatically based on submissions
+
+---
+
+## Best Practices
+
+| Recommendation | Detail |
+|---------------|--------|
+| Enable all RBL layers | Use Spamhaus ZEN as minimum |
+| Set quarantine threshold at 70 | Reduces false positives vs. outright rejection |
+| Enable greylisting for new senders | Blocks most spam bots |
+| Review quarantine daily | Check for legitimate emails incorrectly classified |
+| Enable BEC protection | Protects against executive impersonation attacks |
+| Train Bayesian engine | Submit false positives/negatives regularly |
+| Audit allow lists quarterly | Remove stale or risky entries |
+
+---
+
+## Next Steps
+
+- [Anti-Spoofing Policy](/kb/email-gateway/policy-antispoofing)
+- [Quarantine & Mail Trace](/kb/email-gateway/quarantine-mail-trace)
+- [Logs & Reporting](/kb/email-gateway/logs-reporting)
+- [Anti-Virus Policy](/kb/email-gateway/policy-antivirus)
