@@ -144,7 +144,7 @@ function BrowseContent() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 text-sm py-8 mt-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>\u00a9 {new Date().getFullYear()} Nextguard Technology. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Nextguard Technology. All rights reserved.</p>
         </div>
       </footer>
     </div>
