@@ -1,0 +1,52 @@
+---
+title: "DLP FAQ"
+description: "Frequently asked questions about Nextguard Data Loss Prevention covering all 5 DLP channels."
+keywords: ["FAQ", "DLP", "Data Loss Prevention", "MDLP"]
+date: 2026-02-22
+---
+
+# DLP FAQ
+
+## General
+
+**Q: What are the 5 DLP channels in Nextguard MDLP?**
+A: Network DLP, Endpoint DLP, Email DLP, Application DLP, and Mobile DLP.
+
+**Q: Can I deploy only specific DLP channels?**
+A: Yes. Each channel is independently licensed and deployable.
+
+**Q: What compliance standards does Nextguard DLP support?**
+A: GDPR, HIPAA, PCI-DSS, SOX, PDPO (Hong Kong), PIPL (China), and custom compliance frameworks.
+
+## Detection
+
+**Q: What detection methods are available?**
+A: Keywords, regular expressions, document fingerprinting, NLP, OCR, and machine learning classification.
+
+**Q: Can DLP detect sensitive data in images?**
+A: Yes. OCR technology extracts text from images and scanned documents for policy evaluation.
+
+**Q: How accurate is the fingerprinting detection?**
+A: Fingerprinting can detect even partial matches (configurable from 60% to exact match) of registered documents.
+
+## Endpoint DLP
+
+**Q: What operating systems does the endpoint agent support?**
+A: Windows 10/11 and macOS 12+. Linux agent is available for Ubuntu 20.04+.
+
+**Q: Does the endpoint agent affect system performance?**
+A: Minimal impact. The agent uses less than 2% CPU and 100MB RAM during normal operations.
+
+**Q: Can users bypass the endpoint agent?**
+A: The agent runs as a protected system service with tamper protection. Local admin cannot disable it.
+
+## Policy
+
+**Q: How many policies can I create?**
+A: Unlimited policies. We recommend organizing by department, data type, or compliance requirement.
+
+**Q: Can I set different actions for different severity levels?**
+A: Yes. Each policy rule supports independent actions: log, alert, block, encrypt, or quarantine.
+
+**Q: Are there pre-built policy templates?**
+A: Yes. Industry-specific templates are available for financial, healthcare, government, and technology sectors.
