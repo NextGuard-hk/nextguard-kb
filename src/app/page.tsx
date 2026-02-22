@@ -26,7 +26,7 @@ export default function HomePage() {
                   alt="Nextguard"
                   width={160}
                   height={40}
-                  className="h-8 w-auto"
+                  className="h-8 w-auto mix-blend-screen"
                   unoptimized
                 />
               </Link>
