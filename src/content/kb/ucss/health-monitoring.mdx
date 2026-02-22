@@ -1,0 +1,73 @@
+---
+title: "Health Monitoring"
+description: "Monitor the health, performance, and status of all Nextguard appliances and services through the UCSS dashboard."
+keywords: ["UCSS", "Monitoring", "Health", "Dashboard", "Alerts"]
+date: 2026-02-22
+---
+
+# Health Monitoring
+
+UCSS provides real-time health monitoring for all managed Nextguard appliances and services.
+
+## Dashboard Overview
+
+The main dashboard displays:
+
+- **System Health Score** — Aggregated health metric (0-100)
+- **Active Alerts** — Critical, warning, and informational alerts
+- **Device Status Map** — Visual status of all managed appliances
+- **Traffic Throughput** — Real-time bandwidth utilization graphs
+- **Top Threats** — Most detected threats in the last 24 hours
+
+## Monitored Metrics
+
+| Category | Metrics |
+|----------|--------|
+| **System** | CPU usage, memory, disk I/O, uptime |
+| **Network** | Throughput, connections, latency, packet loss |
+| **Services** | Process status, queue depth, response time |
+| **Security** | Blocked threats, policy violations, incidents |
+| **License** | Expiration date, usage limits, feature status |
+
+## Alert Configuration
+
+### Alert Thresholds
+
+Configure thresholds under **System > Alerts > Thresholds**:
+
+- CPU usage > 80% for 5 minutes → Warning
+- CPU usage > 95% for 2 minutes → Critical
+- Disk usage > 85% → Warning
+- Device offline > 60 seconds → Critical
+
+### Notification Methods
+
+- **Email** — SMTP alerts to administrators
+- **SNMP** — SNMP traps to network management systems
+- **Syslog** — Forward alerts to SIEM platforms
+- **Webhook** — HTTP POST to custom endpoints
+- **Dashboard** — In-console popup notifications
+
+## SNMP Integration
+
+UCSS supports SNMP v2c and v3:
+
+1. Enable SNMP under **System > SNMP**
+2. Configure community string (v2c) or credentials (v3)
+3. Add trap destinations
+4. Import Nextguard MIB files into your NMS
+
+## Syslog Integration
+
+Forward logs to external SIEM:
+
+1. Navigate to **System > Syslog**
+2. Add syslog server (IP, port, protocol)
+3. Select log categories to forward
+4. Choose format (CEF, LEEF, or standard syslog)
+
+## Historical Data
+
+- Performance data retained for 90 days by default
+- Configurable retention period under **System > Data Retention**
+- Export historical data in CSV format for external analysis
