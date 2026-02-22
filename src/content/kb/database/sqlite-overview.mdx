@@ -1,0 +1,90 @@
+---
+title: SQLite数据库与自定义组织架构表
+description: SQLite数据库(ORS.db)的操作方法，包括AD同步、用户查询、数据导出等
+---
+
+# SQLite数据库与自定义组织架构表
+
+ORS.db只包含user, computer, ou, group等信息，不包含其他数据。
+
+## 进入SQLite数据库
+
+```bash
+sqlite3 ORS.db
+```
+
+### 查看终端已注册数量
+
+```bash
+root@ucss:/opt/skyguard/ucs/var/dm# sqlite3 ORS.db
+SQLite version 3.7.13
+Enter ".help" for instructions
+Enter SQL statements terminated with a ";"
+sqlite> .tables
+ucsc_info
+sqlite> .mode line
+sqlite> select count(8) from ucsc_info;
+count(8) = 3849
+sqlite> .q
+```
+
+## sqlite数据库操作
+
+```bash
+root@NCCS-VM:/opt/skyguard/ucs/var/cache# sqlite3 ORS.db
+sqlite> .header on          # 显示表头
+sqlite> .schema AD_group    # 查看表结构
+sqlite> .tables             # 查看所有表
+```
+
+### 查看所有表
+
+```sql
+select * from sqlite_master where type="table";
+```
+
+### 退出SQLite数据库
+
+```
+.quit
+```
+
+碰到`..`的情况，输入`;`或者`ctrl+z`。
+
+## 清理缓存
+
+使用VACUUM清理缓存：
+
+```bash
+root@ucss:/etc/init.d# sqlite3 ORS.db
+SQLite version 3.7.13
+sqlite> VACUUM;
+sqlite>
+```
+
+## 查询AD同步数据
+
+### 显示表头并查询
+
+```sql
+sqlite> .header on
+sqlite> select * from AD_memberships;
+-- 显示: id|entryUuid|groupUuid|serverUuid
+```
+
+### 查看用户数量
+
+```sql
+select count(0) from AD_computer;
+select count(0) from AD_userdn;
+```
+
+## 导出数据
+
+```bash
+root@UCSS3:/opt/skyguard/ucs/var/cache# sqlite3 ORS.db
+sqlite> .out test
+sqlite> .dump
+sqlite> .quit
+root@UCSS3:/opt/skyguard/ucs/var/cache# vi test
+```
