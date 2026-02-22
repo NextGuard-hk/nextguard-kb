@@ -1,0 +1,78 @@
+---
+title: "Device Management"
+description: "Register, configure, and monitor Nextguard security appliances from the UCSS centralized management console."
+keywords: ["UCSS", "Device", "Appliance", "Management"]
+date: 2026-02-22
+---
+
+# Device Management
+
+UCSS provides centralized management for all Nextguard security appliances deployed across your network.
+
+## Registering Devices
+
+### Auto-Discovery
+
+1. Ensure the appliance is on the same network as UCSS
+2. Navigate to **Devices > Discovery**
+3. Click **Scan Network**
+4. Select discovered devices and click **Register**
+
+### Manual Registration
+
+1. Navigate to **Devices > Add Device**
+2. Enter appliance IP address and management port
+3. Provide device credentials
+4. Click **Test Connection** then **Register**
+
+## Device Dashboard
+
+The device dashboard shows:
+
+- **Status** — Online/Offline/Warning indicators
+- **Resource Usage** — CPU, memory, disk utilization
+- **Traffic Stats** — Real-time throughput and connection counts
+- **Policy Sync** — Last sync time and pending changes
+- **Firmware Version** — Current version and update availability
+
+## Device Groups
+
+Organize devices into logical groups:
+
+- By location (HQ, Branch Office, Data Center)
+- By function (Web Gateway, Email Gateway, DLP Engine)
+- By department or business unit
+
+Groups enable batch policy deployment and monitoring.
+
+## Configuration Management
+
+### Push Configuration
+
+1. Select target device(s)
+2. Modify settings in UCSS
+3. Click **Push Configuration**
+4. Monitor deployment status
+
+### Configuration Backup
+
+- **Automatic** — Daily backups of all device configurations
+- **Manual** — On-demand backup before major changes
+- **Restore** — Roll back to any previous configuration snapshot
+
+## Firmware Updates
+
+1. Upload firmware image to **System > Firmware Repository**
+2. Select target devices under **Devices > Firmware Update**
+3. Schedule update window (immediate or maintenance window)
+4. Monitor update progress and automatic rollback on failure
+
+## Device Types
+
+| Type | Description |
+|------|-------------|
+| **Web Gateway** | HTTP/HTTPS inspection and filtering appliance |
+| **Email Gateway** | SMTP relay with security scanning |
+| **DLP Engine** | Network DLP inspection engine |
+| **Endpoint Agent** | DLP agent on user workstations |
+| **Discovery Agent** | Data discovery scanner |
