@@ -109,10 +109,10 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 text-sm py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>\u00a9 {new Date().getFullYear()} Nextguard Technology. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Nextguard Technology. All rights reserved.</p>
           <p className="mt-2">
             <a href="https://next-guard.com" className="hover:text-white transition-colors">nextguard.com</a>
-            &nbsp;\u00b7&nbsp;
+            &nbsp;·&nbsp;
             <a href="mailto:support@nextguard.com" className="hover:text-white transition-colors">support@nextguard.com</a>
           </p>
         </div>
