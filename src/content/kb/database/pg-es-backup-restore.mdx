@@ -1,0 +1,150 @@
+---
+title: PG/ES手动备份恢复
+description: PostgreSQL和Elasticsearch数据库的手动备份与恢复操作指南，包括UCSS迁移、快照管理
+---
+
+# PG/ES手动备份恢复
+
+## 导出pgsql中系统日志为csv格式
+
+```bash
+psql -h 127.0.0.1 -U sps sps_db -c "COPY (SELECT * FROM system.audit_log) TO '/home/system.audit_log.csv'"
+Password for user sps:
+```
+
+## PG数据库备份
+
+```bash
+# 方法1: pg_dumpall
+pg_dumpall -h 169.254.253.4 -U postgres -p 5432
+# 需要输入三次密码，一个数据库一个密码
+# 密码: Pgsql@SkyGuard253.4
+
+# 方法2: pg_dump
+pg_dump -h 169.254.253.4 -U sps -d sps_db > /tmp/pg_backup.sql
+
+# 方法3: pg_dump
+pg_dump -f pg_sps.sql "host=10.0.9.183 port=5432 dbname=sps_db user=sps"
+```
+
+## KB-外置数据库手动备份恢复方法
+
+迁移过程中遇到的问题与处理方法：
+
+1. mount时发现共享目录的uid与gid不是es的，后面通过mount参数解决
+2. 备份与恢复 900G数据要3小时+，注意空间是否充足
+3. 初始化UCSS需要先把data.ini删除再操作: `/opt/skyguard/sps/dataInstall/init.log`
+4. 重新初始化失败情况下，删除以下文件: `/opt/skyguard/sps/dataInstall/data.ini`
+5. 删除后注意 apache与redis服务有没有起来
+6. 注意初始化时不能配置上外围存储
+7. 初始化完成后，查看index状态，集群到单机，会先yellow待分配后变green
+
+## 一、UCSS备份与恢复
+
+HF版本要一致。如果有外置存储，需要新的UCSS与外置存储相通。
+
+## 二、PG的备份与恢复
+
+### 1.1 旧的PG备份
+
+```bash
+# 方法1
+pg_dump -h 169.254.253.4 -U sps -d sps_db > /tmp/pg_backup.sql
+
+# 方法2
+pg_dump -f pg_sps.sql "host=10.0.9.183 port=5432 dbname=sps_db user=sps"
+```
+
+备份后，把这个pg_sps.sql文件下载并上传到新的PG。
+
+### 1.2 PG恢复
+
+```bash
+# 登录新装的pg
+sudo -u postgres psql;
+
+# 创建用户和DB
+drop database sps_db;
+create database sps_db owner sps;
+grant all privileges on database sps_db to sps;
+
+# 恢复操作
+psql -f pg_sps.sql "host=10.0.9.150 port=5432 dbname=sps_db user=sps"
+```
+
+> 注意：在任意一台UCSS上执行数据库命令，重命名数据库==> 创建新库。如果报错 "database sps_db is being accessed by other users"，可以用以下命令终止其他session：
+
+```sql
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pid <> pg_backend_pid();
+```
+
+## 三、ES备份与恢复
+
+备份目录：`/opt/backup *(rw,sync,all_squash)`
+
+### ES备份步骤
+
+1. 在es本地创建一个快照仓库，并把这个路径加到配置文件
+2. 在每个节点对`/opt/backup`进行nfs挂载，用同一个地址
+
+```bash
+mount 192.168.3.95:/opt/210422 /var/backup95
+```
+
+3. 注册仓库——每台ES都需要注册这个仓库，名字需要一样
+
+```bash
+curl -H "Content-Type: application/json" -X PUT 'http://localhost:9200/_snapshot/backup187' \
+  -d '{"type":"fs","settings":{"location":"backup187","max_restore_bytes_per_sec":"200mb"}}'
+```
+
+4. 创建快照——只需要在主的那台进行快照，master会分发
+
+```bash
+# 查询index
+curl -X GET localhost:9200/_cat/indices?v
+
+# 创建快照
+curl -H "Content-Type: application/json" -X PUT \
+  'http://localhost:9200/_snapshot/backup187/snapshot_dlp_endpoint' \
+  -d '{"indices":"dlp-endpoint-20210421-01,dlp-discovery-*"}'
+```
+
+### ES恢复步骤
+
+1. 在es本地创建一个快照仓库，并把这个路径加到配置文件
+2. 在每个节点对`/opt/backup`进行nfs挂载
+
+```bash
+mount 192.168.3.95:/opt/210422 /var/backup186
+```
+
+3. 注册仓库——每台都需要做
+
+```bash
+curl -H "Content-Type: application/json" -X PUT \
+  'http://localhost:9200/_snapshot/backup186' \
+  -d '{"type":"fs","settings":{"location":"backup186","max_restore_bytes_per_sec":"200mb"}}'
+```
+
+4. 然后再从备份机copy到恢复机
+
+5. 恢复快照——在主的那台操作
+
+```bash
+curl -X POST http://localhost:9200/_snapshot/backup186/snapshot_name/_restore
+curl http://localhost:9200/_recovery?pretty
+```
+
+## 设备信息更新
+
+登录数据库更新device_info表：
+
+```bash
+su postgres
+psql sps_db
+select * from system.device_info;
+update system.device_info set device_ip='10.0.x.x' where ...;
+```
