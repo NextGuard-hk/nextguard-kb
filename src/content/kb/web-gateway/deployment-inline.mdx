@@ -1,0 +1,147 @@
+---
+title: Inline Deployment
+description: Step-by-step guide for deploying the Nextguard Web Security Gateway in Inline (bridge) mode.
+category: web-gateway
+tags: [Deployment, Inline, Bridge Mode]
+version: "3.15"
+audience: public
+lastUpdated: 2026-02-22
+order: 2
+---
+
+## Overview
+
+Inline deployment places the WSG physically between your network switch and firewall. All traffic passes through the appliance transparently — no client configuration is required.
+
+**Recommended for:** New deployments, environments where proxy configuration is not feasible.
+
+---
+
+## Network Topology
+
+```
+[Internal Switch]
+       |
+  [WSG eth0 / eth1]   <-- Inline bridge interfaces
+       |
+  [Firewall / Router]
+       |
+   [Internet]
+```
+
+The WSG operates as a **Layer 2 bridge** — clients do not need to be aware of its presence.
+
+---
+
+## Prerequisites
+
+Before beginning deployment:
+
+- [ ] WSG appliance is rack-mounted and powered on
+- [ ] At least 2 network interfaces available for inline bridge
+- [ ] 1 dedicated management interface configured
+- [ ] UCSS management platform accessible
+- [ ] Static IP assigned for management interface
+- [ ] Default gateway and DNS configured
+
+---
+
+## Step 1: Physical Connection
+
+1. Connect **eth0** to the internal network switch (LAN side)
+2. Connect **eth1** to the firewall/router uplink (WAN side)
+3. Connect **mgmt** interface to your management network
+4. Power on the appliance
+
+> **Note:** The inline interfaces (eth0/eth1) should be on the same network segment — they act as a transparent bridge.
+
+---
+
+## Step 2: Initial Network Configuration
+
+Access the console or management web UI:
+
+1. Open browser and navigate to `https://[management-IP]:8443`
+2. Log in with default credentials (admin / nextguard123)
+3. Navigate to **Network > Interfaces**
+4. Configure the management interface:
+   - IP Address: `[your management IP]`
+   - Subnet Mask: `[subnet mask]`
+   - Default Gateway: `[gateway IP]`
+   - DNS: `[primary DNS]`, `[secondary DNS]`
+
+---
+
+## Step 3: Configure Inline Bridge
+
+1. Navigate to **Network > Deployment Mode**
+2. Select **Inline Mode**
+3. Assign bridge interfaces:
+   - **Bridge Interface 1 (LAN):** eth0
+   - **Bridge Interface 2 (WAN):** eth1
+4. Click **Apply**
+5. The system will restart the traffic engine
+
+---
+
+## Step 4: Enable SSL Inspection
+
+1. Navigate to **Policy > SSL Inspection**
+2. Enable **HTTPS Decryption**
+3. Download the **CA Certificate** from the WSG
+4. Deploy the CA certificate to all client machines via:
+   - **Group Policy (GPO)** for Windows domain environments
+   - **MDM (Intune/JAMF)** for managed mobile devices
+   - **Manual install** for individual machines
+
+> SSL inspection is required for full content inspection. Without it, HTTPS traffic is tunneled without inspection.
+
+---
+
+## Step 5: Configure Basic Policy
+
+1. Navigate to **Policy > Web Access Policy**
+2. Create a default policy:
+   - **Action:** Monitor (start with monitor mode before enforcing)
+   - **Users/Groups:** All users
+   - **Categories:** Select categories to monitor or block
+3. Click **Save & Apply**
+
+---
+
+## Step 6: Register with UCSS
+
+1. Navigate to **System > UCSS Registration**
+2. Enter your UCSS server address
+3. Enter the registration token (from UCSS admin console)
+4. Click **Register**
+5. Verify the device appears in UCSS > Device Management
+
+---
+
+## Verification
+
+After completing setup:
+
+1. From a client machine, browse to `http://example.com` — traffic should be logged in **Logs > Web Logs**
+2. Browse to `https://example.com` — with SSL inspection enabled, traffic should also be logged
+3. Try accessing a blocked category — you should see a block page
+
+---
+
+## Troubleshooting
+
+| Issue | Possible Cause | Solution |
+|-------|---------------|----------|
+| No internet after inline placement | Bridge not configured | Re-check bridge interface assignment |
+| HTTPS sites show certificate error | CA cert not installed | Deploy WSG CA cert to clients |
+| No logs appearing | Policy not applied | Check policy assignment and traffic routing |
+| Management UI unreachable | IP misconfiguration | Access via console, re-check network settings |
+
+---
+
+## Next Steps
+
+- [AD / LDAP Integration](/kb/web-gateway/ad-ldap-integration)
+- [URL Category Policy](/kb/web-gateway/policy-url-category)
+- [Logs & User Monitoring](/kb/web-gateway/logs-and-monitoring)
