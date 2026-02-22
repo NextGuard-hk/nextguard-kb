@@ -1,0 +1,40 @@
+---
+title: "Email DLP"
+description: "Nextguard Email DLP scans outbound email content and attachments for sensitive data before delivery."
+tags: ["DLP", "Email", "MDLP"]
+date: 2026-02-22
+---
+
+# Email DLP
+
+Nextguard **Email DLP** integrates with the Email Security Gateway to inspect outbound messages and attachments for policy violations.
+
+## How It Works
+
+1. Outbound email passes through the Email Security Gateway
+2. The DLP engine inspects subject, body, and attachments
+3. Content is matched against detection policies (fingerprint, regex, NLP)
+4. Policy actions are applied: Allow, Block, Quarantine, Encrypt, or Redirect
+
+## Supported Attachment Types
+
+- Office documents (Word, Excel, PowerPoint)
+- PDF files
+- Text and CSV files
+- Compressed archives (ZIP, RAR, 7z)
+- Image files (with OCR scanning)
+
+## Policy Actions
+
+| Action | Description |
+|--------|-------------|
+| Allow | Email delivered normally |
+| Block | Email rejected with NDR to sender |
+| Quarantine | Held for admin review |
+| Encrypt | Auto-encrypt before delivery |
+| Notify | Deliver but alert compliance team |
+| Redirect | Route to manager for approval |
+
+## Integration
+
+Email DLP works with the Email Security Gateway MTA. Policies are configured in the UCSS Management Platform under **DLP > Email Channel**.
