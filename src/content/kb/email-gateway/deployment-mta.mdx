@@ -1,0 +1,149 @@
+---
+title: MTA / MX Deployment
+description: Deploy the Nextguard Email Security Gateway as an MTA with MX record configuration.
+category: email-gateway
+tags: [Deployment, MTA, MX Record, SMTP]
+version: "3.15"
+audience: public
+lastUpdated: 2026-02-22
+order: 2
+---
+
+## Overview
+
+The ESG operates as a **Mail Transfer Agent (MTA)** — it sits between the internet and your internal mail server, receiving inbound email via MX record and relaying outbound email via smart host configuration.
+
+---
+
+## Prerequisites
+
+- [ ] ESG appliance powered on and management interface configured
+- [ ] Public IP address assigned for inbound email (or NAT configured)
+- [ ] DNS access to update MX records
+- [ ] Internal mail server (Exchange, M365, Gmail) accessible from ESG
+- [ ] Port 25 inbound open on firewall
+
+---
+
+## Step 1: Configure ESG Network Settings
+
+1. Log into ESG management console
+2. Navigate to **Network > Interfaces**
+3. Configure:
+   - Management IP (for admin access)
+   - SMTP interface (for email traffic, can be the same or separate)
+4. Set hostname to your mail domain (e.g., `mail.yourcompany.com`)
+5. Ensure DNS is configured for both forward and reverse lookup
+
+---
+
+## Step 2: Configure Inbound Mail Domain
+
+1. Navigate to **Mail Settings > Domains**
+2. Click **Add Domain**
+3. Enter:
+   - **Domain Name:** `yourcompany.com`
+   - **Next Hop:** Internal mail server IP (e.g., `192.168.1.10`)
+   - **Next Hop Port:** 25 (SMTP)
+4. For Microsoft 365:
+   - Next Hop: `yourcompany.mail.protection.outlook.com`
+5. Click **Save**
+
+---
+
+## Step 3: Configure Outbound Smart Host
+
+On your internal mail server, configure ESG as the smart host:
+
+**Microsoft Exchange:**
+1. Open Exchange Admin Center
+2. Go to Mail Flow > Send Connectors
+3. Edit the outbound connector
+4. Set Smart Host to ESG IP address
+5. Authentication: None (trusted relay) or TLS
+
+**Microsoft 365:**
+1. Go to Exchange Admin Center > Mail Flow > Connectors
+2. Create an outbound connector to your ESG
+3. Route mail through: Your ESG IP/hostname
+4. TLS recommended
+
+---
+
+## Step 4: Update MX DNS Record
+
+Update your domain's MX record to point to the ESG:
+
+```
+# Before:
+yourcompany.com.  IN  MX  10  mail.yourcompany.com.
+mail.yourcompany.com.  IN  A  [OLD SERVER IP]
+
+# After:
+yourcompany.com.  IN  MX  10  esg.yourcompany.com.
+esg.yourcompany.com.  IN  A  [ESG PUBLIC IP]
+```
+
+> **DNS propagation** may take up to 48 hours. During transition, keep the old MX record as a lower priority backup.
+
+---
+
+## Step 5: Configure Recipient Verification
+
+To avoid bouncing email to invalid addresses:
+
+1. Navigate to **Mail Settings > Recipient Verification**
+2. Enable **LDAP Recipient Validation**
+3. Connect to Active Directory or Exchange for valid recipient lookup
+4. Or use **Exchange VRFY** for real-time recipient validation
+
+---
+
+## Step 6: Test Mail Flow
+
+1. Send a test email from an external address to `test@yourcompany.com`
+2. Check **Logs > Mail Trace** for the message
+3. Verify delivery to the internal mail server
+4. Send an outbound email and verify it passes through ESG (check SPF/DKIM headers)
+
+```bash
+# Test SMTP from command line
+telnet esg.yourcompany.com 25
+EHLO test.com
+MAIL FROM:<test@test.com>
+RCPT TO:<user@yourcompany.com>
+DATA
+Subject: Test
+.
+QUIT
+```
+
+---
+
+## Step 7: Configure SPF Record
+
+Update your SPF record to include the ESG IP:
+
+```
+# Add ESG to your SPF:
+yourcompany.com. IN TXT "v=spf1 ip4:[ESG_IP] include:spf.protection.outlook.com -all"
+```
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Email not arriving | Check MX record propagation; verify port 25 open |
+| Email rejected by destination | Check SPF/DKIM configuration |
+| Email delivered to wrong server | Verify Next Hop settings in domain configuration |
+| Bounce for unknown recipients | Enable recipient verification |
+
+---
+
+## Next Steps
+
+- [Anti-Spam Policy](/kb/email-gateway/policy-antispam)
+- [Anti-Virus Policy](/kb/email-gateway/policy-antivirus)
+- [Anti-Spoofing Policy](/kb/email-gateway/policy-antispoofing)
