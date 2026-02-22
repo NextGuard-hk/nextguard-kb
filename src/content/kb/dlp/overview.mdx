@@ -1,0 +1,121 @@
+---
+title: MDLP Overview — 5 DLP Channels
+description: Comprehensive overview of Nextguard MDLP, covering its five enforcement channels and detection technologies.
+category: dlp
+tags: [DLP, MDLP, Overview]
+version: "3.15"
+audience: public
+lastUpdated: 2026-02-22
+order: 1
+---
+
+## What is MDLP?
+
+Nextguard **MDLP (Multi-channel Data Loss Prevention)** is a comprehensive DLP solution that monitors, detects, and prevents sensitive data from leaving your organization across **five enforcement channels**.
+
+MDLP is managed centrally through the **UCSS Management Platform**, providing a unified view of all data activity across your environment.
+
+## The 5 DLP Channels
+
+### 1. Network DLP
+Monitors and controls sensitive data transmitted over your network infrastructure.
+
+**Coverage:**
+- HTTP/HTTPS web traffic
+- FTP transfers
+- SMTP/POP3/IMAP email (network-level)
+- Instant messaging protocols
+
+**Deployment:** Inline with your Nextguard Web Security Gateway.
+
+---
+
+### 2. Endpoint DLP
+Agent-based protection installed on Windows endpoints.
+
+**Coverage:**
+- File copy to USB/removable media
+- Print operations
+- Screenshot prevention
+- Clipboard monitoring
+- Application usage control
+
+**Supported OS:** Windows 10/11, Windows Server 2016+
+
+---
+
+### 3. Email DLP
+Scans outbound email content and attachments for sensitive data.
+
+**Coverage:**
+- Email body text analysis
+- Attachment scanning (Office, PDF, images via OCR)
+- Recipient-based policies
+- Encryption enforcement for matched content
+
+**Deployment:** Integrated with Nextguard Email Security Gateway.
+
+---
+
+### 4. Application DLP
+Monitors data activity within specific applications.
+
+**Coverage:**
+- Cloud storage uploads (OneDrive, Google Drive, Dropbox)
+- SaaS application data transfers
+- Browser-based file uploads
+
+---
+
+### 5. Mobile DLP
+Extends data protection to mobile devices.
+
+**Coverage:**
+- iOS and Android device management
+- Mobile email (ActiveSync) inspection
+- App-level data transfer control
+
+---
+
+## Detection Technologies
+
+Nextguard MDLP uses multiple detection methods to accurately identify sensitive data:
+
+| Technology | Description |
+|------------|-------------|
+| **Keyword / Regex** | Pattern matching for PII, account numbers, etc. |
+| **Fingerprinting** | Creates unique digital fingerprints of sensitive documents |
+| **NLP (Natural Language Processing)** | Context-aware content analysis |
+| **OCR (Optical Character Recognition)** | Extracts text from images and scanned PDFs |
+| **Machine Learning** | Learns from data patterns to improve detection accuracy |
+
+## Built-in Compliance Templates
+
+Nextguard MDLP includes pre-built templates for major regulations:
+
+- **GDPR** — EU General Data Protection Regulation
+- **PCI-DSS** — Payment Card Industry Data Security Standard
+- **HIPAA** — Health Insurance Portability and Accountability Act
+- **HKMA** — Hong Kong Monetary Authority Guidelines
+- **PDPO** — Personal Data (Privacy) Ordinance (Hong Kong)
+- **PIPL** — Personal Information Protection Law (China)
+
+## Policy Actions
+
+When a DLP policy matches, the following actions can be configured:
+
+| Action | Description |
+|--------|-------------|
+| **Monitor** | Log the event, no blocking |
+| **Block** | Prevent the transfer |
+| **Quarantine** | Hold for admin review |
+| **Encrypt** | Automatically encrypt the content |
+| **Notify** | Send alert to user and/or admin |
+| **Watermark** | Apply digital watermark to document |
+
+## Next Steps
+
+- [Network DLP Configuration](/kb/dlp/network-dlp)
+- [Endpoint DLP Agent Deployment](/kb/dlp/endpoint-dlp)
+- [Industry Templates Reference](/kb/dlp/industry-templates)
+- [UCSS Management Platform](/kb/ucss/overview)
