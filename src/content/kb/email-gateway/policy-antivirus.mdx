@@ -1,0 +1,125 @@
+---
+title: Anti-Virus Policy
+description: Configure anti-virus and malware scanning policies in the Nextguard Email Security Gateway.
+category: email-gateway
+tags: [Anti-Virus, Malware, Policy, Email Security]
+version: "3.15"
+audience: public
+lastUpdated: 2026-02-22
+order: 3
+---
+
+## Overview
+
+The ESG includes a built-in multi-engine anti-virus scanner that inspects all email attachments and message bodies for malware, viruses, ransomware, and other malicious content.
+
+---
+
+## Anti-Virus Engine
+
+Nextguard ESG uses **dual-engine scanning** for maximum detection:
+
+| Engine | Description |
+|--------|-------------|
+| **Engine 1** | Traditional signature-based detection |
+| **Engine 2** | Heuristic and behavioral analysis |
+| **Sandbox** | Dynamic analysis for unknown/suspicious files |
+
+Signatures are updated automatically every 4 hours from the cloud.
+
+---
+
+## Configuring AV Policy
+
+1. Navigate to **Policy > Anti-Virus**
+2. Click **Edit** on the default AV policy
+3. Configure:
+
+| Setting | Recommended Value |
+|---------|-------------------|
+| **Enable AV Scanning** | Yes |
+| **Scan Direction** | Inbound + Outbound |
+| **Scan Body** | Yes |
+| **Scan Attachments** | Yes |
+| **Max Attachment Size** | 50 MB (configurable) |
+| **Action on Virus Detected** | Quarantine or Delete |
+| **Notification** | Notify admin, optionally notify sender |
+
+4. Click **Save**
+
+---
+
+## File Type Filtering
+
+Block dangerous file types regardless of virus detection:
+
+1. Navigate to **Policy > File Type Filtering**
+2. Configure blocked extensions:
+
+**High Risk (Recommended to Block):**
+- `.exe`, `.bat`, `.cmd`, `.com`, `.pif`, `.scr`
+- `.vbs`, `.js`, `.jar`, `.ps1`, `.wsf`
+- `.msi`, `.dll`, `.ocx`
+
+**Medium Risk (Consider Blocking):**
+- `.iso`, `.img`, `.lnk`
+- Password-protected archives (`.zip`, `.rar` with password)
+
+3. Set action: Block and notify sender, or quarantine
+4. Allow exceptions for trusted senders if needed
+
+---
+
+## Sandbox Integration
+
+For advanced malware analysis:
+
+1. Navigate to **Policy > Sandbox**
+2. Enable sandbox scanning
+3. Configure:
+   - File types to sandbox (Office documents, PDFs, executables)
+   - Analysis timeout (recommended: 90 seconds)
+   - Action on suspicious result: Quarantine
+4. Sandboxed emails are held while analysis completes
+5. View sandbox results in **Logs > Sandbox Reports**
+
+---
+
+## Compressed File Handling
+
+1. Navigate to **Policy > Archive Handling**
+2. Configure:
+   - **Scan inside archives:** Yes (ZIP, RAR, 7Z)
+   - **Max extraction depth:** 5 levels
+   - **Password-protected archives:** Block (or quarantine for review)
+   - **Max extracted size:** 100 MB
+
+---
+
+## Notifications and Alerts
+
+1. Navigate to **Policy > Notifications**
+2. Configure email alerts for:
+   - **Admin notification:** Alert IT when virus detected
+   - **Sender notification:** Optionally inform sender their email was rejected
+   - **Recipient notification:** Inform recipient their email was quarantined
+
+---
+
+## AV Scan Reports
+
+1. Navigate to **Reports > Anti-Virus**
+2. View:
+   - Viruses detected (by type, date, sender)
+   - Detection rate statistics
+   - File types blocked
+   - Sandbox analysis results
+3. Schedule weekly AV reports to your security team
+
+---
+
+## Next Steps
+
+- [Anti-Spam Policy](/kb/email-gateway/policy-antispam)
+- [Anti-Spoofing Policy](/kb/email-gateway/policy-antispoofing)
+- [Quarantine & Mail Trace](/kb/email-gateway/quarantine-mail-trace)
