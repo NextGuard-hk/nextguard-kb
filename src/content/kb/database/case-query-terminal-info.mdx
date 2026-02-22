@@ -1,0 +1,85 @@
+---
+title: 案例3 - 读取后台数据库查询终端信息
+category: database
+tags: [postgresql, 终端监控, 远程访问, SQL查询]
+---
+
+# 案例3、读取后台数据库查询终端信息
+
+## 需求
+
+客户需要在 Q4 上线自研准入，将 DLP 客户端作为准入条件，通过建立可信 MAC 地址表对于 DHCP 进行限制。需要通过读取和复制数据库中的表字段放到数据仓库中操作，不会直接在我们的数据库中修改。
+
+具体要求：
+
+1. 从后台数据库导出 MAC 地址和用户名对应表，提供接口（用户名、密码、表名、列名）供客户数据仓库定期提取
+2. 提供列名：计算机名、用户名、MAC 地址、最后一次登录时间、版本号
+3. 提供数据提取的 SQL 语句和模拟数据
+
+## 读取方法
+
+### 1. 远程连接 PostgreSQL
+
+提供 UCSS 后台数据库连接方法：
+
+#### a. 修改配置文件 postgresql.conf
+
+```
+/etc/postgresql/10/main/postgresql.conf
+```
+
+改为可监听所有 IP：
+
+```
+listen_addresses = '*'
+```
+
+#### b. 修改 pg_hba.conf
+
+```
+/etc/postgresql/10/main/pg_hba.conf
+```
+
+添加允许远程访问的行（可指定固定 IP，如 192.168.1.1/32，或设置 0.0.0.0/0 允许所有）：
+
+```
+host  all  all  0.0.0.0/0  md5
+```
+
+#### c. 重启 PostgreSQL
+
+```bash
+service postgresql restart
+```
+
+#### d. 客户端远程登录
+
+帐号密码：sps/sps，实例名称 sps_db。
+
+SSH 到 UCSS 后台执行：
+
+```bash
+su postgres
+psql sps_db
+```
+
+### 2. 终端监控列表表
+
+在 PG 库的 `system.ep_monitoring_result` 表中读取以下字段：
+
+| 字段 | 说明 |
+|------|------|
+| `hostname` | FQDN / 机器名称 |
+| `login_user` | 登录账号 / 用户名 |
+| `active_mac` | MAC 地址 |
+| `active_ip` | IP 地址 |
+| `ep_version` | 终端版本 |
+| `sps_sync_time` | 终端最近一次连接时间 |
+| `terminal_status` | 终端连接状态（1=在线, 2=离线） |
+
+### 3. SQL 查询语句
+
+```sql
+select hostname, login_user, active_mac, active_ip, ep_version
+from system.ep_monitoring_result;
+```
