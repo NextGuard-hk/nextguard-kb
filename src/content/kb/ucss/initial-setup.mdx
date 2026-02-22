@@ -1,0 +1,82 @@
+---
+title: "Initial Setup & Licensing"
+description: "Step-by-step guide for UCSS initial deployment, network configuration, and license activation."
+keywords: ["UCSS", "Setup", "Installation", "Licensing"]
+date: 2026-02-22
+---
+
+# Initial Setup & Licensing
+
+This guide walks through UCSS first-time deployment and license activation.
+
+## Prerequisites
+
+- UCSS appliance (hardware) or VM image (OVA/QCOW2)
+- Network connectivity with static IP
+- License key from Nextguard support
+- NTP server access for time synchronization
+
+## Installation Steps
+
+### 1. Deploy Appliance
+
+**Hardware**: Connect to network, power on, access console via HDMI/serial
+
+**Virtual**: Import OVA into VMware/Hyper-V/KVM, allocate resources per system requirements
+
+### 2. Console Configuration
+
+On first boot, configure via console:
+
+1. Set management IP address and subnet mask
+2. Configure default gateway
+3. Set DNS servers
+4. Configure hostname
+5. Set timezone and NTP server
+
+### 3. Web UI Setup Wizard
+
+Access `https://<management-ip>:8443` and complete:
+
+1. **Admin Account** — Set administrator username and password
+2. **Network Settings** — Verify management interface configuration
+3. **Time Settings** — Confirm NTP synchronization
+4. **Mail Settings** — Configure SMTP for alert notifications
+5. **License Activation** — Enter license key
+
+## License Management
+
+### License Types
+
+| License | Includes |
+|---------|----------|
+| **Base** | UCSS management, device registration, basic reporting |
+| **Web Gateway** | URL filtering, cloud app control, SSL inspection |
+| **Email Gateway** | Anti-spam, anti-virus, anti-spoofing |
+| **DLP** | All 5 DLP channels, fingerprinting, OCR, ML |
+| **Full Suite** | All modules combined |
+
+### Activation
+
+1. Navigate to **System > License**
+2. Click **Activate License**
+3. Enter license key or upload license file
+4. System validates with Nextguard license server
+5. Modules are unlocked based on license entitlements
+
+### Offline Activation
+
+For air-gapped environments:
+1. Export machine fingerprint from **System > License > Offline**
+2. Submit to Nextguard support portal
+3. Receive offline license file
+4. Import via **System > License > Import**
+
+## Post-Setup Checklist
+
+- [ ] Admin password changed from default
+- [ ] NTP synchronized
+- [ ] SMTP configured for alerts
+- [ ] License activated
+- [ ] Backup configured
+- [ ] First managed device registered
