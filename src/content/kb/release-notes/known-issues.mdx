@@ -1,0 +1,102 @@
+---
+title: "Known Issues"
+description: "Current known issues, limitations, and workarounds for Nextguard products including Web Gateway, Email Gateway, DLP, and UCSS."
+keywords: ["Known Issues", "Bugs", "Workarounds", "Limitations"]
+date: 2026-02-22
+---
+
+# Known Issues
+
+This page lists current known issues and workarounds for Nextguard products. Issues are tracked by ID and updated as fixes become available.
+
+---
+
+## Web Security Gateway
+
+### WSG-001: Intermittent SSL Handshake Failures with TLS 1.3 Client Hello
+- **Status:** Under Investigation
+- **Affected Versions:** v3.15
+- **Description:** In rare cases, SSL inspection may fail during the initial TLS 1.3 handshake when certain cipher suites are negotiated.
+- **Workaround:** Add affected domains to the SSL bypass list via **Policy > SSL Inspection > Bypass List**.
+
+### WSG-002: URL Category Database Update Delay
+- **Status:** Fix Scheduled for v3.15.1
+- **Affected Versions:** v3.15
+- **Description:** Automatic URL category database updates may be delayed up to 2 hours beyond the configured schedule.
+- **Workaround:** Trigger manual update via **System > Updates > URL Database > Update Now**.
+
+### WSG-003: High Memory Usage with Large PAC Files
+- **Status:** Under Investigation
+- **Affected Versions:** v3.14, v3.15
+- **Description:** Explicit proxy deployments using PAC files larger than 512KB may experience elevated memory consumption.
+- **Workaround:** Reduce PAC file size by consolidating rules or splitting into multiple PAC files.
+
+---
+
+## Email Security Gateway
+
+### ESG-001: Quarantine Digest Email Formatting Issues
+- **Status:** Fix Scheduled for v3.15.1
+- **Affected Versions:** v3.15
+- **Description:** Quarantine digest emails may display incorrect character encoding for non-ASCII subject lines.
+- **Workaround:** Access quarantine directly via the UCSS console at **Email > Quarantine > Mail Trace**.
+
+### ESG-002: DMARC Report Generation Timeout
+- **Status:** Under Investigation
+- **Affected Versions:** v3.15
+- **Description:** DMARC aggregate reports may fail to generate for domains receiving more than 100,000 emails per day.
+- **Workaround:** Reduce the reporting period from weekly to daily to limit report size.
+
+---
+
+## DLP / MDLP
+
+### DLP-001: Endpoint Agent Compatibility with macOS Sonoma
+- **Status:** Fix Available in Agent v3.15.1
+- **Affected Versions:** Agent v3.15 on macOS 14.x
+- **Description:** The DLP endpoint agent may crash on macOS Sonoma when monitoring clipboard operations.
+- **Workaround:** Update to Agent v3.15.1 or temporarily disable clipboard monitoring in the endpoint policy.
+
+### DLP-002: OCR Detection Accuracy for Handwritten Text
+- **Status:** Known Limitation
+- **Affected Versions:** v3.15
+- **Description:** The OCR engine has reduced accuracy (40-60%) for handwritten text and stylized fonts.
+- **Workaround:** Combine OCR with fingerprint-based detection for documents with handwritten annotations.
+
+### DLP-003: Network DLP Throughput Degradation with Large Attachments
+- **Status:** Fix Scheduled for v3.15.2
+- **Affected Versions:** v3.15
+- **Description:** Network DLP inline inspection throughput may decrease by up to 20% for attachments larger than 50MB.
+- **Workaround:** Configure a size-based bypass rule for attachments exceeding the threshold.
+
+---
+
+## UCSS Management Platform
+
+### UCSS-001: Dashboard Widget Refresh Delay
+- **Status:** Fix Scheduled for v3.15.1
+- **Affected Versions:** v3.15
+- **Description:** Dashboard widgets may take up to 60 seconds to refresh after configuration changes.
+- **Workaround:** Manually refresh the browser page to load updated widget data.
+
+### UCSS-002: REST API Rate Limiting Not Documented
+- **Status:** Documentation Update Pending
+- **Affected Versions:** v3.15
+- **Description:** The REST API v2 enforces rate limits of 100 requests per minute per API key, but this is not documented.
+- **Workaround:** Implement exponential backoff in API client code when receiving HTTP 429 responses.
+
+### UCSS-003: HA Failover Notification Delay
+- **Status:** Under Investigation
+- **Affected Versions:** v3.14, v3.15
+- **Description:** Email notifications for HA failover events may be delayed by up to 5 minutes.
+- **Workaround:** Monitor HA status via the UCSS dashboard or configure SNMP traps for alerting.
+
+---
+
+## Reporting Issues
+
+To report a new issue or check the status of existing issues:
+
+1. Contact Nextguard Support at **support@nextguard.com**
+2. Include the issue ID (if referencing a known issue) in the subject line
+3. Provide system version, configuration details, and steps to reproduce
