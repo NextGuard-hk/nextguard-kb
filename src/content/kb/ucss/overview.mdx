@@ -1,0 +1,62 @@
+---
+title: "Platform Overview"
+description: "UCSS (Unified Content Security System) is the centralized management platform for all Nextguard security appliances and policies."
+keywords: ["UCSS", "Management", "Platform", "Console"]
+date: 2026-02-22
+---
+
+# UCSS Management Platform Overview
+
+**UCSS (Unified Content Security System)** is the centralized management console for deploying, configuring, and monitoring all Nextguard security products.
+
+## Key Capabilities
+
+- **Unified Dashboard** — Single-pane view of all security appliances and events
+- **Policy Management** — Create and distribute policies across Web Gateway, Email Gateway, and DLP
+- **Device Management** — Register, configure, and monitor all Nextguard appliances
+- **User & Role Management** — Granular RBAC with AD/LDAP integration
+- **Reporting & Analytics** — Real-time and scheduled reports across all modules
+- **High Availability** — Active-passive clustering for management continuity
+
+## Architecture
+
+UCSS operates as a centralized management server that communicates with distributed Nextguard appliances:
+
+- **Management Server** — Central console (hardware or virtual appliance)
+- **Managed Devices** — Web Gateways, Email Gateways, DLP Engines
+- **Agents** — Endpoint DLP agents, Discovery agents
+- **Communication** — Encrypted TLS channels between all components
+
+## System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| CPU | 4 cores | 8 cores |
+| RAM | 8 GB | 16 GB |
+| Storage | 200 GB | 500 GB SSD |
+| OS | CentOS 7+ / Ubuntu 20.04+ | CentOS Stream 9 |
+| Network | 1 Gbps | 10 Gbps |
+
+## Supported Browsers
+
+- Google Chrome 90+
+- Mozilla Firefox 88+
+- Microsoft Edge 90+
+- Safari 14+
+
+## Default Access
+
+- **URL**: `https://<ucss-ip>:8443`
+- **Default Admin**: `admin`
+- **Default Password**: Set during initial setup wizard
+
+## Modules
+
+| Module | Function |
+|--------|----------|
+| **Dashboard** | Real-time security overview and alerts |
+| **Devices** | Appliance registration and monitoring |
+| **Policies** | Web, Email, and DLP policy management |
+| **Users** | Account and role administration |
+| **Reports** | Scheduled and on-demand reporting |
+| **System** | Licensing, updates, backup, and HA configuration |
