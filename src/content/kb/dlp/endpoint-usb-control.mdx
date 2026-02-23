@@ -1,0 +1,54 @@
+---
+title: "终端USB管控与唯一U盘"
+description: "终端USB设备管控、MTP设备禁用、USB无线网卡禁用、唯一U盘识别等配置方法"
+category: "dlp"
+tags: ["endpoint", "USB", "管控", "MTP", "U盘"]
+version: "3.3+"
+order: 24
+---
+
+# 终端USB管控与唯一U盘
+
+## MTP设备禁用
+
+在终端配置中启用MTP设备禁用后，可以防止通过手机等MTP设备传输文件。
+
+## USB无线网卡禁用
+
+可以通过终端策略禁用USB无线网卡，防止用户通过无线网卡绕过网络管控。
+
+## 确定U盘ID
+
+### 方法 1：命令行工具
+
+使用 EndpointAgentUtil 工具查询U盘信息：
+
+```
+EndpointAgentUtil.exe --query-volumeinfo 盘符
+```
+
+路径：`C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointAgentUtil.exe`
+
+输出信息包括：
+- **VolumeName**: 卷名
+- **DeviceName**: 设备名称
+- **Letter**: 盘符
+- **BUS_USB_SERIAL**: USB序列号（用于唯一识别）
+- **BUS_USB_VID/PID**: 厂商ID/产品ID
+- **COMPATIBLE_ID**: 兼容ID
+- **OS_DEVICE_INSTANCE_ID**: 设备实例ID
+
+### 方法 2：DevViewer工具
+
+使用 DevViewer 工具可以查看 USB 设备树，包括：
+- USB 连接器管理器
+- WSD 打印提供程序
+- 安全设备
+- 便携设备
+- 磁盘驱动器
+
+可以通过设备树找到 USB Flash Disk USB Device 的详细信息。
+
+## 唯一U盘配置
+
+通过设置U盘的序列号（BUS_USB_SERIAL）或设备实例ID，可以实现仅允许特定的U盘在终端上使用。
