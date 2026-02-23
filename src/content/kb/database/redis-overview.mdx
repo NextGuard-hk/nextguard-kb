@@ -1,0 +1,195 @@
+---
+title: 03.REDIS数据库
+---
+
+## 03.REDIS数据库
+
+3.16改为：
+
+```bash
+sgcache-cli  -n 1 -a Redis@SkyGuard253.2
+sgcache-cli  -n 6379 -a Redis@SkyGuard253.2
+```
+
+入库es一次处理10条信息（json），最大支持10个线程，最多100个json（一个json可能包含多个事件），Hotfix-SPS-3.3.0-HF103_amd64.deb开始已经优化为一次处理20个json了
+
+### 事件：
+
+1、事件存在redis，事件先到redis的待分拣区，然后redis按各种索引分类进行存放写入表单
+
+2、sps从redis中取出临时事件，并记录在sps-incident.log中，并最终写入到ES
+
+备注：reidis的自增id就是是网络事件文件的索引，如果自增id不连续，sps就拿不到对应的事件了，会导致sps-incident不会触发通知邮件，但是索引丢了，事件入库没问题。
+
+### 用户行为日志/邮件日志：
+
+这些文件虽然通过sps-transfer传递到ucss的临时目录，但是uuid、用户目录、分级信息需要缓存到redis，不然每次入库都需要从pg数据库查询组织关系会很慢。
+
+### redis数据库基本信息
+
+3.10版本账号/后期3.3版本：`-a Redis@SkyGuard253.2`
+
+```bash
+redis-server -v  #redis版本信息
+```
+
+---
+
+### redis密码及登录方法
+
+- `-h <hostname>`
+- `-p <port>`
+- `-n <db>` Database number
+
+```bash
+ps -ef |grep redis  #查看redis表编号
+root         1     0  0 Jun28 ?        01:49:42 redis-server *:6379
+```
+
+---
+
+```bash
+redis-cli  #本地登录，-h 192.168.0.100 远程登录
+redis-cli -n 1/6379/6380  #表示选择了数据库1 3.3
+redis-cli -n 1  -a Redis@SkyGuard253.2   #3.10
+/6379/6380 -a Redis@SkyGuard253.2   #3.10
+```
+
+---
+
+3.16 reids的名称换成了cached，es和pg也改了
+
+```bash
+sgcache-cli  -n 1 -a Redis@SkyGuard253.2
+```
+
+---
+
+### 常用命令
+
+```bash
+keys *  #查眎所有redis缓存key表
+llen incident_data  #查看网络事件堆积数
+llen incident_distribute  #查看分布式存储情况网络事件堆积数
+get "ldap_max_version"  #获取字段信息
+```
+
+### ucwi
+
+```bash
+redis-cli -n 6379 -a Redis@SkyGuard253.2
+llen "ucwi-request-logs"  #ucwi上的api流量日志
+```
+
+```bash
+del llencident_data  #删除缓存网络事件，缓解es数据库入库压力
+redis 127.0.0.1:6379> get cli  #查看文件内容
+"{'timeout_expire_time': 1645079751, 'enable': True, 'timeout_duration': 0}" #0表示无限制
+```
+
+---
+
+### device id需要强制更新时
+
+**3.3版本**
+
+```bash
+redis 127.0.0.1:6379[6380]> get device_id
+"d57f716e-8520-fd7c-ba12-e2d0736da90a"
+127.0.0.1:6379[6380]> DEL device_id
+```
+
+然后重新去控制台获取device_id，即可更新
+
+---
+
+**3.10版本**
+
+内存/cpu/硬盘等配置信息不一致，扩容后，或者页面显示硬盘容量和是实际不符合，需要去redis清理下缓存
+
+```bash
+dcin redis
+redis-cli -n 6380 -a Redis@SkyGuard253.2
+GET app_device_base_info
+DEL app_device_base_info  #删除redis相关信息
+```
+
+```bash
+root@SK3-3-UCSS1:/home/skyguardts# redis-cli
+redis 127.0.0.1:6379[1]> KEYS *
+redis 127.0.0.1:6379[1]> HGETALL dlp_dlp-network_index_setting  #查看该键的所有值
+redis 127.0.0.1:6379[1]> del dlp_dlp-network_index_setting  #删除该key，删除后会自动重新生成
+(integer) 1
+```
+
+---
+
+### 查看redis密码
+
+进入容器
+
+```bash
+cat /etc/redis/redis.conf |grep -v '#' |grep req
+requirepass Redis@SkyGuard253.2
+```
+
+临时修改密码：
+
+```bash
+redis 127.0.0.1:6379[1]> config get requirepass
+1) "requirepass"
+2) "122222"
+redis 127.0.0.1:6379[1]> config set requirepass  Redis@SkyGuard253.2
+OK
+```
+
+---
+
+### DSG上有两个redis服务
+
+端口分别是6379（redisserver）和6380（redisserver1）
+
+```bash
+/etc/init.d/redis-server
+redis-server   redis-server1
+ps -ef |grep redis
+redis     3357     1  0 Jul18 ?        00:03:59 /usr/bin/redis-server 127.0.0.1:6379
+redis     3355     1  0 Jul18 ?        00:04:04 /usr/bin/redis-server 127.0.0.1:6380
+```
+
+其中6380端口，是bro存数据，spworker取
+
+---
+
+### 案例1：redis异常导致的注册失败
+
+从6379可知是Redis服务连接失败了
+
+从"Connection Refused"错误可知6379服务端口没有人监听，所以是Redis服务停了
+
+### 案例2：数据库查眎AD增量还是全量同步
+
+```bash
+进入数据库：redis-cli -n 1
+HGETALL "ldap_full_synchronize"  #查看同步记录 true表示全量同步
+```
+
+PG数据库查看页面配置生效的是增量还是全量：
+
+```sql
+select * from system.sys_props;
+```
+
+echo 红色区域 |base64 -d，MD5解码后，可确认当前页面生效的是全量还是增量
+
+如果ad同步异常，导致页面一直处于正在同步字段，可以把key为：ldap_is_synchronizing的值由true改为false即可
+
+---
+
+### 判断邮件是内部域还是外部域
+
+APP-024之后，升级了Redis，卸载的时候我们考虑了清理掉高版本的rdb文件（格式不兼容），但是有时候在删除之后，又遇到Redis的回写，文件又写出来了。
+
+造成的现象是，redis反复重启
+
+处理办法：Host里删除掉 `/var/skyguard/redis/data/redis.rdb`
