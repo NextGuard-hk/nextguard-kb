@@ -1,0 +1,56 @@
+---
+title: Kafka概述
+---
+
+## Kafka概述
+
+### 说明
+
+3.13开始，事件是直接进入kafka，代替了redis。kafka挂掉，事件不会丢，会堆积再spe那边。
+
+### 登录信息
+
+```
+username="sps" password="Sps@SkyGuard8660";
+```
+
+### 外置kafka需要用到的端口
+
+```yaml
+ports:
+  - 9092:9092
+  - 9093:9093
+  - 9094:9094
+  - 9095:9095
+```
+
+### 测试连通信
+
+```bash
+java -jar /opt/skyguard/sps/tools/kafkaTool/KafkaTool.jar
+```
+
+### 登录方法
+
+1. 进入kafka容器
+2. 进入 `/etc/kafka/bin`
+3. 编辑配置文件 `vi config.properity`：
+
+```
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="sps" password="Sps@SkyGuard8660";
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=PLAIN
+```
+
+4. 查看topic列表：
+
+```bash
+./kafka-topics.sh --list --bootstrap-server localhost:9092 --command-config config.properity
+```
+
+### 主要配置文件
+
+- `/etc/kafka/config/kafka_client_jaas.conf`
+- `/etc/kafka/config/kafka_server_jaas.conf`
+- `/etc/kafka/config/producer.properties`
+- `/etc/kafka/config/producer-sasl.properties`
