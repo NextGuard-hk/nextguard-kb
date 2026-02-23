@@ -10,6 +10,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   'ucss': '\u2699\ufe0f',
   'faq': '\u2753',
   'release-notes': '\ud83d\udcdd',
+    'database': '🗄️',
 }
 
 export default function HomePage() {
