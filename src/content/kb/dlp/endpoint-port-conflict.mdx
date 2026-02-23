@@ -1,0 +1,43 @@
+---
+title: "解决与天擎或亿赛通端口冲突"
+description: "终端网络驱动与天擎或亿赛通网络驱动冲突的解决方案，包括端口配置和驱动文件修改"
+category: "dlp"
+tags: ["endpoint", "端口冲突", "天擎", "亿赛通", "网络驱动"]
+version: "3.3+"
+order: 22
+---
+
+# 解决与天擎或亿赛通端口冲突
+
+## 故障现象
+
+终端网络驱动与天擎网络驱动冲突，访问加载网页慢，严重的话还可能导致系统卡死。
+
+## 故障分析
+
+TCP层面端口冲突。
+
+## 解决办法
+
+强制指定代理默认端口为 tcp 6553。
+
+### 办法 1：少量终端注册表修改
+
+当只有少量终端需要解决此问题时，可以通过注册表命令修改：
+
+```
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\sgeptproxy" /v "TcpPort" /t REG_DWORD /d 6553 /f
+```
+
+### 办法 2：批量终端定制安装包
+
+当所有终端都需要修改时，需要在注册表上做批量修改，并通过定制终端包来实现。
+
+#### 终端包定制步骤
+
+1. 确认终端版本，提取已部署终端上的驱动文件，路径为：`C:\Program Files\SkyGuard\SkyGuard Endpoint\Drivers\`
+2. 复制 Drivers 目录，保留每个文件夹中的 `sgeptproxy.inf`、`sgeptproxy.inf.0`、`sgeptproxy.inf.1`
+3. 用文本编辑工具（如 notepad++）修改每个 `sgeptproxy.inf` 文件，将端口参数修改为 6553
+4. 将修改后的驱动文件打包到定制安装包中
+
+> **注意**：Drivers 目录下包含多个版本文件夹（5.1, 5.2, 6.0, 6.1, 6.2, 6.3, 10.0），需要对每个版本文件夹中的驱动文件都进行修改。
