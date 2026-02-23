@@ -1,53 +1,150 @@
 ---
-title: 终端应用程序DLP配置
-description: 各类应用程序的终端DLP配置说明，包括AirDrop、钉钉、微信、Excel、飞书、Firefox、百度网盘、Edge等。
+title: 終端應用程序DLP配置
+description: 各類應用程序的終端DLP配置說明，包括AirDrop、釘釘、微信、Excel、飛書、Firefox、百度網盤、Edge等。
 category: dlp
-tags: [DLP, 终端, 应用程序, AirDrop, 钉钉, 微信, Excel, 飞书, Firefox, 百度网盘, Edge]
+tags: [DLP, 終端, 應用程序, AirDrop, 釘釘, 微信, Excel, 飛書, Firefox, 百度網盤, Edge]
 version: "3.15"
 audience: public
 lastUpdated: 2025-05-28
 order: 18
 ---
 
+# 終端應用程序DLP配置
+
+本文檔匯總了各類應用程序在終端DLP環境下的配置注意事項和常見問題解決方法。
+
+---
+
 ## AirDrop
 
-### 进程名称
+### 進程名稱
 
-Mac系统的AirDrop程序名称：**sharingd**
+Mac系統的AirDrop程序名稱：**sharingd**
 
-### 配置说明
+### 配置說明
 
-- 该进程不需要注入，走的是Filesystem系统
-- 进程传文件很快，注入也来不及
+- 該進程不需要注入，走的是Filesystem系統
+- 進程傳文件很快，注入也根本來不及
 - **不要添加file-access=lite**
-- file-access=lite仅针对IM、浏览器这类文件访问特别频繁的进程
+- file-access=lite僅針對IM、瀏覽器這類文件訪問特別頻繁的進程
+- sharingd open一個文件一定是要對外發送
 
-## 钉钉 (DingTalk)
+### 進程屬性
 
-钉钉应用的DLP配置注意事项。
+不要添加`file-access=lite`。AirDrop使用Filesystem進行文件傳輸，專用進程訪問文件就不需要注入。
 
-## 微信相关 (WeChat)
+---
 
-微信相关的DLP终端配置和常见问题。
+## 釘釘（DingTalk）
+
+### 已知問題
+
+- 釘釘拖拽可以，上傳文件不攔截
+
+---
+
+## 微信相關（WeChat）
+
+### 問題1：微信點擊文件夾圖標進行文件發送時，點擊"打開"無效
+
+**解決辦法：**
+
+進程屬性加兩個參數：
+
+```
+hook-function-white=GetOpenFileNameW
+is-create-interface-ifiledialog-hook=true
+clipboardctrl-CF HDROP-getfile  #解決複製粘貼文件到對話框不攔截的問題
+is-enable-target-check-file-drag=true  #只拖文件，不鬆鼠標，是不會檢查的
+```
+
+### 問題2：文件對話框不攔截
+
+添加下述兩個屬性：
+
+```
+is-create-interface-ifiledialog-hook=true
+IFileDialog-hookprocedure  #彈出對話框後，檢查文件是關了之前檢查，還是之後。添加有這個屬性，是點確定之前檢查。
+```
+
+### 問題3：企業微信碰到的問題
+
+設置策略動作為確認後，當點擊取消的時候，拖拽的文件會依舊留在對話框。這個時候需要加上參數：
+
+```
+file-tracker-block
+```
+
+否則文件會直接發送成功。加了之後，文件會提示被佔用，無法發生成功。
+
+> 如果文件的發送時間少於30秒時，上一個阻斷，這個就直接阻，都不分析。並會在對話生成一個block的空文件。
+
+---
 
 ## Excel
 
-Excel应用的终端DLP配置。
+### 已知問題：篩選列表卡頓
 
-## 飞书 (Feishu/Lark)
+加一個進程屬性：`office-noget-sheet`
 
-飞书应用的DLP配置。
+> 參考工單：TS-25890
+
+---
+
+## 飛書（Feishu/Lark）
+
+### 已知問題：聊天發生卡頓
+
+加進程屬性：`im-chatuser-noget`
+
+> 飛書終端會獲取信息卡id，參考工單：EI-10615
+
+---
 
 ## Firefox
 
-Firefox浏览器的终端DLP配置。
+### 問題：Linux終端上Firefox不能注入
 
-## 百度网盘 (Baidu Cloud)
+**原因：** Ubuntu系統使用snap沙箱版本Firefox應用
 
-百度网盘的DLP终端配置。
+查看進程：
+```bash
+ps aux | grep firefox
+# 進程路徑為 /snap/firefox/...
+```
+
+**解決辦法：**
+
+添加進程屬性：`snap-name=firefox`
+
+---
+
+## 百度網盤（Baidu Cloud）
+
+### 已知問題
+
+客戶端文件上傳生效，拖拽不攔截。
+
+**解決辦法：**
+
+在`file-access=lite`基礎上加：
+
+```
+file-access-open-api=true
+```
+
+---
 
 ## Edge
 
-Edge浏览器的终端DLP配置。
+### 注意事項
 
-注意：Edge浏览器的JSON文件默认配置了file-access=lite。
+Edge瀏覽器的JSON文件種默認配置了`file-access=lite`，會默認下鉤子。
+
+### 已知問題：上傳文件卡住
+
+**解決辦法：**
+
+```
+is-create-interface-ifiledialog-hook=true
+```
