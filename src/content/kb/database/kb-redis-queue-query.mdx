@@ -1,0 +1,24 @@
+---
+title: KB-reids堆积查询汇总
+---
+
+## KB-reids堆积查询汇总
+
+```bash
+redis-cli -n 1
+llen incident_data  #事件堆积
+zcard network_incident_id_set_key  #sps邮件审批通知堆积数量
+llen network_incident_notify_list  #3.3打109补丁后，查这个字段，network_incident_id_set_key字段取消了
+zcard network_incident_approval_id_mail_set_key  #sps执行释放邮件堆积邮件数量，sps收到mta上送的release code待进行释放堆积
+zcard network_incident_id_send_set_key  #策略通知去重复的，避免一个收件人收到多封
+```
+
+邮件日志/连接日志的概要信息（大小、文件等）也会入redis，es根据redis的信息，从日志临时目录取文件进行入库。
+
+老补丁：
+
+```bash
+hlen network_incident_id_list_key_temp_map  #查询堆积邮件审批通知数量
+```
+
+解决办法：重启sps-incident
