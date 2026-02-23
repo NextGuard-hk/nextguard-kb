@@ -1,0 +1,63 @@
+---
+title: 终端事件字段详情及ES查询说明
+category: database
+tags: [elasticsearch, endpoint, events, query, index, curl]
+---
+
+# 终端事件字段详情及ES查询说明
+
+## Elasticsearch 接口查询
+
+### 说明
+
+所有的查询语句都是Elasticsearch原生支持的语句，如果需要更多的查询，可以直接查询Elasticsearch的官方文档。
+
+### 查询当前所有索引
+
+```bash
+curl http://localhost:9200/_cat/indices
+```
+
+结果示例：第三列即为索引的名称。
+
+### 如何确定索引名称
+
+1. 进入管理平台 “系统-归档” 页面，查看当前包含了哪几类事件日志索引
+2. 查看状态为活跃的分区名称，如 `Dlp-20210401-01`（以实际的系统为准）
+3. 分区名称和后台ES索引名称的对应关系：
+   - DLP事件：以dlp开头，日期结尾，中间加上事件类型
+   - 网络事件：`dlp-network-20210401-01`
+   - 终端事件：`dlp-endpoint-20210401-01`
+   - 发现事件：`dlp-discovery-20210401-01`
+4. 经过多次归档后，每种类型的索引会有多个，以不同的日期结尾
+
+### 根据条件查询终端事件
+
+1. 查询指定索引下的所有终端事件：
+
+```bash
+curl http://localhost:9200/dlp-endpoint-20210401-01/_search?pretty
+```
+
+2. 支持模糊查询，查询所有终端索引下的事件：
+
+```bash
+curl http://localhost:9200/dlp-endpoint-*/_search?pretty
+```
+
+3. 根据检测时间精确查询：
+
+```bash
+curl -XGET 'http://localhost:9200/dlp-endpoint-*/_search?pretty' -H 'Content-Type: application/json' -d '{
+  "query": {
+    "range": {
+      "detect_time": {
+        "gte": "2021-04-01T00:00:00",
+        "lte": "2021-04-30T23:59:59"
+      }
+    }
+  }
+}'
+```
+
+4. 根据高级筛选条件查询，如按用户名、文件名等字段进行过滤
