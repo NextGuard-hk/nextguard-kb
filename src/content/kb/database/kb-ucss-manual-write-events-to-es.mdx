@@ -1,0 +1,78 @@
+---
+title: "KB-UCSS手动把事件和证据文件写入ES库方法"
+description: "UCSS手动将事件和证据文件写入Elasticsearch数据库的操作步骤"
+category: "database"
+tags: ["elasticsearch", "UCSS", "事件导入", "证据文件", "bulk API"]
+date: "2023-02-18"
+---
+
+# KB-UCSS手动把事件和证据文件写入ES库方法
+
+## 概述
+
+当需要手动将UCSS事件和证据文件导入Elasticsearch时，可以按以下步骤操作。
+
+## 操作步骤
+
+### 1、准备数据文件
+
+解压证据和JSON文件的压缩包：
+
+```bash
+tar -zxvf 证据和json文件.tar
+```
+
+### 2、复制文件到目标服务器
+
+使用scp将证据文件复制到目标服务器：
+
+```bash
+scp -r <evidence_file>.eml root@<server_ip>:/opt/skyguard/ucs/var/spe/incident_log/forensics/
+scp -r test.json root@<server_ip>:/opt/skyguard/ucs/var/spe/incident_log/incidents/
+```
+
+### 3、使用ES Bulk API导入事件数据
+
+使用curl调用ES的bulk API将JSON数据导入：
+
+```bash
+curl -H 'Content-Type: application/json' -XPOST \
+  "http://localhost:9200/dlp-network-<date>/_bulk?pretty&refresh" \
+  --data-binary '@test.json' \
+  -u skyguard:Elastic@SkyGuard253.5
+```
+
+如果是远程服务器：
+
+```bash
+curl -H 'Content-Type: application/json' -XPOST \
+  "http://<server_ip>:9200/dlp-network-<date>/_bulk?pretty&refresh" \
+  --data-binary '@test.json' -u skyguard
+```
+
+### 4、复制证据文件到正确目录
+
+将证据文件复制到对应的forensics目录：
+
+```bash
+cd /var/skyguard/sps/forensics/incident/network/<year>/<month>/
+mkdir <day>
+cd <day>/
+cp <evidence_file>.eml .
+```
+
+### 5、设置文件权限
+
+```bash
+chmod -R 777 <day>
+chown -R www-data:www-data <day>
+```
+
+### 6、清理临时文件
+
+```bash
+cd /root/
+rm -rf *
+```
+
+> **注意**：清理临时文件时请确保在正确的目录下操作，避免误删重要文件。
