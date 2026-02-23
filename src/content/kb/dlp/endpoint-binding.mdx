@@ -1,0 +1,46 @@
+---
+title: "终端绑定"
+description: "终端绑定日志分析、域用户自动绑定、绑定成功与失败的排查方法"
+category: "dlp"
+tags: ["endpoint", "绑定", "域用户", "UCSS", "日志"]
+version: "3.3+"
+order: 25
+---
+
+# 终端绑定
+
+## 查看终端绑定日志
+
+终端绑定相关日志在 `EndpointAgentIntegration` 和 `EndpointClientAgent.log` 中。
+
+### 绑定成功日志
+
+绑定成功会有如下记录：
+
+```
+<EndpointAgentUtil> Win32 x86 3.15.3.020
+IPCAgentUtilClientInterface::integrationUserAuthorize()
+```
+
+### 绑定失败排查
+
+如果一般弹窗，日志中会有 `result:24`，表示无此用户信息。
+
+## 域用户自动绑定
+
+电脑是域用户登录时，DLP会默认认证域用户，当UCSS上同步了AD用户后会自动绑定。
+
+### 自动绑定日志
+
+```
+SGEPAgentIntegrationAutohome - System user : domain
+SGEPAgentIntegrationAutohome - Is auto check dom
+```
+
+### 绑定成功日志
+
+弹窗再次绑定成功时，日志会记录：
+
+```
+SGEPAgentIntegrationAutohome - get user name: [用户名]
+```
