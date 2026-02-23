@@ -1,0 +1,87 @@
+---
+title: 开放ES对外访问
+category: database
+tags: [elasticsearch, network, security, iptables, docker-compose]
+---
+
+# KB-开放ES对外访问
+
+> 注意：使用完后需要回退，不然会有安全风险！
+
+## 一、3.3 开放ES对外访问方法
+
+编辑配置文件：
+
+```bash
+vi /etc/elasticsearch/elasticsearch.yml
+```
+
+在配置文件最后加入以下配置：
+
+```yaml
+network.host: 0.0.0.0
+discovery.zen.ping.unicast.hosts: ["0.0.0.0"]
+bootstrap.system_call_filter: false
+transport.tcp.compress: true
+http.max_content_length: 200m
+```
+
+然后重启：
+
+```bash
+/etc/init.d/elasticsearch restart
+```
+
+> 备注：建行版本的ES不支持密码访问，如果需要增加密码访问另行调研。
+
+## 限制访问：只允许本机和指定IP访问9200端口
+
+1. 新建规则：
+
+```bash
+iptables -A INPUT -p tcp --dport 9200 -s 127.0.0.1 -j ACCEPT
+iptables -A INPUT -p tcp --dport 9200 -s 192.168.x.x -j ACCEPT
+iptables -A INPUT -p tcp --dport 9200 -j DROP
+```
+
+2. 查看生效的规则：
+
+```bash
+iptables -L
+```
+
+3. 保存规则：
+
+```bash
+mkdir /etc/iptables
+iptables-save > /etc/iptables/rules.v4
+```
+
+4. 配置开机自启动，避免重启后配置丢失：
+
+```bash
+vi /etc/rc.local
+/sbin/iptables-restore < /etc/iptables/rules.v4
+```
+
+## 二、3.10 开放ES对外访问方法
+
+打开 `/etc/appliance/compose.yaml` 增加端口映射：
+
+```yaml
+ports:
+  - 9300:9300
+  - 9200:9200
+```
+
+如果不能连接，执行：
+
+```bash
+ufw allow 9200/tcp
+```
+
+修改完成后：
+
+```bash
+docker-compose -f /etc/appliance/compose.yaml up -d
+```
