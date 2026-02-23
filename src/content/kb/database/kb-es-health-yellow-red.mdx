@@ -1,0 +1,53 @@
+---
+title: ES健康度检查yellow或者red解决办法
+category: database
+tags: [elasticsearch, health, yellow, red, cluster, troubleshooting]
+---
+
+# KB-ES健康度检查yellow或者red解决办法
+
+## 1. 查看健康度
+
+```bash
+curl http://localhost:9200/_cat/health?v
+curl 169.254.253.5:9200/_cat/health?v -u skyguard:xxx
+```
+
+## 2. 搜索状态为yellow或者red状态的数据库
+
+```bash
+curl http://localhost:9200/_cat/indices | grep -E 'yellow|red'
+```
+
+## 案例1方法：修夏red状态的表（重新分配es路由）
+
+```bash
+curl -XPUT 'localhost:9200/_cluster/settings' -H 'Content-Type:application/json' -d '{"transient":{"cluster.routing.allocation.enable": "all"}}'
+```
+
+或者：
+
+```bash
+curl -XPUT '169.254.253.5:9200/_cluster/settings' -H 'Content-Type:application/json' -d '{"cluster.routing.allocation.enable": "all"}'
+```
+
+执行后重新分配路由：
+
+```bash
+curl -X POST http://localhost:9200/_cluster/reroute
+```
+
+执行后应该变成green。
+
+## 案例2方法：网络事件不见了
+
+1. 定位出数据异常的索引：其中有网络事件的索引和ucwi的索引状态为red
+2. 删除red状态的索引：
+
+```bash
+curl -XDELETE 'http://169.254.253.5:9200/<index_name>'
+```
+
+3. 重新导入数据（如果有备份）
+
+> 注意：删除索引会导致数据丢失，请谨慎操作。
