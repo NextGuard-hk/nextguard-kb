@@ -1,0 +1,53 @@
+---
+title: 终端应用程序DLP配置
+description: 各类应用程序的终端DLP配置说明，包括AirDrop、钉钉、微信、Excel、飞书、Firefox、百度网盘、Edge等。
+category: dlp
+tags: [DLP, 终端, 应用程序, AirDrop, 钉钉, 微信, Excel, 飞书, Firefox, 百度网盘, Edge]
+version: "3.15"
+audience: public
+lastUpdated: 2025-05-28
+order: 18
+---
+
+## AirDrop
+
+### 进程名称
+
+Mac系统的AirDrop程序名称：**sharingd**
+
+### 配置说明
+
+- 该进程不需要注入，走的是Filesystem系统
+- 进程传文件很快，注入也来不及
+- **不要添加file-access=lite**
+- file-access=lite仅针对IM、浏览器这类文件访问特别频繁的进程
+
+## 钉钉 (DingTalk)
+
+钉钉应用的DLP配置注意事项。
+
+## 微信相关 (WeChat)
+
+微信相关的DLP终端配置和常见问题。
+
+## Excel
+
+Excel应用的终端DLP配置。
+
+## 飞书 (Feishu/Lark)
+
+飞书应用的DLP配置。
+
+## Firefox
+
+Firefox浏览器的终端DLP配置。
+
+## 百度网盘 (Baidu Cloud)
+
+百度网盘的DLP终端配置。
+
+## Edge
+
+Edge浏览器的终端DLP配置。
+
+注意：Edge浏览器的JSON文件默认配置了file-access=lite。
