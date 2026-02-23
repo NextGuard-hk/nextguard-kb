@@ -1,0 +1,53 @@
+---
+title: "终端URL分类"
+description: "终端URL分类库的下载路径、更新机制及常见问题排查方法"
+category: "dlp"
+tags: ["endpoint", "URL分类", "排查", "配置"]
+version: "3.3+"
+order: 28
+---
+
+# 终端URL分类
+
+## URL分类库下载路径
+
+终端下载的URL分类库位于以下路径：
+
+```
+C:\Program Files\SkyGuard\SkyGuardEndpoint\UCSCSDK\downloads\swg_url_category
+```
+
+该目录下载的是URL分类的目录，分类site预计有100万+条记录。
+
+> 注意：需要确认是否有下载到本地的逻辑。
+
+## 常见问题排查
+
+### URL分类策略不匹配
+
+**问题现象**：终端下载的 `swg_url_category` 文件MD5正常，但URL分类策略不匹配。
+
+**排查步骤**：
+
+1. 查看日志文件：
+```
+C:\Program Files\SkyGuard\SkyGuardEndpoint\UCSCSDK\var\logWebFilteringEngine.log
+```
+
+2. 检查是否存在云端URL解析失败的错误
+
+3. 确认终端与服务器的连接状态
+
+### 云端URL解析失败
+
+如果日志中显示云端URL解析失败，可能原因包括：
+
+- 终端与云端服务器网络不通
+- 认证信息过期
+- 服务器端配置错误
+
+**解决方法**：
+
+1. 检查终端网络连接
+2. 确认服务器地址配置正确
+3. 重新同步URL分类库
