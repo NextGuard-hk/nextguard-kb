@@ -1,0 +1,28 @@
+---
+title: KB-备份进度条卡在spe备份环节
+---
+
+## KB-备份进度条卡在spe备份环节
+
+### 定位方法：
+
+1. 查看备份日志
+
+```bash
+grep backup /opt/skyguard/tomcat/logs/manager.log
+```
+
+查看备份过程的报错是啥
+
+2. 重点查看spe组件相关异常问题
+
+```bash
+/opt/skyguard/ucs/var/log
+grep -i backup /opt/skyguard/ucs/var/log
+```
+
+看起来spe备份时成功过的，查看backupworker服务，发现服务停止，重启后正常。
+
+### 备注：
+
+另外如果内存不够，清理缓存，或者重启sps-webservices也可以考虑
