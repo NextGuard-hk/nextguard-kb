@@ -1,0 +1,65 @@
+---
+title: 截屏保存不生效
+description: 终端截屏保存功能故障排查，包括日志分析、策略配置检查及SPE证据截图问题。
+category: dlp
+tags: [DLP, 终端, 截屏, 故障排查, EndpointClientGUI, SPE]
+version: "3.15"
+audience: public
+lastUpdated: 2025-07-21
+order: 13
+---
+
+## 策略动作：截屏保存
+
+### 日志文件位置
+
+EndpointClientGUI.log 一般在用户日志的里面：
+
+**Windows:**
+
+```
+C:\ProgramData\SkyGuard\log\win10
+\EndpointAgent\log\win10\EndpointClientGUI.log
+```
+
+关键日志信息：
+```
+<EndpointClientGUI>: INFO SGEPLog.CEndpointClientGUI
+onGenerateScreenshotFile,Filename:C:\ProgramData\SkyGuard\Screen
+```
+
+**Linux:**
+
+```
+EndpointClientGUI_1_x.log
+[I] [3907043] (gui.cpp:screenShot:339) - call
+```
+
+### 截图与证据文件关系
+
+截图文件会包含在终证据文件enn中，会包含证据文件和截图文件。
+
+### 截屏逻辑
+
+1. 只有策略动作勾选了截屏保存，命中策略后，证据中就应该有截图
+2. GUI默认会每一秒钟对不信任的软件截图一次，并附上时间戳
+3. 截屏图片是作为证据的部分上传的，不开截屏选项时不会截图
+4. 下述两个配置是否勾选，不影响证据截图功能
+
+### 终端截屏策略配置
+
+命中策略时，间隔时间（默认2秒），前后各增加截屏
+
+## 案例：事件证据没有截图
+
+### SPE证据文件排序
+
+SPE证据文件有个逻辑：按证据大小排序，小的放在前一个截屏文件一般1-3M多，根据屏幕大小而定。
+
+### 排查步骤
+
+1. 检查GUI进程是否启动
+2. 如果当时GUI进程没有启动，截图不会生成
+3. AGENT收到截图后，就会送给SPE
+4. 确认GUI正常工作
+5. 检查是用户进程还是system进程，system进程不行
