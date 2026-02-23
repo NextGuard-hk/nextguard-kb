@@ -1,0 +1,34 @@
+---
+title: "36、ES多次锁表原因定位"
+category: database
+tags: [elasticsearch, lock, troubleshooting, disk]
+created: 2021-04-26
+updated: 2021-04-26
+---
+
+# ES多次锁表原因定位
+
+## 客户真实情况
+
+4月19日：
+反馈ucss邮件日志和网络事件查不到4月18日5点之后的邮件日志和网络事件且在继续增加。ES查询的结果中有read_only_allow_delete锁表标志。
+
+执行解锁命令：
+```bash
+curl -XPUT -H "Content-Type: application/json" http://127.0.0.1:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete":null}'
+```
+
+解锁后，4月25日（昨天）：
+反馈25号3点以后没有网络事件了，经过确认，ES再次被锁。
+
+## 原因分析
+
+1. 关于ES被锁，我们内部一直同步的是data盘空间高于85%就会被锁，但是远程到服务器，查看data盘空间为67%，离85%还有一段距离。
+
+2. 有没有可能是/var/tmp文件夹临时数据突然增加导致了磁盘空间超过85%。一个案例，ucss报磁盘空间满，但是查看tmp文件夹占用了9.3M。
+
+就在一直找到合适的方法说服客户是磁盘空间不足导致该问题。服务器也确实出了磁盘空间不足的通知，这点充分可以说明磁盘空间不足。但是有点小疑问就是，是否如第2点所描述的那样，是tmp文件临时增加导致的，需要进一步确认。
+
+## 解决方案
+
+磁盘扩容
