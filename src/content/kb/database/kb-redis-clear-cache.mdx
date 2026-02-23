@@ -1,0 +1,16 @@
+---
+title: KB-手动清除缓存方法
+---
+
+## KB-手动清除缓存方法
+
+手动清除缓存方法如下：
+
+1. ssh进入ucss后台，切换到root用户
+2. 执行：`redis-cli -n 1` 进入redis，然后执行：
+
+```bash
+del dlp_notification_forensics_ids
+```
+
+即可解决
