@@ -1,0 +1,133 @@
+---
+title: "终端进程属性配置"
+description: "终端进程属性参数说明，包括file-access-open-api、networkbypass、file-access-lite、block等属性的配置与使用场景"
+category: "dlp"
+tags: ["endpoint", "进程属性", "配置", "troubleshooting"]
+version: "3.3+"
+order: 27
+---
+
+# 终端进程属性配置
+
+终端进程属性用于精细化控制终端对各类应用程序进程的监控行为。通过设置不同的进程属性，可以实现对文件访问、网络通道、截屏等功能的灵活管控。
+
+## Linux终端进程属性
+
+```
+file-access-open-api=true  # 审计应用程序通道文件拖拽和文件另存为行为
+```
+
+## Win终端进程属性
+
+### is-enable-target-check-file-drag
+
+```
+is-enable-target-check-file-drag=true
+```
+
+- **使用场景**：只拖文件，不松鼠标，不会检查
+- **适用平台**：Windows终端
+
+### networkbypass
+
+```
+networkbypass
+```
+
+- **功能说明**：不通过网络通道对该进程进行监控
+- **使用场景**：
+  - 百度网盘客户端无法登陆（登录失败，网络异常）
+  - 腾讯会议无法登陆（网络异常，请检查网络设置）
+- **适用平台**：Windows终端、MAC终端
+
+> 注意：浏览器加了该属性可能会导致HTTPS无法正常访问
+
+### file-access=lite
+
+```
+file-access=lite
+```
+
+- **不加file-access=lite时**：驱动级别监控，会遍历全部文件，可能导致业务系统卡顿
+- **加file-access=lite时**：文件级别注入，只有该进程访问了文件才会监控
+- **功能说明**：
+  - 终端IM发送文件截图功能支持
+  - 文件访问控制（驱动级注入→文件级注入）
+- **使用场景**：
+  - 微信、QQ、钉钉、飞秋等IM软件进程
+  - Chrome、Firefox等浏览器软件进程
+  - Word、Excel等Office软件进程
+  - IE钩子进程未启用时的替代方案
+- **适用平台**：Windows终端、MAC终端
+
+### block
+
+```
+block
+```
+
+- **功能说明**：通过网络通道阻断该进程的全部网络访问
+- **使用场景**：
+  - 360 U盘安全防护往U盘拷贝进行拦截（进程名：360Tray.exe）
+  - 搜狗Sogou输入法截屏工具禁用（进程名：screencapture）
+- **适用平台**：Windows终端、MAC终端
+
+### supportmailtype=1
+
+```
+supportmailtype=1
+```
+
+- **场景**：对Outlook O365邮件正文检测支持
+- **适用平台**：Windows终端
+
+### inside-name
+
+```
+inside-name
+```
+
+- **场景**：应用程序名称不统一，通过exe程序的原始文件名进行匹配
+- **配置示例**：file-access=lite + inside-name
+- **适用平台**：Windows终端
+
+### print-gdi-direct-draw-text
+
+```
+print-gdi-direct-draw-text=true
+```
+
+- **场景**：Word打印速度明显变慢时，在winword.exe进程里添加该属性启用文字水印直接绘制
+- **相关配置**：`printing-watermark-policy=2`
+- **适用平台**：Windows终端
+
+### print-gdi-blt-capabilities
+
+```
+print-gdi-blt-capabilities=15
+```
+
+- **场景**：Office 365 Excel打印水印不显示（进程名：excel.exe）
+- **适用平台**：Windows终端
+
+### printing-watermark-policy
+
+```
+printing-watermark-policy  # 默认值为3
+```
+
+- `printing-watermark-policy=2`：文档内容会覆盖在水印上面
+- `printing-watermark-policy=3`：水印置于打印文档内容之上
+- **场景**：需要对水印置顶或者置底
+- **适用平台**：Windows终端
+
+### on-creation-inject-method / on-the-fly-inject-method
+
+```
+on-creation-inject-method=7
+on-the-fly-inject-method=7
+```
+
+- **功能说明**：由远程注入改成消息注入
+- **场景**：Chrome浏览器进程属性加file-access=lite后，打开网页时弹出异常提示
+- **适用平台**：Windows终端
