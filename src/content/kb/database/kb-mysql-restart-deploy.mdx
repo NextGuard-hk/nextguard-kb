@@ -1,0 +1,27 @@
+---
+title: KB-MYSQL无法启动，重启部署方法
+---
+
+## KB-MYSQL无法启动，重启部署方法
+
+MySQL无法启动时，可以通过以下步骤重新部署：
+
+1. 删除 `/var/lib/mysql/` 下的所有文件
+
+2. 执行以下命令初始化数据库：
+
+```bash
+mysql_install_db --user=mysql -basedir=/usr --datadir=/var/lib/mysql
+```
+
+3. 切换到 `/opt/skyguard/www/ats/` 目录下
+
+4. 使用root用户登陆mysql数据库，此时root用户密码为空
+
+5. 执行以下命令：
+
+```sql
+source cert_server.sql
+```
+
+6. 此时查看是否能同步成功，如果不成功可以尝试重新注册一下SWG
