@@ -1,0 +1,71 @@
+---
+title: UCSS加错授信IP手动修改方法
+category: database
+tags: [ucss, postgresql, redis, auth-ip, troubleshooting]
+---
+
+# UCSS加错授信IP，手动修改方法
+
+## 问题描述
+
+UCSS添加了错误的授信IP地址，需要手动从数据库和Redis缓存中删除。
+
+## 解决方案
+
+### 步骤一：从PG数据库中删除授信IP
+
+1. 登录UCSS后台
+2. 执行命令：
+
+```sql
+psql -h 127.0.0.1 -U sps sps_db;
+```
+
+3. 输入密码：sps
+4. 执行命令查询授信地址表中数据：
+
+```sql
+select * from system.auth_address;
+```
+
+5. 执行删除命令删除表中数据（表中数据全部删除）：
+
+```sql
+delete from system.auth_address;
+```
+
+6. 执行第4步中命令查看数据是否删除成功
+7. 退出数据库命令：
+
+```
+\q
+```
+
+### 步骤二：清除Redis中授信地址缓存内容
+
+1. 后台执行命令登录redis客户端：
+
+```bash
+redis-cli
+```
+
+2. 切换redis查询库：
+
+```
+select 1
+```
+
+3. 查看所有redis缓存key：
+
+```
+keys *
+```
+
+4. 找到对应key删除命令：
+
+```
+DEL sps_authaddress_ip
+```
+
+5. 执行 `keys *` 查看key是否删除
+6. exit 退出redis客户端
