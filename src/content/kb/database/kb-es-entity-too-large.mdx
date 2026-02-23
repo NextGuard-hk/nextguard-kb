@@ -1,0 +1,44 @@
+---
+title: ES报Entity Too Large导致事件不更新或堆积解决办法
+category: database
+tags: [elasticsearch, entity-too-large, events, incident, troubleshooting]
+---
+
+# 因ES报“Entity Too Large”导致的网络事件不更新/事件堆积解决办法
+
+## 问题现象
+
+1. 从上午10:30左右没有新事件产生
+2. 中午13:30分左右重启incident服务和dlpserver服务
+3. 重启服务后，redis中出现事件堆积，重启服务前redis没有
+4. 磁盘空间正常
+
+## 原因分析
+
+通过incident.log定位到异常时间点，发现错误日志：
+
+```
+ElasticsearchStatusException: Unable to parse response body
+URI [/_bulk?timeout=1m], status line [HTTP/1.1 413 Request Entity Too Large]
+```
+
+根本原因：SPS每次通过body选10个JSON文件入库ES，由于这10个JSON的总大小超过了ES默认的 `http.max_content_length` 限制。
+
+## 解决办法
+
+在客户的ES配置文件 `elasticsearch.yml` 最后增加一行：
+
+```yaml
+http.max_content_length: 200mb
+```
+
+修改后重启ES服务即可。
+
+## 补充说明
+
+在顺丰环境中曾碰到ES事件特别大的情况，单个JSON文件达到29MB，导致导出报告卡住。需要删除过大的JSON文件后，通过curl重新导入：
+
+```bash
+rm -rf bad.json
+curl 'localhost:9200/dlp-discovery'
+```
