@@ -1,0 +1,52 @@
+---
+title: Cloud-NG云网关配置
+description: Cloud-NG云端流量监控的MTA配置、UCWI集成以及注意事项。
+category: web-gateway
+tags: [Cloud-NG, MTA, UCWI, 云网关, SEG]
+version: "3.15"
+audience: public
+lastUpdated: 2024-07-17
+order: 5
+---
+
+## 概述
+
+Cloud-NG是基于云端的流量监控解决方案。
+
+> **注意：** Cloud-NG不支持FTP协议，因为云端流量监测是基于端口的，FTP端口是随机的。
+
+## MTA配置
+
+### 步骤1：配置SEG策略动作
+
+在SEG管理界面中，进入 **SEG管理 > 策略元素 > 策略动作**，编辑策略动作：
+
+- **名称：** Cloud-NG添加邮件头
+- **动作类型：** 放行
+- **邮件操作：** 勾选"记录邮件原文"和"邮件头操作"
+
+### 步骤2：配置高级路由
+
+将邮件路由指向云端：
+
+- **目标地址：** `cn-south-1.pop.skyguard.cn`
+- 启用高级邮件路由
+- 配置域名和主机名/IP映射
+
+## UCWI集成
+
+### API接口
+
+- **接口地址：** `https://ucwi.cn-south-1.pop.skyguard.cn/<tenant-id>/sync`
+- **请求方法：** POST
+
+### 必需请求头
+
+| Header | 说明 |
+|---|---|
+| `Connection` | 连接类型 |
+| `x-skg-timestamp` | 请求时间戳 |
+| `Authorization` | 认证信息 |
+| `x-tenant-id` | 租户ID（必须配置） |
+
+> **重要：** `x-tenant-id` 头是必须的，用于标识租户信息。
