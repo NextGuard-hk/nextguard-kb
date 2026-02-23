@@ -131,7 +131,7 @@ function KBHeader() {
             <span className="text-gray-400 mx-1 hidden sm:inline">/</span>
             <span className="text-gray-300 text-sm hidden sm:inline">Knowledge Base</span>
         <nav className="hidden md:flex gap-5 text-sm">
-          {NAV_STRUCTURE.slice(0,5).map(c => (
+          {NAV_STRUCTURE.slice(0,6).map(c => (
             <Link key={c.id} href={`/kb/${c.id}`} className="text-gray-600 hover:text-blue-600">{c.label.split(' ')[0]}</Link>
           ))}
         </nav>
