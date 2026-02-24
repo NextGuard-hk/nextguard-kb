@@ -1,0 +1,35 @@
+---
+title: "ITM风险用户报告显示IP而非AD用户名"
+description: "ITM风险用户报告中来源显示为IP而无法显示AD用户名的问题排查和解决方案"
+---
+
+# ITM风险用户报告显示IP而非AD用户名
+
+参考工单：EI-7595
+
+## 问题描述
+
+ITM风险用户报告中，来源信息显示为IP地址，无法显示用户AD信息。
+
+## 原因分析
+
+uus-agent只在SWG之类的设备上运行，收集AD信息及用户名与IP的对应关系。如果客户无SWG之类的设备，需要将uus-agent添加至UCSS上面的uss容器中运行，以收集相关信息发送至ITM设备。
+
+## 解决方案
+
+1. 安装对应的uus-agent包至uss容器
+
+```bash
+# deb包位置: itpfiles.skyguardmis.com/Build/itp/uusagent/
+# 包名: uus-agent_3.10-0183_all.deb
+
+# 登录UCSS，进入uss容器，进行安装
+docker cp uus-agent_3.10-0183_all.deb appliance_uss_1:/
+```
+
+2. 进入容器并安装
+
+```bash
+dcin uss
+dpkg -i uus-agent_3.10-0183_all.deb
+```
