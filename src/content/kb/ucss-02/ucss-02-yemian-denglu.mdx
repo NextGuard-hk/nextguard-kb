@@ -1,0 +1,48 @@
+---
+title: 'UCSS页面登录与验证码'
+description: 'UCSS 3.16版本页面登录关闭验证码方法及多因素认证配置'
+category: ucss-02
+tags: [UCSS, 登录, 验证码, 认证]
+version: "1.0"
+audience: public
+lastUpdated: 2024-09-12
+order: 2
+---
+
+# UCSS页面登录与验证码
+
+## UCSS Web登陆验证码
+
+### 问题描述
+
+用户希望UCSS登陆可以多因素验证。
+
+### 环境说明
+
+UCSS 3.15 SP1及以上版本。
+
+### 解决方案
+
+操作方法：需要从UCSS后台进行开启。
+
+```bash
+# 进入sps容器
+dcin sps
+
+# 进入配置目录
+cd /var/skyguard/sps/program-data/config/
+
+# 备份配置文件
+cp base_config.properties base_config.properties.bak
+
+# 编辑配置文件
+vi base_config.properties
+```
+
+## 其他页面类问题
+
+- 系统健康状态检查
+- 登录认证相关配置
+- 字符限制相关问题
+- 页面502错误处理
+- nginx异常相关问题
