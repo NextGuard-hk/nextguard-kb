@@ -1,0 +1,27 @@
+---
+title: "ITM概述"
+description: "ITM模块概述、日志来源、镜像地址与后台配置说明"
+---
+
+# ITM概述
+
+配置了NCP之后，所有的网络数据靠NCP处理。
+
+## ITM分析日志来源
+
+1. 终端日志：终端上送给ucss后，由ucss送到ITP的es里
+2. DSG、ASWG（非代理模式）日志，由ucss送到ITP的es里
+3. ASWG旁路代理模式日志送到NCP，由NCP送到ITP的es里
+
+> 特别注意：ASWG如果是串行模式，是不会产生NCP流量风险报告
+
+## ITM镜像地址
+
+3.16当前推荐版本，环境搭建要求：
+- 硬盘300G以上
+- 内存32G以上
+
+## ITP后台相关配置说明
+
+- 控制台帐号：`itmadmin/firewall`
+- ITM服务器用户名和密码：`itm-admin`
