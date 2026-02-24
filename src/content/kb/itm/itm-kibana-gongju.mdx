@@ -1,0 +1,47 @@
+---
+title: "ITM内置的Kibana工具"
+description: "ITM内置Kibana工具的开启和使用方法，用于ES数据可视化分析"
+---
+
+# ITM内置的Kibana工具
+
+Kibana是针对ES的开源分析可视化工具，与存储在ES的数据进行交互。
+
+## 开启Kibana Web界面
+
+需要开启配置文件中的端口5601。
+
+### 修改配置
+
+```bash
+vi /opt/skyguard/itpcompose/docker-compose.yaml
+```
+
+找到kibana部分，确保以下配置已启用：
+
+```yaml
+kibana:
+  image: reg-cloud.skyguardmis.com/itp/kibana
+  hostname: kibana
+  container_name: kibana
+  volumes:
+    - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+    - /etc/timezone:/etc/timezone
+    - ./kibana/kibana.keystore:/usr/share/kibana/config/kibana.keystore
+  ports:
+    - "5601:5601"
+  networks:
+    app_net:
+      ipv4_address: 172.238.238.242
+```
+
+### 重启服务
+
+```bash
+docker-compose -f /opt/skyguard/itpcompose/docker-compose.yaml up -d
+```
+
+### 登录访问
+
+登录URL: `http://127.0.0.1:5601`
