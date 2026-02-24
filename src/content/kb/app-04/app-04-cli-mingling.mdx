@@ -1,0 +1,67 @@
+---
+title: 'CLI命令'
+description: 'SkyGuard APP设备CLI命令行工具使用说明'
+category: app-04
+tags: [APP, CLI, 命令行, 运维]
+version: "1.0"
+audience: public
+lastUpdated: 2024-01-01
+order: 2
+---
+
+# CLI命令
+
+## SkyGuard管理控制台
+
+登录设备后进入SkyGuard management console，提供以下选项：
+
+1. Initialization - 初始化
+2. Command Line Console - 命令行控制台
+3. Quit - 退出
+
+选择“2. Command Line Console”进入CLI模式。
+
+## 常用命令
+
+### bypass dsg
+
+```bash
+# bypass dsg
+enable    disable    status    driverstatus driv...
+```
+
+### loglevel
+
+```bash
+# loglevel trace
+# loglevel
+error  warn  info  debug  trace
+```
+
+可设置日志级别：error, warn, info, debug, trace。
+
+### check monitor
+
+```bash
+# check monitor
+TSDB MaxTime: 2023-05-22
+SYS CurrentTime: 2023-05-22
+Status: Healthy
+```
+
+检查监控服务状态，可修复无监控日志问题。
+
+### fix tsdb
+
+```bash
+# fix tsdb
+Fix TSDB will lose all history monitor data...
+```
+
+修复TSDB数据库，注意会丢失所有历史监控数据。
+
+## 相关服务
+
+- `lcagent` - 本地代理服务
+- `monitor` - 监控服务
+- `node_exporter` - 节点指标导出服务
