@@ -1,0 +1,61 @@
+---
+title: "ITM快速生成报告demo使用说明"
+description: "ITM快速生成报告demo工具的使用说明，包括model_trigger脚本操作、数据清理和注意事项"
+---
+
+# ITM快速生成报告demo使用说明 (V3.15)
+
+通过itm的demo工具，可以模拟快速生成itm报告，用于现场演示。
+
+## 说明
+
+ITM默认两小时计算一次，前端每小时来取一次报告，如果要提高ucss提取周期，可调整。
+
+## 调整提取周期
+
+1. 登录UCSS后台，运行 dcin appliance_sps_1
+
+```bash
+/opt/skyguard/sps/apps/sps-incident/conf
+itm.scores.process.job.cron.expression=0 0/10 * * * ?
+```
+
+2. 将其修改为10分钟到ITM获取一次结果
+
+3. 执行 `/etc/init.d/sps-incident restart`
+
+## Demo工具操作方法
+
+```bash
+cd /opt/skyguard/itpcompose/model_trigger2
+./model_trigger.sh python main.py -A <ITM的IP>
+```
+
+> 脚本默认一个小时内只能运行一次。
+
+## 备注
+
+- 如果碰到报错，可能是时间戳问题，调整时间戳到当前时间
+- 如果ucss那边暂时没有呈现数据，确认ITP已经生成报告后，可以通过kibana查看数据是否已有
+
+## 清理ers_result数据
+
+```bash
+curl -s -XPOST 'http://172.238.238.239:9200/ers_result*/_delete_by_query' \
+  -H 'Content-Type: application/json' -d '{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "timestamp": {
+              "gte": "2023-05-28T19:29:52",
+              "lt": "2023-11-28T21:29:52"
+            }
+          }
+        }
+      ]
+    }
+  }
+}' | jq
+```
