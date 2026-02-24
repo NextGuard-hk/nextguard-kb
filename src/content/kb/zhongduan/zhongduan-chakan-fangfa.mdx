@@ -1,0 +1,28 @@
+---
+title: "终端查看方法"
+description: "使用procexp工具查看终端进程钩子注入状态，检查sgephook.dll链接文件"
+---
+
+# 终端查看方法
+
+## 使用procexp查看进程
+
+procexp：查看程序（比如IE），是否有动态链接文件sgephook.dll钩子程序注入
+
+快捷键：`Ctrl+D`
+
+## 查看步骤
+
+1. 打开Process Explorer
+2. 选择View > Show Lower Pane View > DLLs
+3. 查看目标进程的DLL列表
+4. 确认是否包含sgephook.dll
+
+## 常见DLL文件
+
+- sgephook.dll - 主钩子程序
+- Network Action Predictor - Net Win32 API Helpers DLL
+- nsi.dll - Network List Manager
+- netmsg.dll
+- Microsoft KSP
+- Windows NCrypt 加密插件
