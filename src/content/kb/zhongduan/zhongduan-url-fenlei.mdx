@@ -1,0 +1,24 @@
+---
+title: "终端url分类"
+description: "终端URL分类下载路径、swg_url_category的工作原理及常见问题排查"
+---
+
+# 终端url分类
+
+download路径：
+
+```
+C:\Program Files\SkyGuard\SkyGuardEndpoint\UCSCSDK\downloads\swg_url_category
+```
+
+这个下载的只是url分类的目录，分类site预计有100W+，不确定是否有下载到本地的逻辑。
+
+## 常见问题
+
+有个案例是终端下载swg_url_category比对md5正常，但url分类策略不匹配，查看日志：
+
+```
+C:\Program Files\SkyGuard\SkyGuardEndpoint\UCSCSDK\var\logWebFilteringEngine.log
+```
+
+发现是云端url解析失败导致。
