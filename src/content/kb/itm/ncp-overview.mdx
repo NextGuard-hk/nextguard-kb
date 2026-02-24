@@ -1,0 +1,35 @@
+---
+title: "NCP概述"
+description: "NCP全网络流量抓取模块的作用、架构和配置说明"
+---
+
+# NCP概述
+
+## NCP作用
+
+NCP用于ASWG走代理模式下，配合ITM获取网络镜像流量日志。
+
+ASWG的旁路，就自带了NCP功能，但走代理模式时，很多协议不在代理范围，也就需要用NCP去补充。
+
+UCSS上配置NCP后，NCP负责收集ASWG代理模式日志并通过syslog协议发送给ITP服务器。
+
+## 架构说明
+
+NCP采集的日志类型包括：
+- 邮件日志：发件人、收件人、抄送人、密送人、邮件大小、附件数量、附件大小、连接日志
+- 上传日志：用户、目标类别、文件大小、文件数量、病毒检测
+- 网络日志：连接数量、数据包大小、数据包类型
+- DLP/SWG审计日志：用户、策略名称、匹配数量等
+
+## bro进程崩溃修复
+
+如果bro进程经常crash，可以添加cron任务自动重启：
+
+```bash
+echo "*/5 * * * * root /usr/local/bro/bin/broctl cron" > /etc/cron.d/broCron
+/etc/init.d/cron restart
+```
+
+## 线程调整
+
+11000硬件，默认4个Bro线程。可根据实际需要调整。
