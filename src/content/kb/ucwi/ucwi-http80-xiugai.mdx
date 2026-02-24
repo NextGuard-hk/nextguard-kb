@@ -1,0 +1,48 @@
+---
+title: "UCWI Web和API修改为HTTP 80端口访问"
+description: "将UCWI从默认HTTPS 5443修改为HTTP 80端口的配置步骤"
+---
+
+# UCWI Web和API修改为HTTP 80端口访问
+
+## 1、关闭UCWI的SSL
+
+```bash
+dcin ucwi
+vi /etc/apache2/sites-enabled/004-inspector.conf
+```
+将 `SSLEngine on` 修改为 `off`
+
+## 2、拷贝004-inspector.conf到持久化路径
+
+```bash
+cp /etc/apache2/sites-enabled/004-inspector.conf /opt/skyguard/cert/
+```
+
+## 3、修改端口映射配置和持久化路径
+
+编辑 `vi /etc/appliance/compose.yaml`：
+
+```yaml
+ucwi:
+  image: "ucwi-full"
+  container_name: "appliance_ucwi_1"
+  depends_on:
+    - redis
+  restart: always
+  networks:
+    internal:
+      ipv4_address: 169.254.253.11
+  ports:
+    - 80:5443  # 把5443修改为80端口
+  privileged: false
+  environment:
+    - DEVICE=ucwi
+  volumes:
+    - /etc/localtime:/etc/localtime
+    - /etc/hostname:/etc/hostname
+    - /opt/skyguard/cert:/opt/skyguard/cert
+    - /var/log/skyguard/ucwi/inspector:/var/log/inspector
+    - /var/log/skyguard/ucwi/apache2:/var/log/apache2
+    - /opt/skyguard/cert/004-inspector.conf  # 新增持久化
+```
