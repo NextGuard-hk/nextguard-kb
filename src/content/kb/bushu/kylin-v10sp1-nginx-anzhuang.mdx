@@ -1,0 +1,56 @@
+---
+title: "Kylin V10sp1 安装 nginx 方法"
+description: "Kylin V10sp1环境中安装nginx的方法，包括联网和离线环境"
+---
+
+# Kylin V10sp1 安装 nginx 方法
+
+## 问题
+
+1. 客户环境用 sp1 的安装包部署 db，需要提前安装 nginx
+2. 客户环境无法联网
+
+## 报错分析
+
+根据报错可知，要安装 nginx，需要提供高版本的 mailcap，但是目前系统中所用的 perl 依赖版本是 `perl-5.28.0-`。
+
+查看 perl 版本：
+
+```bash
+rpm -q --whatrequires perl-5.28.0-434.ky10.x86_64
+```
+
+## 解决办法（联网环境）
+
+启用 `/etc/yum.repos.d/kylin_x86_64.repo` 源并安装：
+
+```bash
+yum install nginx
+```
+
+发现系统安装过程中，也是直接强制更新了 perl。
+
+## 解决办法（离线环境）
+
+通过 yum 源拉取 nginx 的安装包：
+
+```bash
+yumdownloader --resolve --destdir=/home/nginx nginx
+```
+
+将下载的包复制到离线机器，然后安装：
+
+```bash
+rpm -ivh --replacefiles *
+```
+
+## 验证安装
+
+正常拉起服务：
+
+```bash
+systemctl start nginx
+systemctl status nginx
+```
+
+确认 nginx 服务状态为 `active (running)` 即表示安装成功。
