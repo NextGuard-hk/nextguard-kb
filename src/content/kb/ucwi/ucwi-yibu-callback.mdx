@@ -1,0 +1,33 @@
+---
+title: "异步/callback回调问题汇总"
+description: "UCWI异步模式callback回调服务相关问题与排查方法"
+---
+
+# 异步/callback回调问题汇总
+
+ucwi异步模式就涉及到回调callback服务相关问题。
+
+## 回调逻辑
+
+如果对方服务不可达，目前逻辑是前面的发不出去，手动调整回调次数：
+
+```python
+self.try_times = CONFIG.get("callback_try_times")
+self.try_interval = CONFIG.get("callback_try_interval")
+```
+
+## 异步callbsever收到的信息格式
+
+- `actionCode: 2` — 拦截，`1` — 放行
+- `result` 包含匹配策略、分类、优先级等信息
+
+## redis回调队列
+
+可以通过redis查看回调队列状态，包含多种告警和任务队列：
+- `ucwi-async-callback`
+- `synctime_schedule_task`
+- `webservice_info`
+- `backup_schedule_task`
+- `mem_alert`
+- `device_id`
+- `app_interfaces_info`
