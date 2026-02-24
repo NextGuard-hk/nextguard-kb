@@ -1,0 +1,108 @@
+---
+title: 'UCSS审批通知排查'
+description: 'UCSS平台邮件审批通知日志排查与自动重发配置说明'
+category: ucss
+tags: [UCSS, 审批通知, 邮件, 日志排查]
+version: "1.0"
+audience: public
+lastUpdated: 2023-06-21
+order: 3
+---
+
+# UCSS审批通知排查
+
+## 重点说明
+
+网络事件详情里面显示邮件通知发送成功，但是后台incident日志中可能显示异常。原因：发邮件是异步的，将邮件提交到发送队列就会向前端返回成功。
+
+## 邮件审批通知日志
+
+日志路径：`/opt/skyguard/sps/logs/sps-incident/incident.log`
+
+### 常用排查命令
+
+```bash
+# 证据文件入库状态、邮件审批状态
+grep 事件uuid
+
+# 查看是否有邮件审批通知发送
+grep 1--事件id
+
+# 查看邮件通知处理
+grep Notification@company-release.com
+
+# 查询邮件通知耗时
+grep consuming
+
+# 查看是否有证据文件因为磁盘问题被删除
+grep deleted
+
+# 查看网络事件是否入库
+grep record
+```
+
+### 进阶排查命令
+
+```bash
+# 查看邮件发送失败
+grep 'email send failed'
+
+# 查看通知分发器状态
+grep 'network notification dispatcher'
+# 常应该是有started也有stop
+
+# 表示未执行重试
+grep 'restart next time'
+
+# 表示正在处理重试队列
+grep '=== processing main retry ids:'
+
+# 查看网络通知发送
+grep 'network === begin to send notification'
+
+# 查看终端通知发送
+grep 'endpoint === begin to send notification'
+
+# 表示邮件服务重试发送
+grep 'notify retry send'
+
+# 说明没有配置通知
+grep 'notification is null'
+```
+
+## 待审批邮件未审批自动重发
+
+新增功能：待审批邮件未审批时支持自动重新发送通知。
+
+### 配置方法
+
+1. 除了策略动作要勾选外，还需要开启全局配置
+2. 修改配置文件：
+
+```bash
+vi /var/skyguard/sps/program-data/config/notification.properties
+
+# DLP策略重发间隔（分钟）
+dlp.notification.resend.interval=24
+
+# DLP策略重发次数
+dlp.notification.resend.times=1
+```
+
+3. 设置定时任务：
+
+```bash
+notification.resend.time=0 0/10 * * * ?
+```
+
+4. 修改完后执行命令重启相关服务：
+
+```bash
+/etc/init.d/sps-incident restart;
+```
+
+### 查看日志确认
+
+```bash
+grep 'config retry' /var/skyguard/sps/program-data/config/
+```
