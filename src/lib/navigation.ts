@@ -93,6 +93,10 @@ export const NAV_STRUCTURE: NavCategory[] = [
       { slug: 'ucss-02/ucss-02-yemian-502', title: '页面502' },
       { slug: 'ucss-02/ucss-02-nginx-yichang', title: 'nginx异常相关' },
       { slug: 'ucss-02/ucss-02-shouquan-license', title: 'license基础知识' },
+      { slug: 'ucss-02/ucss-02-license-guoqi', title: 'license许可到期/过期' },
+      { slug: 'ucss-02/ucss-02-hexinshu-chaoxian', title: '核心数超限案例' },
+      { slug: 'ucss-02/ucss-02-chushihua-baocuo', title: '初始化特别久或者初始化报错' },
+      { slug: 'ucss-02/ucss-02-deviceid-zhuce', title: 'deviceid显示正常但注册不上' },
     ]
   },
   {
