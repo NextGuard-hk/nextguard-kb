@@ -1,0 +1,87 @@
+---
+title: "数据库外置案例"
+description: "UCSS 3.11数据库外置实施案例，基于Ubuntu 20.04.2系统安装PostgreSQL和Elasticsearch"
+---
+
+# 数据库外置案例
+
+> 声明：本文档仅适用于UCSS库库进行测试。
+
+## 数据库版本
+
+| 数据库 | 版本 |
+|--------|------|
+| Elasticsearch | 7.12.1 |
+| PostgreSQL | 12.7 |
+| Redis | 5.0.7 |
+
+## 第一部分：环境准备
+
+### 所需软件
+
+1. **Ubuntu 20.04.2**
+   - 镜像文件：`ubuntu-20.04.2-live-server-amd64.iso`
+   - 镜像大小：1186688kb (1.13GB)
+
+2. **PostgreSQL 数据库**
+   - `postgresql-12.7.tar.gz`
+
+3. **Elasticsearch 数据库**
+   - `elasticsearch-7.12.1-linux-x86_64.tar.gz`
+
+4. **全新安装的 UCSS 3.11**
+
+## 第二部分：操作系统安装
+
+### 安装Ubuntu 20.04.2
+
+推荐配置：8核心CPU，32GB或64GB内存
+
+### 安装依赖包
+
+```bash
+apt-get install libreadline-dev
+apt-get install build-essential
+apt-get install zlib1g-dev
+apt-get install net-tools
+apt-get install openssh-server
+```
+
+### 复制数据库源码包
+
+将PostgreSQL和Elasticsearch数据库拷贝到Ubuntu的`/usr/local/`目录
+
+## 第三部分：安装PostgreSQL数据库
+
+### 1. 解压安装包
+
+```bash
+tar -zxvf postgresql-12.7.tar.gz
+```
+
+### 2. 进入目录并配置
+
+```bash
+cd /usr/local/postgresql-12.7
+./configure
+```
+
+### 3. 编译
+
+```bash
+make
+```
+
+### 4. 创建用户并设置密码
+
+```bash
+adduser postgres
+```
+
+### 5. 安装PostgreSQL
+
+```bash
+make install
+```
+
+注意：此步骤需要使用root用户执行。
