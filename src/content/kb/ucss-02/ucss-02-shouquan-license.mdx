@@ -23,23 +23,70 @@ cat UCSS-cf44c91f-c8f2-3349-810a-9d17b9... | python -m json.tool
 
 ### INTER平台
 
-| 平台 | 最大CPU核数 |
-|------|----------|
-| UCSG 1100 | 8 |
-| UCSS 1100 | 8 |
-| UCSG 5100 | 40 |
-| UCSS 5100 | 40 |
-| UCSG 11000 | 128 |
-| UCSS 11000 | 128 |
+- **UCSG 1100**: 最大CPU核数 8
+- **UCSS 1100**: 最大CPU核数 8
+- **UCSG 5100**: 最大CPU核数 40
+- **UCSS 5100**: 最大CPU核数 40
+- **UCSG 11000**: 最大CPU核数 128
+- **UCSS 11000**: 最大CPU核数 128
 
 说明：3.15 app-25支持到128核
 
 ### 海光平台
 
-| 平台 | 最大CPU核数 | 最大内存GB |
-|------|----------|----------|
-| UCSG 1100 | 32 | 16 |
-| UCSS 1100 | 32 | 32 |
-| UCSG 5100 | 64 | 32 |
-| UCSS 5100 | 64 | 64 |
-| UCSG 11000 | 128 | 64 |
+- **UCSG 1100**: 最大CPU核数 32，最大内存 16GB
+- **UCSS 1100**: 最大CPU核数 32，最大内存 32GB
+- **UCSG 5100**: 最大CPU核数 64，最大内存 32GB
+- **UCSS 5100**: 最大CPU核数 64，最大内存 64GB
+- **UCSG 11000**: 最大CPU核数 128，最大内存 64GB
+- **UCSS 11000**: 最大CPU核数 128，最大内存 128GB
+
+### 飞腾平台
+
+- **UCSG 11000**: 最大CPU核数 128，最大内存 32GB
+- **UCSS 11000**: 最大CPU核数 128，最大内存 64GB
+
+### 虚拟平台
+
+- **VM 800**: 最大CPU核数 8，最大内存 12GB
+- **VM 1000**: 最大CPU核数 12，最大内存 16GB
+- **VM 5000**: 最大CPU核数 32，最大内存 32GB
+- **VM 10000**: 最大CPU核数 64，最大内存 64GB
+
+## 授权码和授权文件的区别
+
+### 授权码
+
+使用授权码激活必须要连接到license server，使用授权文件进行激活。
+
+### 授权文件
+
+先尝试从license server拿服务器上的license文件。
+
+配置文件路径：`/opt/skyguard/tomcat/conf/config.properties`
+
+设置 `license.server.host=license.skyguard.com`
+
+ts测试环境修改hosts文件，添加一条将license.skyguard.com指向license server
+
+## 设备池模式授权
+
+在存在多台网关设备的情况下，使用设备池方式连接license server，后续在3.13版本将会支持wildcard。
+
+内网可用池模式的dns：
+
+- **公网解析**: 114.114.114.114 / 49.4.x.x
+- **内网解析-APP部门**: 172.22.113.254 / 172.2.x.x
+- **内网解析-QA部门**: 172.22.70.65 / 172.2.x.x
+
+## 查看app获取的license信息
+
+```bash
+curl -s http://localhost:8885/app/v1/device/license
+```
+
+## 常见导入授权报错
+
+1、当前设备与License管理的设备列表不匹配
+
+原因：device_id和申请的id不一致
