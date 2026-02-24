@@ -1,0 +1,27 @@
+---
+title: "KB-09 BCLinx"
+description: "BCLinux未授权时无法使用yum安装软件包的解决方法"
+---
+
+# KB-09 BCLinx
+
+## 问题描述
+
+BCLinux 未授权的时候，无法使用 yum 命令安装软件包。
+
+## 解决方法
+
+修改如下配置文件，设置 `enabled=0`，保存退出之后，即可使用 yum 安装软件包。
+
+```bash
+cat /etc/yum/pluginconf.d/subscription-manager.conf
+```
+
+将配置文件中的 `[main]` 段下的 `enabled=1` 修改为 `enabled=0`：
+
+```ini
+[main]
+enabled=0
+```
+
+保存退出后即可正常使用 yum 命令。
