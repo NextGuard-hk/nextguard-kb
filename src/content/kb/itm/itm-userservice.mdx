@@ -1,0 +1,52 @@
+---
+title: "UserService用户识别模块"
+description: "ITM统一UserService用户识别模块的工作原理、配置文件和服务管理"
+---
+
+# UserService用户识别模块
+
+## 工作原理
+
+在3.7版本之前使用XID Server组件来做用户识别，但在实际环境中网关会部署到各个不同位置。
+
+从3.7版本开始调整为使用UserService组件来做用户识别，包括Endpoint Client等透明用户识别模块。
+
+> 注意：这些数据是存到内存中的。
+
+## UserService Client功能
+
+UserService Client主要负责收集、提供用户名，主要作用：
+
+1. 传递给SPE补充网络事件的来源信息
+2. 传递给ITMS上的UserService Server
+
+## 配置文件
+
+### USS配置、日志文件
+
+```
+/opt/skyguard/userservice/server
+/opt/skyguard/userservice/server/etc
+/opt/skyguard/userservice/server/etc
+/opt/skyguard/userservice/server/log
+```
+
+### USA配置、日志文件
+
+```
+/opt/skyguard/userservice/agent
+/opt/skyguard/userservice/agent/etc
+/opt/skyguard/userservice/agent/log
+```
+
+## 进入UserAgent方法
+
+```bash
+dcin uss
+```
+
+### 查看相关服务
+
+```bash
+ps -ef
+```
