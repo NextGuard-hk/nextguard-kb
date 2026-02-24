@@ -119,6 +119,9 @@ export const NAV_STRUCTURE: NavCategory[] = [
       { slug: 'ucss-02/ucss-02-youjian-toudi-api', title: 'API-邮件投递查询' },
       { slug: 'ucss-02/ucss-02-zhengju-xiazai-api', title: 'API-证据下载接口' },
       { slug: 'ucss-02/ucss-02-aswg-shenpi-api', title: 'API-ASWG审批接口' },
+            { slug: 'ucss-02/ucss-02-zhongduan-shenpi-api', title: 'API-终端审批接口(DLP)' },
+      { slug: 'ucss-02/ucss-02-es-api-chouqu', title: 'API-ES抽取终端事件' },
+      { slug: 'ucss-02/ucss-02-es-proxy-api', title: 'API-ES Proxy日志查询' },
     ]
   },
   {
