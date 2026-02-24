@@ -86,6 +86,13 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'server',
     items: [
       { slug: 'ucss-02/ucss-02-overview', title: '02.UCSS概览' },
+      { slug: 'ucss-02/ucss-02-yemian-denglu', title: 'UCSS页面登录与验证码' },
+      { slug: 'ucss-02/ucss-02-xitong-jiankang', title: '系统健康状态' },
+      { slug: 'ucss-02/ucss-02-denglu-renzheng', title: '登录认证相关' },
+      { slug: 'ucss-02/ucss-02-zifu-xianshi', title: '字符限制相关' },
+      { slug: 'ucss-02/ucss-02-yemian-502', title: '页面502' },
+      { slug: 'ucss-02/ucss-02-nginx-yichang', title: 'nginx异常相关' },
+      { slug: 'ucss-02/ucss-02-shouquan-license', title: 'license基础知识' },
     ]
   },
   {
@@ -95,8 +102,6 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'layout',
     items: [
       { slug: 'app-04/app-04-overview', title: '04.APP概览' },
-      { slug: 'app-04/app-04-cli-mingling', title: 'APP CLI命令' },
-      { slug: 'app-04/app-04-changjian-wenti', title: 'APP常见问题' },
     ]
   },
   {
@@ -106,7 +111,6 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'cpu',
     items: [
       { slug: 'spe-05/spe-05-overview', title: '05.SPE概览' },
-      { slug: 'spe-05/spe-05-spe-fuwu', title: 'SPE服务配置' },
     ]
   },
   {
@@ -116,7 +120,6 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'shield',
     items: [
       { slug: 'dsg-06/dsg-06-overview', title: '06.DSG概览' },
-      { slug: 'dsg-06/dsg-06-panglu-bushu', title: 'DSG旁路部署' },
     ]
   },
   {
@@ -126,7 +129,6 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'mail',
     items: [
       { slug: 'seg-07/seg-07-overview', title: '07.SEG概览' },
-      { slug: 'seg-07/seg-07-youjian-anquan', title: '邮件安全策略' },
     ]
   },
   {
@@ -145,8 +147,6 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'monitor',
     items: [
       { slug: 'ucwi-09/ucwi-09-overview', title: '09.UCWI概览' },
-      { slug: 'ucwi-09/ucwi-09-faxian-gongju', title: 'UCWI发现工具' },
-      { slug: 'ucwi-09/ucwi-09-zhongduan-guanli', title: 'UCWI终端管理' },
     ]
   },
   {
@@ -156,9 +156,6 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'activity',
     items: [
       { slug: 'itm-10/itm-10-overview', title: '10.ITM概览' },
-      { slug: 'itm-10/itm-10-weijing-jiankong', title: 'ITM威胁监控' },
-      { slug: 'itm-10/itm-10-guzhang-chuli', title: 'ITM故障处理' },
-      { slug: 'itm-10/itm-10-changyong-duankou', title: 'ITM常用端口' },
     ]
   },
   {
@@ -168,8 +165,6 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'bar-chart',
     items: [
       { slug: 'mag-11/mag-11-overview', title: '11.MAG概览' },
-      { slug: 'mag-11/mag-11-baogao-guanli', title: 'MAG报告管理' },
-      { slug: 'mag-11/mag-11-peizhi-wendang', title: 'MAG配置文档' },
     ]
   },
   {
@@ -189,7 +184,6 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'search',
     items: [
       { slug: 'tesao-14/tesao-14-overview', title: '14.特扫概览' },
-      { slug: 'tesao-14/tesao-14-shebei', title: '特扫设备' },
     ]
   },
   {
