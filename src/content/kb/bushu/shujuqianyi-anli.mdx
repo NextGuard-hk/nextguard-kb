@@ -1,0 +1,31 @@
+---
+title: "数据迁移案例 - 3.3热备份 spe 拷贝报错"
+description: "3.3版本热备份时 spe 配置拷贝报错的处理案例"
+---
+
+# 数据迁移案例 - 3.3热备份 spe 拷贝报错
+
+## 问题描述
+
+3.3 热备的时候，可能会出现拷贝 spe 配置时，临时证据拷贝环节报错。
+
+报错信息：
+
+```
+file error for /opt/skyguard/ucs/var/dm/forensics/...
+error while copying /opt/skyguard/ucs/var/dm/forensics/...
+++++Failed to create directories++++++++
+```
+
+## 分析
+
+看备份目录，应该 app、sps 已经备份完毕了，spe 里面的 dm 证据备份太消耗时间。
+
+备份目录大小：
+
+| 目录 | 大小 |
+|------|------|
+| app | 12K |
+| spe | 237G |
+| sps | 12G |
+| `__version__` | 4.0K |
