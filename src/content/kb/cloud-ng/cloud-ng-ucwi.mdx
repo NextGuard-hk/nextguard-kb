@@ -1,0 +1,31 @@
+---
+title: "UCWI配置"
+description: "Cloud-NG UCWI云安全Web接入配置，包括API调用和认证头设置"
+---
+
+# UCWI配置
+
+Cloud-NG UCWI（云安全Web接入）配置指南。
+
+## API接口调用
+
+**请求方法：** POST
+
+**接口地址：**
+
+```
+https://ucwi.cn-south-1.pop.skyguard.cn/skg/v1/dlp/channel/webserviceapp/{channel-id}/sync
+```
+
+## 请求头配置
+
+需要新增以下请求头（Headers）：
+
+| Header | 说明 |
+|--------|------|
+| Connection | 连接类型 |
+| x-skg-timestamp | SKG时间戳 |
+| Authorization | 认证信息 |
+| x-tenant-id | 租户ID（需要新增） |
+
+> **注意：** 需要新增一个 `x-tenant-id` 请求头。
