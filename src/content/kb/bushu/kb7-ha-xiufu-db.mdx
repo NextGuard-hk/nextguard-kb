@@ -1,0 +1,64 @@
+---
+title: "KB7-高可用环境修复DB方法"
+description: "高可用环境中pgserver异常的排查和修复方法"
+---
+
+# KB7-高可用环境修复DB方法
+
+## 问题描述
+
+高可用环境中DB数据库中pgserver异常/修复方法。
+
+## 诊断步骤
+
+### 1. 检查数据库状态
+
+通过 `check-db-cluster.sh` 脚本查询数据库状态，获取3台DB的内部信息。
+
+```bash
+kubectl get pods -o wide | grep stolon-keeper
+check-db-cluster.sh
+```
+
+### 2. 检查pgserver连接
+
+由于是pg数据库报错，查看3台pgserver，发现只有一台有影响：
+
+```bash
+nc -z 10.233.68.29 5432 -w 5 -v    # tcp连接测试
+```
+
+### 3. 确认问题节点
+
+基本确认是某台pgsql存在备份异常。
+
+```bash
+kubectl get pvc
+```
+
+查看该台pg的数据库文件目录。
+
+### 4. 查看数据库文件目录
+
+异常的pgsql数据库文件对应路径：
+
+```bash
+cd /opt/local-path-provisioner/pvc-xxx
+# 查看目录内容：dbstate keeperstate lock postgres
+```
+
+### 5. 查看stolon状态
+
+```bash
+kubectl exec -it stolon-keeper-0 -- bash
+stolonctl status --cluster-name=kube-stolon --store-backend=kubernetes --kube-resource-kind=configmap
+```
+
+查询三台pgsql当前状态。
+
+## 修复方法
+
+1. 确定异常节点
+2. 检查pgsql数据目录完整性
+3. 如需要，重新初始化异常节点
+4. 确认集群状态恢复正常
