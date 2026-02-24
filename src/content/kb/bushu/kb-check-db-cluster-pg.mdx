@@ -1,0 +1,50 @@
+---
+title: "KB-check-db-cluster.sh探测pg启动失败"
+description: "check-db-cluster.sh脚本检测到pg服务连接失败但实际服务正常的问题排查"
+---
+
+# KB-check-db-cluster.sh探测pg启动失败
+
+## 问题描述
+
+如题，但是pg服务其实是正常的，UCSS登录相关不受影响。
+
+check-db-cluster.sh输出：
+```
+[ info  ] connect es successfully
+[ info  ] connect redis successfully
+[ error ] failed to postgresql
+```
+
+## 诊断步骤
+
+### 1. 检查节点状态
+
+```bash
+kubectl get nodes
+kubectl get pods -o wide | grep stolon
+```
+
+所有节点和pod都在Running状态。
+
+### 2. 查看check-db-cluster.sh脚本
+
+`vi check-db-cluster.sh`，检查探测方法，但效果不明显。
+
+### 3. 解决方法
+
+```bash
+cd stolon-data/
+ls
+pg_controldata -D /stolon-data/
+ls postgres/
+pg_controldata -D /stolon-data/postgres/
+ps -ef
+jobs
+```
+
+## 注意事项
+
+- check-db-cluster.sh报错不一定代表服务真的失败
+- 需要结合实际服务状态综合判断
+- pg服务正常时UCSS登录不受影响
