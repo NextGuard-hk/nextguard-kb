@@ -1,0 +1,19 @@
+---
+title: "dnsmasq问题排查"
+description: "dnsmasq服务无法启动及终端服务器相关问题排查"
+---
+
+# dnsmasq问题排查
+
+## 问题描述
+
+ts容器内dnsmasq无法启动。
+
+## 临时解决办法
+
+1. 停掉宿主机的dnsmasq
+2. 开启ats容器内的dnsmasq
+
+## 根因分析
+
+检查dnsmasq配置文件，确认bind-interfaces配置正确。对于Ubuntu软件化部署案例，注释掉bind-dynamic配置项即可解决。
