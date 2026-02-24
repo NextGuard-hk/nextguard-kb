@@ -1,0 +1,43 @@
+---
+title: "KB11-修改db-vip后导致UCSS初始化连接kafka失败"
+description: "已部署完DB高可用后修改db-vip导致UCSS初始化连接kafka失败的问题排查"
+---
+
+# KB11-修改db-vip后导致UCSS初始化连接kafka失败
+
+## 现象
+
+已经部署完DB高可用，客户要求修改DB的VIP，发现修改后初始化时kafka连接失败。
+
+初始化日志中出现：
+```
+init-kafka : <error> Timed out waiting to send the call. Call: listNodes
+init-data : <error> init kafka
+```
+
+## 原因定位
+
+在UCSS的kafka容器内，利用已有的kafka套件，进行近连接方法：
+
+1. 进入kafka容器
+2. 进入 `/etc/kafka/bin`
+3. 编辑 `config.properity`
+
+```
+saml.jaas.config=org.apache.kafka.common.security...
+password="Kafka@SkyGuard";
+security.protocol=SASL_PLAINTEXT
+saml.mechanism=PLAIN
+```
+
+4. 运行 `./kafka-topics.sh --list --bootstrap-server ...`
+
+## 解决方案
+
+检查修改VIP后的配置是否正确更新，确保kafka配置中的地址已同步修改。
+
+## 注意事项
+
+- 修改db-vip后需要确保所有相关配置都已更新
+- kafka连接配置中的地址需要同步修改
+- 建议修改VIP前做好备份
