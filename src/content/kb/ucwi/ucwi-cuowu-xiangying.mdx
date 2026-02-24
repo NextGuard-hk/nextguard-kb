@@ -1,0 +1,32 @@
+---
+title: "UCWI错误响应码"
+description: "UCWI对接过程中客户端错误码整理与排查方法"
+---
+
+# UCWI错误响应码
+
+ucwi对接过程中，客户端的错误码整理。这些错误码大部分都会同步记录在以下日志路径中：
+
+- `/var/log/apache2/ucwi-access.log` — 认证异常
+- `/var/log/apache2/ucwi-error.log`
+- `/var/log/inspector/ucwi.log`
+
+常用grep命令：
+```bash
+grep bulk_async  # 批量送检post记录
+grep sync        # 同步
+grep async       # 异步
+grep 401         # 认证失败
+```
+
+## 1、响应码 Unauthorized Access 401
+
+**原因1：** 认证信息不对，需要核对Access Key、Access Secret和ws_token。此故障不会记录在api.log中，只在access.log中记录。ws_token的输出来自`/opt/skyguard/cert/`。
+
+**原因2：** 客户端和服务器的时间差大于5分钟。错误日志：
+```
+/var/log/apache2/ucwi-error.log |grep 'T'
+```
+同时在`/var/log/apache2/access.log`中也会记录401状态码（包含时间、请求URL、以及发起请求的客户端类型）。
+
+**原因3：** 和原因1的日志一样，但是故障原因是DLP管理 > 策略元素 > WebService应用中配置不正确。
