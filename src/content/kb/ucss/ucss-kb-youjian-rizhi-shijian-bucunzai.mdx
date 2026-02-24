@@ -1,0 +1,39 @@
+---
+title: "KB-邮件日志点击命中测试提示事件不存在"
+description: "邮件日志点击命中测试时提示事件不存在的排查方法"
+---
+
+# KB-邮件日志点击命中测试提示事件不存在
+
+## 现象
+
+邮件日志中点击命中测试，提示事件不存在。
+
+## 可能性一
+
+message-Id不合法，格式有问题，导致网络事件没有产生。
+
+邮件日志显示的message-Id和实际事件匹配的ID不一致。
+
+## 排查方法
+
+通过ES查询对应的messageId：
+
+```bash
+curl -X GET 'http://169.254.253.5:9200/channel_mail*/_search?pretty' -d '{"query":{"match":{"messageId":"<对应的messageId>"}}}'
+```
+
+或者加上认证：
+
+```bash
+curl -X GET 'http://169.254.253.5:9200/channel_mail*/_search?pretty' -u 'skyguard:Elastic@SkyGuard253.5'
+```
+
+## 检查字段
+
+检查返回结果中的关键字段：
+
+- messageId: 邮件消息ID
+- channelType: 通道类型（5=邮件）
+- workMode: 工作模式（2=流量）
+- details: 时间详情
