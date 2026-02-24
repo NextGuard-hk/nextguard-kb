@@ -1,0 +1,29 @@
+---
+title: 'deviceid显示正常但注册不上'
+description: 'device-id显示正常但sps返回-100无法注册的排查与解决'
+category: ucss-02
+tags: [UCSS, deviceid, 注册, sps, 数据库]
+version: "1.0"
+audience: public
+lastUpdated: 2024-12-16
+order: 12
+---
+
+# deviceid显示正常，但是注册不上，sps返回-100
+
+## 原因
+
+数据库有冲突了，相同IP，不同DeviceID，已经有一条记录，所以再写不进去了。
+
+第一次firstboot时，没有获取到uuid，所以数据库的device_info中记录的依旧是Web上拿不到device-id。重新firstboot，报错：Failed, to register app.log
+
+## 排查
+
+进入pg数据库查看，ucss一个ip对应了2条deviceid信息，导致出错。
+
+## 解决办法
+
+1. 重新firstboot，并临时修改ucss ip地址，完成注册
+2. 进pg数据库，删除之前ip的2条记录
+3. 重新firstboot，并修改为之前的ip地址
+4. 此时即可完成修复，进数据库可以看到device数据显示正常
