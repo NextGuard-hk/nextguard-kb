@@ -1,0 +1,40 @@
+---
+title: "01.应用程序通道"
+description: "应用程序通道配置下发文件路径、解密方法、钩子日志查看及应用程序通道开启状态检查"
+---
+
+# 01.应用程序通道
+
+## 应用程序配置下发文件路径
+
+```
+C:\Program Files\SkyGuard\SkyGuardEndpoint
+```
+
+这个文件默认是加密的，需要解密，或者直接用终端工具解密。
+
+## 解密配置文件的方法
+
+```bash
+cd C:\Program Files\SkyGuard\SkyGuardEndpoint
+ucsc_util.bat supper@SG8660 --decrypt a
+```
+
+## 注入/钩子日志
+
+日志路径：
+
+```
+C:\ProgramData\SkyGuard\log\admin
+```
+
+需要开启admin权限查看，包含以下日志文件：
+- sgephook_chrome.exe.log
+- sgephook_DllHost.exe.log
+- sgephook_Explorer.EXE.log
+- sgephook_firefox.exe.log
+- sgephook_msedge.exe.log
+
+## 查看终端配置中应用程序通道是否开启
+
+查看 `EndpointAgent\log\sgephook_xxxx.log` 的日志记录，确认应用程序通道是否已启用。
