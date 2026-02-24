@@ -1,0 +1,68 @@
+---
+title: 'MySQL数据库维护'
+description: 'UCSS平台MySQL数据库版本查看、日志配置与常用维护操作'
+category: shujuku
+tags: [数据库, MySQL, 维护, 日志]
+version: "1.0"
+audience: public
+lastUpdated: 2023-02-18
+order: 2
+---
+
+# MySQL数据库维护
+
+## 概述
+
+UCSS的所有版本中都包含mysql，终端标签相关数据存储在MySQL中。
+
+## 查看MySQL版本
+
+```bash
+mysql --version
+```
+
+## 日志路径
+
+```
+/var/log/mysql/mysql.log
+```
+
+## 启用MySQL日志
+
+mysql.log默认不开启，开启方法：
+
+```bash
+vi /etc/mysql/my.cnf
+# 取消下述两行注释，重启mysql服务
+#general_log_file= /var/log/mysql/mysql.log
+#general_log=1
+```
+
+## UCSS版本与MySQL关系
+
+- 3.3版本ucss中mysql主要时标签服务
+  - 错误日志：`/opt/skyguard/ucs/var/lms/mysql/log`
+  - 监听端口：8859
+- 3.16版本后升级为great
+
+## 进入MySQL客户端
+
+### 3.3版本UCSS
+
+```bash
+/opt/skyguard/ucs/bin/mysql -h 127.0.0.1 -P 8859 -u root -p
+```
+
+对应配置文件：
+```xml
+/opt/skyguard/ucs/etc/lms_local.xml
+<db_user>skyguard</db_user>
+<db_password>skyguard123</db_password>
+```
+
+## 常用数据库操作
+
+```sql
+-- 查看所有数据库
+mysql> show databases;
+```
