@@ -1,0 +1,269 @@
+---
+title: "KB-Win终端产品白名单整理"
+description: "Win终端产品进程列表、目录及白名单配置整理，包括文件访问白名单、银行网站白名单等"
+---
+
+# KB-Win终端产品白名单整理
+
+需要在第三方软件里加白名单，否则会冲突
+
+## 1. Win终端：3.5.0版本终端进程列表及目录
+
+**进程：**
+
+- EndpointAgentIntegration.exe
+- EndpointClientAgent.exe
+- EndpointClientGUI.exe
+- EndpointDataDiscovery.exe
+- EndpointFilesystemMonitor.exe
+- EndpointInjectionFramework.exe
+- EndpointTrafficServer.exe
+- EndpointWatchdog.exe
+- kvoop.exe（Win10有此进程，Win7无此进程）
+- kvoop_worker.exe
+- SPELite.exe
+- WFELite.exe
+- %windir%\system32\sgephook.dll 32位系统
+- %windir%\SysWOW64\sgephook.dll 64位系统
+- WaterMark.exe（非常驻进程，执行屏显水印时启动）
+- EndpointLabelManagementAgent.exe（非常驻进程，启用标签功能时启动）
+
+**详细路径：**
+
+```
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointAgentIntegration.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointClientAgent.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointClientGUI.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointDataDiscovery.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointFilesystemMonitor.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointInjectionFramework.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointTrafficServer.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\EndpointWatchdog.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\UCSCSDK\FilterSDK\kvoop.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\UCSCSDK\bin\kvoop_worker.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\UCSCSDK\bin\SPELite.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\UCSCSDK\bin\WFELite.exe
+%windir%\system32\sgephook.dll
+%windir%\SysWOW64\sgephook.dll
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\bin\WaterMark.exe
+C:\Program Files\SkyGuard\SkyGuard Endpoint\UCSCSDK\bin\EndpointLabelManagementAgent.exe
+```
+
+**目录：**
+```
+C:\Program Files\SkyGuard
+```
+
+## 2. MAC终端：3.5.0版本终端进程列表及目录
+
+**进程：**
+
+- EndpointAgentIntegration
+- EndpointClientAgent
+- EndpointDataDiscovery
+- EndpointFileSystemMonitor
+- EndpointInjectManager
+- EndpointTrafficServer
+- EndpointWatchdog
+- kvoop_worker
+- SPELite
+- WPELite
+- EndpointClientGUI.app（天空卫士终端，提供水印功能）
+- EndpointLabelManagementAgent（非常驻进程，启用标签功能时启动）
+
+**详细路径：**
+
+```
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointAgentIntegration
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointClientAgent
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointDataDiscovery
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointFileSystemMonitor
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointInjectManager
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointTrafficServer
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointWatchdog
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/UCSCSDK/bin/kvoop_worker
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/UCSCSDK/bin/SPELite
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/UCSCSDK/bin/WPELite
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointClientGUI.app
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/UCSCSDK/bin/EndpointLabelManagementAgent
+```
+
+**目录：**
+```
+/Library/Application Support/SkyGuard
+```
+
+## 需要在SkyGuard里加白名单，否则会影响其它软件使用
+
+### 1. 文件访问白名单（系统预置）
+
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：应用程序路径
+- **生效通道**：应用程序通道
+
+**Mac值：**
+```
+/Library/
+/Applications/
+/System/
+~/Library/
+~/Applications/
+/usr/
+/bin/
+/sbin/
+/var/log
+/etc/
+/lib/
+/private/etc/
+```
+
+**Windows值：**
+```
+%programfiles%
+%programfiles(x86)%
+%windir%
+%Temp%
+%userprofile%\AppData\LocalLow\Microsoft
+%userprofile%\AppData\LocalLow\TENCENT
+%userprofile%\AppData\Roaming\Microsoft
+%userprofile%\Documents\Tencent Files
+%userprofile%\Documents\WeChat Files
+%userprofile%\Documents\Tencent
+%allusersprofile%\Tencent
+%allusersprofile%\microsoft
+%localappdata%
+%userprofile%\Links
+%appdata%
+%userprofile%\Application Data\utForpc
+%allusersprofile%\Documents\Tencent\QQ
+%allusersprofile%\Application Data\Microsoft
+%userprofile%\Local Settings
+%allusersprofile%\Documents\Tencent
+%allusersprofile%\Application Data\Tencent
+%allusersprofile%\Application Data\Microsoft
+%userprofile%\Documents\WXWork
+%userprofile%\AppData\LocalLow\SogouPY
+C:\Users\Public\Documents\Tencent
+```
+
+### 2. 银行网站（系统预置+补充）
+
+- **目的**：解决USBKey登录问题
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：目标域名
+- **生效通道**：HTTP，HTTPS
+
+**银行网站（默认）：**
+cmbchina.com; boc.com; icbc.com.cn; abchina.com; ccb.com; bankcomm.com; psbc.com; cebbank.com; citicbank.com; spdb.com.cn; cmbc.com.cn; cib.com.cn; hxb.com.cn; bankofbeijing.com.cn; cgbbank.com.cn; citibank.com.cn; sc.com; hkbea.com.cn; hsbc.com.cn
+
+**银行网站（补充）：**
+95559.com.cn; ecitic.com; cgbchina.com.cn; 95599.cn; unionpay.com; chinaums.com; tenpay.com; alipay.com; chbank.com; 99bill.com; jnbank.com.cn; ccqtgb.com; cmbcn.com.cn; epay.163.com; czcb.com.cn; zybank.com.cn; jsbchina.cn; mybank.cn; hsbank.com.cn; nbcb.com.cn; crbank.com.cn; ghbank.com.cn; ncbchina.cn; mucfc.com; czbank.com; pingan.com; bestpay.com.cn; 95516.com; gov.cn; unionpaysecure.com; pay.suning.com; jr.jd.com; huifu.com; bjrcb.com; xmccb.com; 4001961200.com; gzcb.com.cn; grcbank.com; gdnybank.com; dongguanbank.cn; drcbank.com; bankofbbg.com; guilinbank.com.cn; bosc.cn; bankofshanghai.com; hzbank.com.cn; njcb.com.cn; bocd.com.cn; cbhb.com.cn; bank-of-tianjin.com.cn
+
+### 3. Apple Store（系统预置）
+
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：目标域名
+- **生效通道**：HTTP，HTTPS
+
+icloud.com; itunes.apple.com; mzstatic.com; xp.apple.com; gs-loc.apple.com; gsa.apple.com; s.mzstatic.com; gsas.apple.com
+
+### 4. IOS升级（系统预置）
+
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：目标域名
+- **生效通道**：HTTP，HTTPS
+
+albert.apple.com; identity.apple.com
+
+### 5. 微软升级（系统预置）
+
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：目标域名
+- **生效通道**：HTTP，HTTPS
+
+microsoft.com
+
+### 6. GotoMeeting会议（系统预置）
+
+gotomeeting.com
+
+### 7. Webex会议（系统预置）
+
+webex.com
+
+### 8. Mozilla更新（系统预置）
+
+mozilla.org; mozilla.com
+
+### 9. Citrix远程（系统预置）
+
+citrixonline.com
+
+### 10. GotoAssist远程（系统预置）
+
+gotoassist.com
+
+### 11. 搜狗拼音（系统预置）
+
+qqpy.sogou.com; pinyin.sogou.com; dsp.brand.sogou.com
+
+### 12. 应用API相关（系统预置）
+
+api.hdtv.letv.com; api.taobao.com; alipaylog.com; openapi.baidu.com; diskapi.baidu.com; api.ad.xiaomi.com; api.platform.cp21.ott.cibntv.net
+
+### 13. 应用错误日志上传（系统预置）
+
+err.up.vivo.com.cn; bugreport.os.qiku.com; logs.quality.qiku.com; bugs.python.org; tracker.sns.iqiyi.com; kstj.baidu.com; xfeedback.scloud.letv.com; kugou.com; nexus.officeapps.live.com; platform.v5.ztemt.com.cn; tool.css-js.com; c.xingjuhe.com; report.cgi.weiyun.com
+
+### 14. Sogou输入法引起IM聊天软件QQ、微信、钉钉卡顿
+
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：应用程序路径
+- **生效通道**：应用程序通道
+
+```
+%userprofile%\AppData\LocalLow
+%userprofile%\AppData\LocalLow\SogouPY
+C:\ProgramData\SogouInput
+D:\ProgramData\SogouInput
+E:\ProgramData\SogouInput
+F:\ProgramData\SogouInput
+```
+
+### 15. 百度网盘客户端
+
+- **位置**：系统 → 终端管理 → 终端应用程序类别 → 终端应用程序 → 百度网盘
+- 程序名称：BaiduNetdisk.exe;BaiduNetdiskHost.exe;baidunetdisk.exe;baidunetdiskhost.exe
+- 系统平台：Windows
+- 进程属性：networkbypass
+
+### 16. 百度网盘客户端无法登陆，报错：登录失败，网络异常
+
+百度网盘通过文件访问控制来识别，不通过网络模块
+
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：目标域名
+- **生效通道**：HTTPS
+
+passport.baidu.com; globalsign.com
+
+### 17. 360云盘客户端无法登陆
+
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：目标IP/IP段
+- **生效通道**：HTTP
+
+36.110.236.254;36.110.213.150
+
+### 18. 搜狗输入法引起IM聊天软件QQ、微信、钉钉卡顿
+
+- **位置**：系统 → 终端管理 → 终端白名单
+- **类型**：应用程序路径
+- **生效通道**：应用程序通道
+
+```
+%userprofile%\AppData\LocalLow
+%userprofile%\AppData\LocalLow\SogouPY
+C:\ProgramData\SogouInput
+D:\ProgramData\SogouInput
+```
