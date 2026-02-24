@@ -1,0 +1,41 @@
+---
+title: "KB-07 后台挂载/mount ISO镜像方法"
+description: "软件化部署时挂载ISO镜像作为本地源的方法，适用于离线环境安装前置包"
+---
+
+# KB-07 后台挂载/mount ISO镜像方法
+
+## 背景
+
+有时候进行软件化部署，或者安装前置包的时候，发现缺少某些依赖，可以把操作系统的ISO镜像挂载上进行使用。
+
+## 离线环境利用ISO本地源完成镜像文件安装
+
+有些安装包，比如 `Skyguard_3.10.0_centos-2109091614.tar` 需要加载本地repo本地源
+
+### 配置本地源方法
+
+```bash
+cd /etc/yum.repo.d/  # 进目录
+touch local.repo  # 创建yum源文件
+vi local.repo  # 编写yum源
+```
+
+内容配置：
+
+```ini
+[base]
+name=local
+baseurl=file:///mnt/  #这是iso的实际挂载路径
+enable=1
+gpgcheck=0
+```
+
+### 创建目录和挂载镜像
+
+```bash
+mkdir -p /mnt/iso/
+mount /opt/OracleLinux*.iso /mnt/iso/ -o loop
+```
+
+注意：`-o loop` 表示使用回环设备挂载
