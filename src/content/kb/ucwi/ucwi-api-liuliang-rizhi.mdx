@@ -1,0 +1,31 @@
+---
+title: "API流量日志"
+description: "UCWI API流量日志查看、上传与ucss交互说明"
+---
+
+# API流量日志
+
+api流量日志会先存放在uwi的redis中，然后上传到ucss。
+
+## api流量日志相关
+
+日志路径：`/var/log/inspector/ucwi-xxx.log`
+
+```bash
+grep 'logs to SPS'  # 表示把api流量日志上传到了ucss
+```
+
+`/var/log/inspector/async-daemon-xxx.log` 这个日志里面记录了api流量日志的全部信息。
+
+```bash
+grep 'request logs for upload'  # api流量日志产生并上送
+```
+
+开了debug，会看到详细api流量日志详情。
+
+## 查看ucwi上的api临时流量日志是否堆积
+
+```bash
+redis-cli -n 6379 -a Redis@SkyGuard253.2
+llen "ucwi-request-logs"  # ucwi上的api流量日志
+```
