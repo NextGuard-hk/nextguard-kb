@@ -28,6 +28,9 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'mail',
     items: [
       { slug: 'seg/seg-overview', title: 'SEG概览' },
+            { slug: 'seg/jiami-waifa-huizong', title: 'KB-加密外发汇总' },
+      { slug: 'seg/seg-celue-lanjie', title: 'KB-SEG策略拦截相关' },
+      { slug: 'seg/seg-renzheng', title: 'SEG认证' },
     ]
   },
   {
