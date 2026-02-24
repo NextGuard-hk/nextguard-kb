@@ -1,0 +1,35 @@
+---
+title: sps-transfer服务说明
+description: UCSS sps-transfer服务的功能、端口、日志、配置文件及内存配置说明
+---
+
+# sps-transfer服务说明
+
+## 功能
+
+- 接受邮件日志，临时目录: `/var/skyguard/sps/email/temp/data/`
+- 接受邮件连接日志，临时目录: `/var/skyguard/sps/connect/temp/data`
+- 接受邮件原文: `/mailarchive`
+- 接受用户行为日志，临时目录: `/var/skyguard/sps/connect/temp/data`
+
+## 端口
+
+```
+84514
+```
+
+## 日志
+
+```bash
+/opt/skyguard/sps/logs/sps-transfer/transfer.log
+```
+
+## 配置文件
+
+```bash
+/opt/skyguard/sps/apps/sps-transfer/config/
+```
+
+## 内存
+
+1-2G
