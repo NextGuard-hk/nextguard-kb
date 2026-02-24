@@ -1,0 +1,104 @@
+---
+title: "软件化部署"
+description: "软件化部署安装指南，包含安装包路径、版本信息、磁盘要求、支持的操作系统列表和注意事项"
+---
+
+# 软件化部署
+
+## 软件化部署安装包路径
+
+安装包路径：`\\appfiles.skyguardmis.com\Release\Appliance`
+
+### 安装步骤
+
+1. 先安装操作系统（基础操作系统）
+2. 再安装前置适配包（安装docker环境），安装即可，注意选相同架构
+3. 再安装核心软件包（安装Appliance软件，各版本不同）
+4. 有ARM的要出，会带aarch64来区别
+
+## 版本信息
+
+### 3.15.0（支持X86与ARM两个平台）
+
+- **X86_64**：ISO版本测试完毕之后，因项目需要
+- **Aarch64（ARM架构）**：有完整的构建及适配
+
+### 3.16.0版本（只支持X86_64架构，不支持ARM）
+
+- X86_64：因软件化版本与ISO版本是一起出的
+
+### 3.11版本
+
+- 构建完成
+- pre-install包依然需要先安装
+
+## 软件化安装的约定及支持
+
+1. 软件化安装环境，Appliance不维护Host的网络
+2. 安装过程需要额外软件源，要么使用网络软件源
+3. 核心包安装前，会检查磁盘空间：
+   - `/opt/apps` 70GB
+   - `/var/skyguard/forensics` 100GB
+   - `/var/skyguard/` 70GB
+   - `/var/log/skyguard` 40GB
+   - 虚拟机，推荐使用350GB以上的磁盘分配
+4. 国产操作系统有时候定制分区会导致安装失败
+5. 目前已经支持以下操作系统的软件化安装
+
+## 针对DSG旁路特别说明
+
+国产化硬件在软件化部署DSG旁路的时候，由于不兼容标准libpcap，会存在占用大量内存的情况
+
+## 注意事项
+
+1. 操作系统或者3.15的ISO的要提前拷贝到后台
+2. `/etc/yum.repo.d`源地址移除系统自带的源地址
+
+### 配置本地源方法
+
+控制台直接挂载ISO：
+
+```bash
+mount /dev/sr0 /mnt/   #表示把硬件光驱的镜像挂载
+```
+
+```bash
+cd /etc/yum.repo.d/  # 进目录
+touch local.repo  #创建yum源文件
+vi local.repo  # 编写yum源
+```
+
+内容参照：
+
+```
+[base]
+name=local
+baseurl=file:///mnt
+enable=1
+gpgcheck=0
+```
+
+## 软件化部署和ISO部署区别
+
+1. ISO部署时，管理口IP在bond0上面，注册也是bond0
+2. 软件化部署时，管理口IP已经写死在eth0了
+   - `cat /etc/appliance/appliance.conf | grep softwareDistro`
+   - `softwareDistro`字段说明：
+     - `false`：ISO镜像安装，脚本会配置网络信息
+     - `true`：软件化部署，脚本不会改动宿主机网络配置
+
+## 支持的操作系统列表
+
+- UOS 1020E
+- UOS 1020A
+- UOS 1050D
+- Ubuntu 2004
+- Ubuntu 2204
+- Kylin V10 SP1 (Tercel)
+- Kylin V10 SP2 (Sword)
+- Kylin V10 SP3 (Lance)
+- CentOS 7.9
+- RHEL 7.9
+- RHEL 8.x
+- BCLinux 8.6
+- OracleLinux 7.9
