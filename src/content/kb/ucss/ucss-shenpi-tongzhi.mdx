@@ -1,0 +1,82 @@
+---
+title: "UCSS审批通知"
+description: "UCSS邮件审批通知功能配置、日志分析及常见案例"
+---
+
+# UCSS审批通知
+
+## 重点
+
+网络事件详情里面显示邮件通知发送成功，但是后台实际可能未发送。原因：发邮件是异步的，将邮件提交到发送队列就会显示成功。
+
+## 邮件审批通知日志
+
+日志路径：
+
+```
+/opt/skyguard/sps/logs/sps-incident/incident.log
+```
+
+### 常用日志检查命令
+
+- `grep 事件uuid` - 查找证据文件入库状态、邮件审批状态
+- `grep 1--事件id` - 查看是否有邮件审批通知发出
+- `grep Notification@company-release.com` - 查找通知邮件
+- `grep consuming` - 查询邮件通知耗时
+- `grep deleted` - 查看是否有证据文件因为磁盘问题被删除
+- `grep record` - 查看网络事件是否已入库
+
+### 异常检查
+
+- `grep 'email send failed'` - 检查邮件发送失败
+- `grep 'network notification dispatcher'` - 检查网络通知分发器
+- `grep 'restart next time'` - 表示未执行审批
+- `grep '=== processing main retry ids:'` - 检查重试处理
+- `grep 'notify retry send'` - 表示邮件服务重试发送
+- `grep 'notification is null'` - 说明没有配置通知
+
+## 常见案例
+
+### 案例1、手动发送邮件审批
+
+手动触发邮件审批流程。
+
+### 案例2、foxmail等客户端配置
+
+配置foxmail等邮件客户端与UCSS审批系统集成。
+
+### 案例3、邮件审批通知配置
+
+配置邮件审批通知模板和发送规则。
+
+### 案例4、邮件审批不通过处理
+
+邮件审批不通过时的处理方法。
+
+### 案例6、UCSS平台配置
+
+UCSS平台相关配置。
+
+### 案例7、Webmail集成
+
+Webmail与UCSS审批的集成配置。
+
+### 案例8、测试邮件服务
+
+测试邮件服务连接和配置。
+
+### 案例9、邮件释放网络配置
+
+邮件释放网络相关配置。
+
+### 案例10、主管回复配置
+
+主管回复审批配置。
+
+### 案例11、审批通知发送问题
+
+审批通知发送失败排查。
+
+### 案例12、支持非主流邮件
+
+支持非主流邮件客户端的配置。
