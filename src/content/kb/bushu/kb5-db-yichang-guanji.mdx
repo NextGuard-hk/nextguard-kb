@@ -1,0 +1,45 @@
+---
+title: "KB5-DB服务器异常关机"
+description: "DB服务器异常关机后的恢复步骤和排查方法"
+---
+
+# KB5-DB服务器异常关机
+
+## 问题描述
+
+3台DB服务器做k8s，默认时运行关闭一台，另外两台可正常工作。
+
+如果三台同时关闭，再次开机可能会出现以下问题：
+- 可能会发现UCSS登录时报密码错误
+- 长时间无响应
+
+## 诊断步骤
+
+### 1. 检查DB服务器后台
+
+```bash
+check-db-cluster.sh
+```
+
+可能出现报错：`[ error ] failed to connect es`
+
+### 2. 检查节点状态
+
+```bash
+kubectl get nodes
+```
+
+可能报错：`The connection to the server was refused - did you specify the right host or port?`
+
+### 3. 检查Docker状态
+
+```bash
+docker ps
+```
+
+## 解决方案
+
+1. 确认所有DB节点已正常启动
+2. 检查k8s集群状态
+3. 如果集群无法自动恢复，可能需要手动重启服务
+4. 检查ES、Redis等服务是否正常运行
