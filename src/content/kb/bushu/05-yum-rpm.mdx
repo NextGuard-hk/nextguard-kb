@@ -1,0 +1,81 @@
+---
+title: "yum/rpm包管理"
+description: "yum和rpm包管理相关操作，包含yum取消ssl校验、查看系统版本、下载和安装rpm包、配置CentOS源"
+---
+
+# yum/rpm包管理
+
+## yum取消ssl校验方法
+
+透明代理等环节yum时报https证书不信任等问题：
+
+```bash
+echo 'sslverify=0' >> /etc/yum.conf
+```
+
+## 1. 查看系统版本
+
+```bash
+cat /etc/redhat-release
+```
+
+## 2. 查看自带yum软件包
+
+```bash
+rpm -qa|grep yum
+```
+
+### 查看已安装的包
+
+```bash
+yum list installed |grep libxslt*
+```
+
+## 3. 下载rpm包
+
+```bash
+wget http://mirrors.163.com/centos/7/os/x86_64/Packages/xxx.rpm
+```
+
+备注：如果没有wget命令，可以用curl -O命令进行下载
+
+## 4. 安装rpm包
+
+```bash
+rpm -ivh python-urlgrabber-3.10-10.el7.noarch.rpm
+rpm -ivh --force --nodeps
+```
+
+- `--nodeps`：安装时不检查依赖关系
+- `--force`：强制安装
+- `--replacefiles`：安全一些，只替换文件
+
+## 5. 下载CentOS源地址
+
+```bash
+wget http://mirrors.163.com/.help/CentOS7-Base-163.repo
+```
+
+### CentOS源配置示例
+
+```ini
+[base]
+name=CentOS-$releasever - Base - 163.com
+#mirrorlist=http://mirrorlist.centos.org
+baseurl=http://mirrors.163.com/centos/7/os/$basearch/
+enabled=1
+gpgcheck=0
+gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7
+
+[updates]
+name=CentOS-$releasever - Updates - 163.com
+baseurl=http://mirrors.163.com/centos/7/updates/$basearch/
+gpgcheck=1
+gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7
+
+[extras]
+name=CentOS-$releasever - Extras - 163.com
+baseurl=http://mirrors.163.com/centos/7/extras/$basearch/
+gpgcheck=1
+gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7
+```
