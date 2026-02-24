@@ -40,6 +40,7 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'globe',
     items: [
       { slug: 'cloud-ng/cloud-ng-overview', title: 'Cloud-NG概览' },
+            { slug: 'cloud-ng/cloud-ng-mta', title: 'Cloud-NG MTA配置' },
     ]
   },
   {
