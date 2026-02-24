@@ -50,6 +50,8 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'settings',
     items: [
       { slug: 'ucss/ucss-overview', title: 'UCSS概览' },
+      { slug: 'ucss/ucss-shenhe-shenpi', title: '审核-审批-邮件工作流区别' },
+      { slug: 'ucss/ucss-shenpi-tongzhi', title: 'UCSS审批通知排查' },
     ]
   },
   {
@@ -97,6 +99,14 @@ export const NAV_STRUCTURE: NavCategory[] = [
       { slug: 'ucss-02/ucss-02-hexinshu-chaoxian', title: '核心数超限案例' },
       { slug: 'ucss-02/ucss-02-chushihua-baocuo', title: '初始化特别久或者初始化报错' },
       { slug: 'ucss-02/ucss-02-deviceid-zhuce', title: 'deviceid显示正常但注册不上' },
+      { slug: 'ucss-02/ucss-02-daoru-shouquan-shibai', title: 'KB6-导入授权文件失败(Appliance)' },
+      { slug: 'ucss-02/ucss-02-shouquan-shebei-bupipei', title: 'KB7-授权设备类型不匹配' },
+      { slug: 'ucss-02/ucss-02-shouquan-zhengshu-wuxiao', title: 'KB8-授权证书未找到/无效' },
+      { slug: 'ucss-02/ucss-02-hexinshu-bupipei', title: 'KB9-核心数不匹配' },
+      { slug: 'ucss-02/ucss-02-deviceid-yichang', title: 'KB10-device-id异常/不可设置' },
+      { slug: 'ucss-02/ucss-02-shouquanchi-shibai', title: 'KB11-授权池文件导入失败' },
+      { slug: 'ucss-02/ucss-02-license-xinghao-buconsistent', title: 'KB12-license型号不一致' },
+      { slug: 'ucss-02/ucss-02-ucwi-shouquan-queshi', title: 'KB13-ucwi授权文件缺失' },
     ]
   },
   {
