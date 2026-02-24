@@ -1,0 +1,66 @@
+---
+title: "用户行为日志"
+description: "UCSS用户行为日志的业务流程、堆积处理和ASWG日志调优"
+---
+
+# 用户行为日志
+
+## 业务流程
+
+1. sps-transfer负责接受swg设备上送的日志文件
+2. sps-webservice负责把日志文件的json补全后的内容，从日志文件中取出日志信息，并写入ES
+3. 日志文件的（uuid、用户目录、分级信息直接缓存到/var/skyguard/sps/record/temp/data目录
+
+## 查看日志入库是否正常
+
+```bash
+/opt/skyguard/sps/logs/sps-transfer/transfer.log
+```
+
+## 用户行为日志堆积
+
+可能堆积的目录：
+
+```
+/var/skyguard/sps/record/temp/data  #sps容器
+/var/swg_transfer/rt  #ats容器
+/var/log/trafficserver/policy_send/  #ats容器
+```
+
+## UCSS侧ASWG用户行为日志es入库调优
+
+修改配置文件：
+
+```bash
+vi /var/skyguard/sps/program-data/config/swg_config.properties
+swg.record.data.max.file.process.count  #将参数改为适当值
+```
+
+## ASWG测，用户行为日志上传调优
+
+1. 调整ASWG发送用户行为日志进程：
+
+```bash
+/etc/swg_transfer/swg_transfer.cfg  #将下面参数调整
+sed -i 's/instance_concurrency_0=1/instance_concurrency_0=4/' /etc/swg_transfer/swg_transfer.cfg
+```
+
+2. 重启服务生效：
+
+```bash
+/etc/init.d/swgtransfer restart
+```
+
+## ASWG后台关闭用户行为日志方法
+
+可以使用以下命令代替：
+
+```bash
+traffic_ctl config set proxy.config.slog
+```
+
+然后执行：
+
+```bash
+traffic_line -x  #使之生效
+```
