@@ -1,0 +1,119 @@
+---
+title: "3.3升级到3.15版本操作指南"
+description: "从3.3版本升级到3.15版本的完整操作步骤，包括备份恢复流程"
+---
+
+# 3.3升级到3.15版本操作指南
+
+## 前提
+
+- 准备好存放备份程序和备份文件的存储设备（本地或远程）
+- 本次升级基于本地数据库测试，未涉及远程数据库的升级
+- 终端升级前需要部署终端升级服务器（使用 ucsslite 作为升级服务器）
+
+## 操作步骤
+
+### 1. 开启设备后台 SSH
+
+将备份恢复工具复制到设备上，放置在 `_tmp_ezRecover` 目录。
+
+### 2. 进行冷备份
+
+即备份证据文件相关。进入 `_tmp_ezRecover` 目录，执行：
+
+```bash
+./ezBackup.sh
+```
+
+会把证据文件等冷数据备份到 `/sg_backup` 目录。
+
+### 3. 执行热备份
+
+即备份设备配置，支持本地、SMB、NFS 三种方式：
+
+```bash
+# 本地备份
+./python3.3/python3/bin/python3 save_recover.py -d /tmp/mytest save ucss
+
+# 远程 SMB
+./python3.3/python3/bin/python3 save_recover.py -t samba -s //server/share -u user -p pass save ucss
+
+# 远程 NFS
+./python3.3/python3/bin/python3 save_recover.py -t nfs -s server:/share save ucss
+```
+
+**参数说明：**
+
+| 参数 | 说明 |
+|------|------|
+| `-d` | 远程目录要挂载的本地目录 |
+| `-t` | 挂载类型，支持 local、samba、nfs |
+| `-s` | 远程路径 |
+| `-u` | 用户名 |
+| `-p` | 密码 |
+| `save/recover` | 备份/恢复 |
+
+支持的设备类型：ucss/ucsslite/dsg/aswg/aseg/ucwi
+
+### 4. 安装 3.15 版本
+
+安装3.15版本，初始化完成，开启后台，将备份恢复工具复制到设备上。
+
+### 5. 进行热恢复
+
+进入解压目录，先进行热恢复（设备配置）：
+
+```bash
+./python3.10/python3/bin/python3 save_recover.py recover ucss
+```
+
+### 6. 进行冷恢复
+
+热恢复完成，进行冷恢复（证据文件、归档内容）：
+
+将冷备份目录挂载到 `/sg_backup`，进入对应目录，执行：
+
+```bash
+cd archiveDir/
+bash archiveRestore.sh archive20230731
+```
+
+### 7. 重启设备
+
+### 8. 重新进行初始化
+
+## 具体各设备操作
+
+### UCSS 设备
+
+#### 本地备份
+
+1. 将备份脚本 `ez-recover-xxxxxxxxxxxxx.tar.gz` 复制到需要备份的设备
+2. 解压缩包：`tar zxvf ez-recover-xxxxxxxxxxxxx.tar.gz`
+3. 解压后进入目录 `tmp_ezRecover/ezBackup` 运行备份脚本
+   - `./ezBackup.sh` 会把证据文件等冷数据备份到 `/sg_backup`
+4. 进入 `tmp_ezRecover` 目录，进行热备份：
+   - `./python3.3/python3/bin/python3 save_recover.py -d /tmp/mytest save ucss`
+   - 生成 cluster、4个文件夹，`__version__` 1个文件
+5. 将 `/tmp/mytest` 目录下生成的备份文件导出到其他位置存放
+
+#### SMB 远程备份
+
+1. 将备份脚本复制到设备
+2. 解压缩包
+3. 对证据等进行冷备份，使用解压后的脚本进入 `_tmp_ezRecover`：
+   - `mount -t cifs -overs=1.0,username=Administrator,password=xxx //server/share /mnt`
+   - 运行 `./ezBackup.sh`
+4. 进行热备份：
+   - 匿名登录：`./python3.3/python3/bin/python3 save_recover.py -t samba -s //172.16.0.100/share/ucss save ucss`
+   - 用户名密码登录：`./python3.3/python3/bin/python3 save_recover.py -t samba -s //172.16.0.100/share/ucss -u user -p pass save ucss`
+5. 备份成功后，到远程指定的目录下查找备份文件
+
+### 恢复操作
+
+1. 安装3.15版本并初始化
+2. 开启后台，将备份恢复工具复制到设备
+3. 进行热恢复（设备配置）
+4. 进行冷恢复（证据文件、归档内容）
+5. 重新初始化该设备
+6. 授权 - 登录管理界面，对该设备进行授权
