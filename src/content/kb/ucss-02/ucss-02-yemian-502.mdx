@@ -1,0 +1,37 @@
+---
+title: '页面502'
+description: 'UCSS页面出现502错误的常见原因及解决方法'
+category: ucss-02
+tags: [UCSS, 502, tomcat, monit]
+version: "1.0"
+audience: public
+lastUpdated: 2024-11-11
+order: 6
+---
+
+# 页面502
+
+## 问题原因
+
+页面出现502错误，大概率是tomcat没有完全启动，或者5分钟内启动不起来，被monit restart了。
+
+## 解决方法
+
+可以先关闭monit再试试：
+
+```bash
+# 关闭monit
+monit stop all
+
+# 重启服务后再开启monit
+monit start all
+```
+
+## 诊断日志
+
+可以查看monit监控日志确认tomcat进程状态：
+
+- 检查tomcat进程数量
+- 确认tomcat是否正常运行
+- 查看api响应状态
+- 确认是否被monit自动重启
