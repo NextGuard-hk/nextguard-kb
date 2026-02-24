@@ -1,0 +1,45 @@
+---
+title: 'license基础知识'
+description: 'UCSS license授权基础知识，包括CPU核数限制及解析方法'
+category: ucss-02
+tags: [UCSS, license, 授权, CPU核数]
+version: "1.0"
+audience: public
+lastUpdated: 2024-12-16
+order: 8
+---
+
+# license基础知识
+
+## 解析license文件
+
+```bash
+cat UCSS-cf44c91f-c8f2-3349-810a-9d17b9... | python -m json.tool
+```
+
+## CPU核数限制
+
+由于建行112核心的授权问题，intel或AMD硬件安装时，CPU限制如下：
+
+### INTER平台
+
+| 平台 | 最大CPU核数 |
+|------|----------|
+| UCSG 1100 | 8 |
+| UCSS 1100 | 8 |
+| UCSG 5100 | 40 |
+| UCSS 5100 | 40 |
+| UCSG 11000 | 128 |
+| UCSS 11000 | 128 |
+
+说明：3.15 app-25支持到128核
+
+### 海光平台
+
+| 平台 | 最大CPU核数 | 最大内存GB |
+|------|----------|----------|
+| UCSG 1100 | 32 | 16 |
+| UCSS 1100 | 32 | 32 |
+| UCSG 5100 | 64 | 32 |
+| UCSS 5100 | 64 | 64 |
+| UCSG 11000 | 128 | 64 |
