@@ -1,0 +1,52 @@
+---
+title: "API-ES抽取终端事件"
+description: "调用ES API抽取固定终端固定日期的事件数据"
+---
+
+# KB-调用ES API抽取固定终端固定日期的事件
+
+## 场景说明
+
+通过ES API查询接口，抽取指定终端在指定日期范围内的DLP事件数据。此方法适用于需要批量导出或分析特定终端的历史事件数据。
+
+## 请求方式
+
+- **Method**: POST（注意：不是GET）
+- **URL**: ES集群查询接口
+
+## 查询参数示例
+
+主要查询条件包括：
+- `detectDateTime`: 检测日期范围
+- `isIgnored`: 是否忽略
+- `isVisible`: 是否可见
+- `isOrdinary`: 是否普通事件
+
+```json
+{
+  "from": 0,
+  "size": 20,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "detectDateTime": {
+              "from": "2025-04-07T16:00:00.000+0000",
+              "to": "2025-04-08T15:59:59.999+0000"
+            }
+          }
+        },
+        { "term": { "isIgnored": false } },
+        { "terms": { "isVisible": [true] } }
+      ]
+    }
+  }
+}
+```
+
+## 注意事项
+
+1. 确保使用POST方法，不是GET
+2. 日期格式需包含时区信息
+3. 查询结果可通过`from`和`size`分页
