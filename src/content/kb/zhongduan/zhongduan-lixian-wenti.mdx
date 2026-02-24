@@ -1,0 +1,27 @@
+---
+title: "终端离线问题定位"
+description: "终端离线问题排查方法，包括license授权检查、日志分析等"
+---
+
+# 终端离线问题定位
+
+## 检查license授权
+
+查看看终端license授权是否满
+
+```
+license authed
+count:5000, have used:3831, surplus:116
+```
+
+## 查看日志
+
+```bash
+/opt/skyguard/sps/logs/sps-webservice/webservice.log |grep surplus
+```
+
+当页面出现可用license为0时，可以过滤出负数的情况：
+
+```bash
+/opt/skyguard/sps/logs/sps-webservice/webservice.log |grep surplus:-
+```
