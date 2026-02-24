@@ -1,0 +1,35 @@
+---
+title: "SNMP/NTP/keepalived汇总"
+description: "SNMP监控问题、NTP对时、keepalived高可用相关问题汇总"
+---
+
+# SNMP/NTP/keepalived汇总
+
+## SNMP问题汇总
+
+### snmp无法监控到smb
+
+SNMP监控无法获取SMB服务状态数据。需检查SNMP配置文件和权限设置。
+
+## shm、tmpfs动态分区
+
+系统内存中shm和tmpfs分区配置与调整。
+
+## NTP对时
+
+### 配置方法
+
+确保设备时间同步，配置NTP服务。
+
+### KB-如何判断网关是否对时
+
+通过ntpq命令检查时间同步状态。
+
+## keepalived高可用
+
+keepalived服务配置与故障排查。
+
+### 常见问题
+- VIP未漂移
+- 脑裂问题
+- 健康检查失败
