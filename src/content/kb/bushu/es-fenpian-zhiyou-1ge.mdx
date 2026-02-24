@@ -1,0 +1,41 @@
+---
+title: "ES分片只有1个"
+description: "Elasticsearch分片只有1个，关闭1台DB后ES网络事件索引无法写入的问题分析"
+---
+
+# ES分片只有1个
+
+## 问题描述
+
+发现ES索引分片数量异常，正常应该是5个主分片，一个副分片，但实际只有1个分片。
+
+## 诊断方法
+
+### 检查索引分片状态
+
+```bash
+curl -XGET 'http://localhost:9200/_cat/indices?v'
+curl -XGET 'http://localhost:9200/_cat/shards?v'
+```
+
+正常环境应显示：
+- dlp-network-permanent-01
+- dlp-network-YYYYMMDD-01 （多个日期索引）
+- 每个索引有5个主分片(p)和对应的副本分片(r)
+
+### 检查ES节点状态
+
+```bash
+netstat -anpt | grep 9200
+curl 192.168.0.10:9200/_cat/indices?v
+```
+
+## 问题影响
+
+客户环境中，由于ES分片只有1个，导致关闭1台DB后，ES网络事件的索引写不进了。
+
+## 注意事项
+
+- 确保ES集群分片配置正确，默认应为5个主分片
+- 在高可用环境中，副本分片确保单节点故障时数据不丢失
+- 关闭DB前应检查ES分片分布情况
