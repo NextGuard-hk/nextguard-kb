@@ -1,0 +1,88 @@
+---
+title: "UCWI概述"
+description: "UCWI模块概述、架构说明、调试方法与常见问题"
+---
+
+# UCWI模块概述
+
+UCWI（Unified Content Web Inspector）是SkyGuard的Web内容检查引擎，负责对Web流量进行内容分析和检测。
+
+## 架构说明
+
+- ucwi并发接收流量，ucwi送cae并发送检→cae并发分析
+- uciw接受并发api的数量和cpu核心数量没有必然联系
+- 并发中每一路线程送检cae都是串行间隔送的，并行取决于spe分析效率
+- 客户端拿到的结果/rps处理效率，取决于spe返回结果，比如32c可以接多个个API长连接，但是同步模式下，等到cae返回结果后这一路并发才会释放掉
+
+UCWI分析结果传给客户端，客户端通过5443端口连接Apache2。
+
+## 关闭MD5校验方法
+
+默认是开启md5校验的，就是说redis里面存储的md5值对比客户端上传的md5值。
+
+配置文件：
+- `/opt/skyguard/cert/config.py` （已持久化）
+- `/opt/skyguard/inspector/etc/config.json` 中 `redis_cache_enabled` 设为False
+
+重启服务生效：
+```bash
+dcin ucwi
+supervisorctl restart apache2
+supervisorctl restart asyncdaemon  #异步模式
+```
+
+> 注意：md5值缓存在redis列表，更新dlp策略时会清空
+
+## 3.10版本关闭MD5校验
+
+```bash
+dcin ucwi
+vim /opt/skyguard/inspector/spe_sdk.py
+# 将714行内容注释，并且新建一行设置变量ori_payload
+supervisorctl restart apache2
+supervisorctl restart asyncdaemon
+```
+
+## 3.3版本后台开demo方法
+
+登录后台，修改 `/opt/skyguard/inspector/api`：
+```python
+def is_demo_page_enable():
+    return True
+```
+保存后重启apache：
+```bash
+service apache2 restart
+```
+
+## UCWI开启流量dump方法
+
+dump出ucwi送检cae前的流量，确保送给cae前流量正常。
+
+配置文件：`/opt/skyguard/cert/config.py`（已持久化）
+- `dump_content`: False → 修改为True表示开启
+
+重启服务生效：
+```bash
+dcin ucwi
+supervisorctl restart apache2
+mkdir /opt/skyguard/dump
+chown www-data:www-data /opt/skyguard/dump
+```
+生成的文件路径：`/opt/skyguard/dump`
+
+## 后台开启debug日志方法
+
+为了实现某些特定场景的UCWI排错，需要查看UCWI接收到的metadata内容。
+
+配置文件：
+- `/opt/skyguard/inspector/config.py` （宿主机）
+- `/opt/skyguard/cert/config.py` （容器）
+
+```json
+"logging": {
+    "debug": True,  // Debug logging
+}
+```
+
+对于异步模式，在打开UCWI的debug日志后需要重启服务。
