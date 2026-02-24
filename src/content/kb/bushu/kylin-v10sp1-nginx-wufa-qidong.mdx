@@ -1,0 +1,62 @@
+---
+title: "Kylin V10SP1安装Nginx无法启动"
+description: "解决Kylin V10SP1系统上在线安装Nginx后无法启动的问题"
+---
+
+# Kylin V10SP1安装Nginx无法启动
+
+## 问题描述
+
+客户是自带的源地址进行在线安装Nginx，安装完成后无法启动。
+
+检查状态时显示：
+
+```bash
+systemctl status nginx
+# Active: failed (Result: exit-code)
+```
+
+## 报错日志
+
+查看错误日志：
+
+```bash
+cd /var/log/nginx/
+ls -l
+more error.log
+```
+
+nginx版本：`nginx/1.16.1`
+
+## 解决方法
+
+编辑 `/etc/nginx/nginx.conf`，注释以下两行：
+
+```nginx
+http {
+    ##
+    # Basic Settings
+    ##
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    # server_tokens off;
+
+    # server_names_hash_bucket_size 64;
+    # server_name_in_redirect off;
+
+    # include /etc/nginx/mime.types;      # 注释此行
+    # default_type application/octet-stream;  # 注释此行
+
+    ##
+    # SSL Settings
+    ##
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+}
+```
+
+注释以上两行后，重新启动Nginx即可正常运行。
