@@ -113,6 +113,12 @@ export const NAV_STRUCTURE: NavCategory[] = [
             { slug: 'ucss-02/ucss-02-hotfix-buding-anzhuang', title: 'hotfix补丁安装相关' },
             { slug: 'ucss-02/ucss-02-mingzhong-celue-guanjianzi', title: '命中策略关键字显示' },
             { slug: 'ucss-02/ucss-02-laiyuan-mubiao-zidian-guoduo', title: '来源目标字典过多' },
+            { slug: 'ucss-02/ucss-02-qkact-api', title: 'API-快速操作接口' },
+      { slug: 'ucss-02/ucss-02-api-zhongduan-zhuangtai', title: 'API-终端状态查询' },
+      { slug: 'ucss-02/ucss-02-zhongduan-jiankong-api', title: 'API-终端监控列表' },
+      { slug: 'ucss-02/ucss-02-youjian-toudi-api', title: 'API-邮件投递查询' },
+      { slug: 'ucss-02/ucss-02-zhengju-xiazai-api', title: 'API-证据下载接口' },
+      { slug: 'ucss-02/ucss-02-aswg-shenpi-api', title: 'API-ASWG审批接口' },
     ]
   },
   {
