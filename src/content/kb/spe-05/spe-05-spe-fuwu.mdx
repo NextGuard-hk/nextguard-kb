@@ -1,0 +1,136 @@
+---
+title: 'SPE服务管理'
+description: 'SPE服务进程管理与运维说明'
+category: spe-05
+tags: [SPE, 服务管理, 进程, 运维]
+version: "1.0"
+audience: public
+lastUpdated: 2024-01-01
+order: 2
+---
+
+# SPE服务管理
+
+## spe-service
+
+包含的子线程如下：
+
+```bash
+ps -auxf
+/opt/skyguard/ucs/bin/spe-service -p /var/run/spe-service.pid
+MgmtConsole
+--OCRServer
+----OCRServer --slave 1
+----OCRServer --slave 0
+--DeviceManager
+--fpdbservice
+--ContentAnalysisEngine
+--DSA
+--
+LabelManagementService
+--XIDServer (3.3)
+```
+
+## 查看SPE容器主进程状态
+
+```bash
+root@UCSS-V3:/etc/init.d#
+supervisorctl status spe-service
+spe-service    RUNNING    pid 61, uptime 56 days, 23:26:33
+```
+
+## 相关日志
+
+- `/opt/skyguard/ucs/var/spe/` - SPE日志目录
+- `/opt/skyguard/ucs/var/dm/` - DM日志目录
+
+## CAE引擎
+
+### CAE配置调优
+
+- CAE日志匹配字段配置
+- 安全模式配置
+- 网络DLP支持配置
+- CAE超时调整
+
+### CAE异常日志汇总
+
+常见CAE异常日志和处理方法。
+
+## KV引擎
+
+### KV关闭后的影响
+
+KV关闭后，CAE策略匹配行为变化说明。
+
+## DM (DeviceManager)
+
+DM即DeviceManager，主要负责终端接入、数据传输等。
+
+### 服务状态检查
+
+服务能否启动，首先取决于配置文件中dm服务状态：
+`/opt/skyguard/ucs/etc/DLPServer.xml`
+
+### 终端ITM堆积日志
+
+```
+/opt/skyguard/ucs/var/dm/itm_log
+```
+
+### DM事件证据临时目录
+
+```
+/opt/skyguard/ucs/var/dm/incident    #终端事件堆积/事件缓存
+/opt/skyguard/ucs/var/dm/forensics   #终端证据堆积/证据缓存
+```
+
+### 设备管理
+
+设备管理/SPS连接情况/终端策略同步压力情况/终端注册
+
+## DSA
+
+DSA服务相关配置和管理。
+
+## ICAP
+
+ICAP协议集成配置。
+
+## 数据模板
+
+数据模板配置和管理。
+
+## OCR
+
+OCR识别服务配置。
+
+## lms
+
+lms服务配置。
+
+## 流量日志
+
+流量大小和文件大小的区别说明。
+
+## ORS数据库
+
+ORS.db数据库相关说明。
+
+## XIDServer
+
+XIDServer服务配置说明。
+
+## spe_util工具
+
+spe_util命令行工具使用方法。
+
+## DLP策略相关
+
+### 命中DLP策略
+
+DLP策略命中及耗时相关说明。
+
+### 调整DSG策略分析
+
+DSG策略分析配置调整。
