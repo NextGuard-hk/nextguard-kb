@@ -1,0 +1,119 @@
+---
+title: "KB-DB外置数据库安装方法（CentOS）"
+description: "UCSS 3.10版本在CentOS 7.9上安装外置数据库的详细步骤，包括Redis、PostgreSQL、ES和MySQL"
+---
+
+# KB-DB外置数据库安装方法（CentOS）
+
+## 环境信息
+
+- **UCSS版本**：3.10
+- **DB操作系统**：CentOS 7.9
+
+## 3.10数据库版本
+
+| 数据库 | 版本 |
+|--------|------|
+| Redis | v5.0.7 |
+| Elasticsearch | 7.12.1 |
+| PostgreSQL | 12.7 |
+| MySQL | 8.0.25 |
+
+## UCSS-HA+单台DB外置操作说明
+
+- 初始化时，ucss数据库外置和ucss-HA是不同的pg，但系统默认redis服务器也在es服务器ip地址
+- ucss-ha必须要配置nfs/smb外置存储不目录的配置
+- 配置、事件、日志是不支持备份的
+
+**特别提示**：3.10和之前的版本，redis安装完成后不需要设置密码。
+
+## 安装Redis数据库
+
+### 1. 查找指定的Redis版本
+
+下载地址：https://download.redis.io/releases/
+
+### 2. 下载并解压
+
+```bash
+cd /home
+curl -O -k https://download.redis.io/releases/redis-5.0.7.tar.gz
+tar -zxvf redis-5.0.7.tar.gz
+```
+
+### 3. 创建目录并复制文件
+
+```bash
+mkdir /usr/local/redis
+cp //home/redis-5.0.7/* /usr/local/redis/ -rf
+```
+
+### 4. 校验并安装
+
+```bash
+cd /usr/local/redis
+make
+make install PREFIX=/usr/local/redis
+```
+
+### 5. 修改配置
+
+```bash
+vi /usr/local/redis/redis.conf
+```
+
+修改以下配置项：
+- `daemonize yes` - 后台运行
+- `bind 0.0.0.0` - 允许外部访问
+- `protected-mode no` - 关闭保护模式
+
+### 6. 启动Redis
+
+```bash
+./redis-server /usr/local/redis/redis.conf
+/usr/local/redis/bin/redis-cli -p 6379
+```
+
+### 7. 检查服务
+
+```bash
+ps -ef | grep redis
+netstat -anpt | grep 6379
+```
+
+**备注**：如果外部telnet 6379不通，检查是否CentOS防火墙未关闭：
+
+```bash
+systemctl stop firewalld.service
+systemctl disable firewalld.service
+```
+
+## 安装PostgreSQL
+
+### 1. 解压安装包
+
+```bash
+mkdir /usr/local/PostgreSQL
+tar -zcvf postgresql-12.7 /usr/local/PostgreSQL/
+```
+
+### 2. 编译
+
+```bash
+cd /usr/local/PostgreSQL/
+./configure
+```
+
+如报错缺少readline依赖：
+
+```bash
+yum install readline
+yum install readline-devel
+```
+
+### 3. 安装
+
+```bash
+make
+make install
+```
