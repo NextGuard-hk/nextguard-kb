@@ -1,0 +1,44 @@
+---
+title: "Kylin-V10安装V3.15 DB高可用问题"
+description: "麒麟V10系统下安装V3.15版本DB高可用环境的问题和解决方案"
+---
+
+# Kylin-V10安装V3.15 DB高可用问题
+
+## 客户信息
+
+- 客户：广发证券
+
+## 麒麟版本
+
+Kylin Linux Advanced Server release V10 (Sword)
+Linux version 4.19.90-24.4.v2101.ky10.x86_64
+
+## DB软件包版本
+
+`db-cluster-3.13.0-002-kylin-v10-sp2-x86-no-rook.tar.gz`
+
+## 安装结果
+
+1. lab环境最小化安装OK
+2. 客户环境对操作系统进行了裁剪，导致安装失败
+
+## 客户环境最小化安装失败解决办法
+
+### 1. 查看install.log
+
+发现报错：`Failed to enable unit: Unit file not found`
+
+### 2. 检查系统服务
+
+客户系统裁剪导致某些systemd服务缺失。
+
+### 3. 解决方案
+
+安装缺失的依赖包，或者使用未裁剪的操作系统进行安装。
+
+## 注意事项
+
+- 客户环境如果对操作系统进行了裁剪，可能导致安装失败
+- 建议使用最小化安装的标准系统
+- no-rook版本的iso不提供NFS服务
