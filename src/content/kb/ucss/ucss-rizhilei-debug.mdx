@@ -1,0 +1,81 @@
+---
+title: UCSS日志类 - Debug模式开启方法
+description: SPS各服务日志debug模式开启方法，包括webManager、webservice、事件日志入库、SWG日志接收等服务
+---
+
+# UCSS日志类 - Debug模式开启
+
+## 打开SPS各个服务log的debug模式
+
+### 1、打开webManager管理平台服务的debug模式
+
+有两种方式：
+
+**方式一：通过管理平台portal**
+
+登录管理平台portal，进入--系统---设备管理---ucss设备---其他一收集日志页面，点击"DEBUG设置"灰色按钮，然后启用web服务器debug，保存即可。
+
+**方式二：通过后台打开**
+
+使用root账号登录ucss设备，编辑文件：
+
+```bash
+/opt/skyguard/tomcat/webapps/webManager/WEB-INF/classes/logback.xml
+```
+
+把下图红色部分的注释取消，保存后重启tomcat服务：
+
+```bash
+service tomcat restart
+```
+
+### 2、打开SPS的webservice的debug
+
+使用root账号登录ucss设备，编辑文件：
+
+```bash
+/opt/skyguard/sps/apps/sps-webservice/config/webservice.properties
+```
+
+把下图红色部分：
+- `logging.level.root=info` 改为：`logging.level.root=debug`
+
+然后重启服务：
+
+```bash
+service sps-webservice restart
+```
+
+### 3、打开SPS的事件日志入库服务的debug
+
+使用root账号登录ucss设备，编辑文件：
+
+```bash
+/opt/skyguard/sps/apps/sps-incident/config/incident.properties
+```
+
+把下图红色部分：
+- `logging.level.root=info` 改为：`logging.level.root=debug`
+
+然后重启服务：
+
+```bash
+service sps-incident restart
+```
+
+### 4、打开SPS的SWG日志接收服务的debug
+
+使用root账号登录ucss设备，编辑文件：
+
+```bash
+/opt/skyguard/sps/apps/sps-transfer/config/transfer.properties
+```
+
+把下图红色部分：
+- `logging.level.root=info` 改为：`logging.level.root=debug`
+
+然后重启服务：
+
+```bash
+service sps-transfer restart
+```
