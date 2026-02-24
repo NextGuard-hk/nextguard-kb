@@ -1,0 +1,41 @@
+---
+title: "隔离后API加密释放记录"
+description: "SEG邮件隔离后通过API进行加密释放的操作记录和流程"
+---
+
+# 隔离后API加密释放记录
+
+邮件隔离后通过UCSS QKAct API进行加密释放的操作流程。
+
+## 查看邮件日志
+
+**路径：** 监控 > 邮件监控 > 邮件日志
+
+在SecGator管理界面中查看邮件日志，可按接收时间筛选（如“最近3天”）。
+
+邮件日志包含以下信息：
+- 邮件ID
+- SMTP-ID
+- 邮件方向（出向）
+
+## API加密投递
+
+使用UCSS QKAct API进行邮件加密投递：
+
+**请求方法：** POST
+
+**接口地址：**
+
+```
+https://{server-ip}:8443/qkact/v0/seg/email/deliver
+```
+
+## 返回结果
+
+成功响应示例：
+
+```
+encrypt to recipients ok
+```
+
+`#` 表示加密投递已完成。
