@@ -1,0 +1,45 @@
+---
+title: "KB1-邮件日志和邮件连接日志不上传/不生成"
+description: "邮件日志和邮件连接日志不上传或不生成的排查方法"
+---
+
+# KB1-邮件日志和邮件连接日志不上传/不生成邮件日志
+
+## 1、注册信息为空导致的日志不上传
+
+```bash
+cat /etc/trafficserver/ucsssrvinfo  #发现注册信息为空
+```
+
+会导致不生成邮件日志，实测会生成邮件日志，但是swgtransfer丢弃。
+
+原因：设备只有一块网卡的情况下，完成了注册，但后来新增了网卡，由于注册信息为空，导致swg_transfer服务无法启动。
+
+解决办法：手册注册，注册后服务正常。
+
+检查进程：
+
+```bash
+root@DSG3 [ats]:/var/spool/postfix/data/
+ps aux | grep swg_transfer
+```
+
+## 2、初始化的时候，mysql容器未初始化完成
+
+初始化的时候，如果mysql容器未初始化完成，可能导致问题。
+
+检查mysql数据目录：
+
+```bash
+ls /var/skyguard/mysql/data/
+```
+
+如果不完整会导致没有邮件连接日志、邮件审批通知异常。
+
+检查ucsssrvinfo：
+
+```bash
+cat /etc/trafficserver/ucsssrvinfo  #如果token为空则确认未注册
+```
+
+解决办法：停掉MySQL容器，删除/var/skyguard/mysql/data目录，重新初始化。初始化时，系统IO忧导致MySQL长时间初始化不完，触发超时。
