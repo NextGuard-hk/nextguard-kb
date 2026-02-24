@@ -1,0 +1,78 @@
+---
+title: "3.10到3.15版本操作指南"
+description: "从3.10版本升级到3.15版本的完整操作步骤"
+---
+
+# 3.10到3.15版本操作指南
+
+## 备份工具位置
+
+`\\appfiles.skyguardmis.com\Public\autoupload\ezRecover`
+
+备份日志目录：`/home/_tmp_ezRecover/ezBackup/manual`
+
+包含文件：
+- `archiveRestore.sh`
+- `backupes.log`
+- `backuppg.sh`
+- `archive.sh`
+- `ES升级.docx`
+
+## 备份准备工作
+
+- 准备好存放备份程序和备份文件的存储设备（本地或远程）
+- 旧版本使用远程数据库时，升级过程中，新版本必须使用同一远程数据库
+- 终端升级前需要部署终端升级服务器（使用 ucsslite 作为升级服务器）
+
+## 操作步骤
+
+### 1. 开启设备后台 SSH
+
+将备份恢复工具复制到设备上。
+
+### 2. 进行冷备份
+
+即备份证据文件相关，进入 `_tmp_ezRecover` 目录，执行：
+
+```bash
+./ezBackup.sh
+```
+
+会把证据文件等冷数据备份到 `/sg_backup` 目录。
+
+备份过程会检查依赖、系统信息（Host: UCSS3.10, IP, 产品版本 3.10.0, 产品类型 UCSS）、备份目录路径等。
+
+### 3. 执行热备份
+
+支持本地、SMB、NFS 三种方式：
+
+```bash
+# 本地
+./python3.3/python3/bin/python3 save_recover.py -d /tmp/mytest save ucss
+
+# SMB
+./python3.3/python3/bin/python3 save_recover.py -t samba -s //server/share -u user -p pass save ucss
+
+# NFS
+./python3.3/python3/bin/python3 save_recover.py -t nfs -s server:/share save ucss
+```
+
+### 4. 安装 3.15 版本
+
+安装并初始化，开启后台，将备份恢复工具复制到设备上。
+
+### 5. 进行热恢复
+
+```bash
+./python3.10/python3/bin/python3 save_recover.py recover ucss
+```
+
+### 6. 进行冷恢复
+
+将冷备份目录挂载到 `/sg_backup`，执行恢复脚本。
+
+### 7. 重启设备
+
+### 8. 重新初始化
+
+升级到 UCSS15。
