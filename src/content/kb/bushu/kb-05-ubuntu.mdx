@@ -1,0 +1,30 @@
+---
+title: "KB-05 Ubuntu软件化部署"
+description: "Ubuntu 2204软件化部署指南，包含安装报错问题、mkfs.xfs依赖解决、前置包安装"
+---
+
+# KB-05 Ubuntu软件化部署
+
+## 部署版本
+
+Ubuntu 2204 - 3.15版本
+
+## Ubuntu 2204安装软件包时报错
+
+报错信息：
+
+```
+Check dependencies failed, These commands are missing:
+  mkfs.xfs
+You need run pre-install script first.
+```
+
+### 原因
+
+看提示是未安装前置补丁包，其实1.3版本前置补丁包已经打成功了，其实是1.3版本的前置补丁包未包含mkfs.xfs导致
+
+### 解决方法
+
+已升级到EI-8639
+
+`mkfs.xfs` 是一个xfs文件系统格式化工具，用于创建xfs文件系统
