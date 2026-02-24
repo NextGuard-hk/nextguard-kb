@@ -1,0 +1,44 @@
+---
+title: "UCSS邮件审批释放流程"
+description: "邮件审批释放邮件流程及相关日志分析"
+---
+
+# UCSS邮件审批释放流程
+
+## 邮件审批流程（邮件回复）
+
+1. 客户发邮件 -- seg/dsg-mta进行dlp内容审核
+2. 命中dlp策略，spe把证据文件上送给ucss的证据库
+3. ucss发送审批通知邮件给主管，并在通知邮件中插入release code
+4. ucss会调用邮件服务器把发送审批通知邮件发出
+5. 主管回复审批通知邮件先经过seg/dsg-mta, dsg-mta把回复邮件的release code提取出来
+6. ucss比对release code插入的和收到的是否一致，一致则通知mta释放邮件
+7. mta收到指令和证据文件后，执行邮件投递
+
+## 相关日志
+
+日志路径：
+
+```
+/opt/skyguard/sps/logs/sps-incident/incident.log
+```
+
+```bash
+--| grep 'release code'   # 发出releasecode
+```
+
+```
+/opt/skyguard/sps/logs/sps-manager/manager.log
+```
+
+```bash
+--| grep smtp_id/message_id   # 需要投递给seg
+```
+
+```
+/opt/skyguard/sps/logs/sps-webservice/webservice.log
+```
+
+```bash
+--| grep 'release code'   # 获取seg上传的释放请求
+```
