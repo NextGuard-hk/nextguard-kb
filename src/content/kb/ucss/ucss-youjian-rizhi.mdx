@@ -1,0 +1,128 @@
+---
+title: UCSS邮件日志
+description: UCSS邮件日志相关路径、排查方法、日志堆积处理及常见问题
+---
+
+# UCSS邮件日志
+
+## 邮件日志路径（定位无邮件日志等相关问题）
+
+### SEG侧
+
+```bash
+/var/log/mail.log      #seg侧
+/var/log/supervisor/mail_release.log  #mail release日志
+```
+
+### UCSS侧
+
+```bash
+/opt/skyguard/sps/logs/sps-transfer/transfer.log
+```
+
+通过grep命令查看接收日志：
+
+```bash
+grep 'Received' /opt/skyguard/sps/logs/sps-transfer/transfer.log
+```
+
+### 没有邮件日志的可能原因
+
+- 审批通知的邮件虽然有smtpid但是也是不会记录到邮件日志中
+- 邮件一直卡在待分析队列
+
+解决方法：
+1. 客户环境可以尝试做一次postfix reload，让待分析队列重新分析
+2. 可以将这些历史邮件全部移动到备份目录，只分析新邮件
+
+### 临时邮件日志路径
+
+**UCSS侧：**
+
+```bash
+/var/skyguard/sps/email/temp/data/
+/var/skyguard/sps/connect/temp/data
+/opt/skyguard/sps/email/temp/data  #3.15版本
+```
+
+查看服务状态：
+
+```bash
+service sps-transfer status  #ucss负载接受邮件日志
+```
+
+## MTA侧邮件日志
+
+### 3.3及以上环境
+
+seg本地待上传邮件日志/邮件连接日志：
+
+```bash
+/var/spool/postfix/data/log/mail    #邮件日志
+/var/spool/postfix/data/log/connection  #邮件连接日志
+```
+
+负载传输服务：
+
+```bash
+service swgtransfer status  #负载传输邮件日志
+```
+
+如果服务无法启动，需要检查：
+
+```bash
+cat /etc/trafficserver/swg_transfer.cfg
+```
+
+### 3.1环境
+
+```bash
+/var/spool/postfix/vevent    #邮件日志
+/var/spool/postfix/connlog   #邮件连接日志
+/usr/sbin/postformat status  #服务异常会导致邮件日志堆积
+```
+
+解决方法：
+
+```bash
+killall postformat
+```
+
+然后重启进程。
+
+## ucss平台查不到邮件日志
+
+MTA侧问题：
+
+- ASEG并发邮件日志/邮件连接日志速率调整：`/etc/swg_transfer/swg_transfer.cfg`
+
+### 邮件日志堆积问题
+
+1. 邮件日志堆积：`/var/spool/postfix/data/log`
+2. 如果MTA本地也不堆积邮件日志和邮件连接日志：
+
+```bash
+killall postformat
+ps -ef |grep postformat
+/usr/sbin/postformat start
+```
+
+### 端口说明
+
+- 9514端口是SYSLOG服务连接postformat使用的端口
+- 8514是SEG设备连接UCSS传输日志的端口
+
+### 检查要点
+
+1. 三台设备是否有正常的mail.log
+2. 查看三台设备9514端口是否有连接建立
+3. postformat的线程数是否完整
+
+### UCSS侧检查
+
+```bash
+netstat -nap |grep 8514  #查看日志传输端口连接
+/opt/skyguard/sps/logs/sps-transfer/transfer.log
+```
+
+确认pem收件人认证是否匹配。
