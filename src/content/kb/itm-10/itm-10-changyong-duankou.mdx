@@ -1,0 +1,38 @@
+---
+title: ITM常用端口
+description: ITM系统常用端口列表及说明
+---
+
+# ITM常用端口
+
+## 端口列表
+
+| 端口 | 协议 | 用途 |
+|------|------|------|
+| 514 | UDP/TCP | Syslog日志接收端口，UCSS发送终端日志到ITM |
+| 9200 | TCP | Elasticsearch HTTP接口 |
+| 9300 | TCP | Elasticsearch节点通信接口 |
+| 5601 | TCP | Kibana Web界面 |
+| 9092 | TCP | Kafka消息队列 |
+| 2181 | TCP | Zookeeper |
+| 8080 | TCP | ITM Web管理界面 |
+| 443 | TCP | HTTPS访问 |
+| 139 | TCP | SMB文件共享 |
+| 445 | TCP | SMB文件共享 |
+
+## 端口检查命令
+
+```bash
+# 检查所有监听端口
+netstat -anpt | grep LISTEN
+
+# 检查特定端口
+netstat -anpt | grep 514
+netstat -anpt | grep 9200
+```
+
+## 注意事项
+
+- 端口514是独立的，指定端口514表示UCSS会把日志通过514端口传输
+- SMB通道需要双向流量，端口是固定的139、445
+- IP和下面的端口是独立的，点击连接测试可以发现是否连通
