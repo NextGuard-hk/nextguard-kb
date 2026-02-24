@@ -1,0 +1,238 @@
+---
+title: "03.LAB环境"
+description: "LAB实验室环境配置、Xen虚拟机、ESXI、ARM虚拟机、网络配置及防火墙设置"
+---
+
+# 03.LAB环境
+
+## Xen lab虚拟机信息
+
+- IP: 172.22.3.208, root/firewall, root/debian
+- gateway: 172.22.80.243
+
+## ESXI-陈思伟/于淳-夏磊
+
+- web控制台: 172.22.164.10, root/skyguard@123
+- gateway: 172.22.80.1
+
+## Esxi-MACOS虚拟机
+
+- web控制台: 172.22.3.216 root/Firewall1!
+- ikuai: 172.22.80.247
+- 内网: 192.168.0.200, 外网172.22.80.247:3389
+
+| 设备 | IP | 账号密码 |
+|------|-----|----------|
+| ikuai | 192.168.0.254 | admin/Admin@1234 |
+| uos-dsg | 192.168.0.1 | root/SkyGuard@405 |
+
+## 制作qcow2=镜像用服务器
+
+- ucsg-11000/REHL7.6
+- 带外管理: 172.22.148.109, ADMIN/11111111
+- 172.22.3.21 root/Firewall1!
+
+---
+
+- xenserver-DL002: 172.22.148.22 root/firewall (信创)
+
+## 阿彪的目前安装ASEG3.9硬件
+
+- IPMI: 172.22.148.107 ADMIN/11111111
+- IP: 172.22.80.246
+
+## ARM虚拟机 IPMI
+
+- IPMI管理地址: https://172.22.80.17, 用户名: root/0penBmc
+- web登录: https://172.22.80.41:8006/
+- 用户名密码: root / firewall
+- ssh root@172.22.80.41, 用户名密码: root / firewall
+- ucss: 172.22.2.35 root/SkyGuard@405
+
+## linux搭建防火墙
+
+### 1、配置网卡及路由信息
+
+2张网卡，一个内网，一个办公网即可
+
+```
+vi /etc/network/interfaces
+
+# The loopback network interface
+auto lo eth0 eth1
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet static
+address 172.22.80.243
+netmask 255.255.0.0
+gateway 172.22.0.1
+dns-nameserver 172.21.23.21
+
+allow-hotplug eth1
+iface eth1 inet static
+address 192.168.0.1
+netmask 255.255.255.0
+```
+
+验证路由信息:
+
+```
+route -n
+Kernel IP routing table
+Destination     Gateway         Genmask
+0.0.0.0         172.22.0.1      0.0.0.0
+172.22.0.0      0.0.0.0         255.255.0.0
+192.168.0.0     0.0.0.0         255.255.255.0
+192.168.1.0     192.168.0.254   255.255.255.0
+192.168.2.0     192.168.0.254   255.255.255.0
+192.168.3.0     192.168.0.254   255.255.255.0
+192.168.4.0     192.168.0.254   255.255.255.0
+```
+
+### 2、配置端口映射，保证办公网段可以访问
+
+麒麟系统为例:
+
+```
+执行iptables -t nat -A POSTROUTING -o ens33...
+iptables-restore < /etc/sysconfig/iptables
+```
+
+其中下述需要禁用:
+```
+#-A INPUT -j REJECT --reject-with icmp-host...
+#-A FORWARD -j REJECT --reject-with icmp-ho...
+```
+
+配置端口映射规则:
+```
+vi /etc/iptables/rules.v4
+-A PREROUTING -d 172.22.80.243/32 -p tcp...
+iptables-restore < /etc/iptables/rules.v4
+```
+
+### 3、配置IP转发
+
+```
+cat /etc/sysctl.conf
+net.ipv4.ip_forward=1
+```
+
+## Linux系统搭建路由器
+
+### 1、建议配置4-5块网卡
+
+- eth0接防火墙: 管理口用
+- eth1: mta口
+- eth2: p1口
+- eth3: p2口
+- eth4: pc
+
+```
+vi /etc/network/interfaces
+allow-hotplug eth0
+iface eth0 inet static
+  address 192.168.0.254
+  netmask 255.255.255.0
+  network 192.168.0.0
+  broadcast 192.168.0.255
+  gateway 192.168.0.1
+  dns-nameservers 172.21.23.21
+
+allow-hotplug eth1
+iface eth1 inet static
+  address 192.168.1.254
+  netmask 255.255.255.0
+
+allow-hotplug eth2
+iface eth2 inet static
+  address 192.168.2.254
+  netmask 255.255.255.0
+
+allow-hotplug eth3
+iface eth3 inet static
+  address 192.168.3.254
+  netmask 255.255.255.0
+
+allow-hotplug eth4
+iface eth4 inet static
+  address 192.168.4.254
+  netmask 255.255.255.0
+```
+
+## 镜像流量执行
+
+dsg上执行:
+```
+ifconfig bond_p1 192.168.2.151 netmask 255...
+```
+
+路由上执行:
+```
+iptables -I PREROUTING -t mangle -i eth4...
+```
+
+## XenCenter信息
+
+- ip: 172.22.160.242
+- username: root
+- passwd: firewall
+- dsg旁路: 172.22.160.91
+
+## TS物理机
+
+TS LAB里有3台5100硬件，其中1台后来被SE替换成11000
+
+IPMI管理地址:
+- UCSS: 172.22.148.201
+- UCSG: 172.22.148.202
+- SWG: 172.22.148.203
+
+## Xen lab虚拟机信息详细
+
+IP: 172.22.3.208, root/firewall, root/debian
+
+| 设备 | eth0 | eth1/2... |
+|------|------|----------|
+| GATEWAY | eth0: 192.168.0.1 | 出口: 1 |
+| ROUTE | eth0: 192.168.0.254 | eth1-4 |
+
+### 3.3环境
+
+| 设备 | IP |
+|------|----|
+| UCSS | eth0: 192.168.0.3 |
+| UCSSLite | eth0: 192.168.0.31 |
+| DSG-MTA | eth0: 192.168.0.32 |
+| ASWG | eth0: 192.168.0.33 |
+| ASEG-HA1/HA2 | VIP:192.168.0.34, HA1:192.168.0.35, HA2:192.168.0.36 |
+
+### 3.6环境
+
+| 设备 | IP |
+|------|----|
+| UCSS-3.6 | eth0:192.168.0.6 |
+| DSG-MTA-3.6 | eth0:192.168.0.61 |
+| ASEG-3.6 | eth0:192.168.0.62 |
+
+### 3.9环境
+
+| 设备 | IP |
+|------|----|
+| UCSS | 192.168.0.9 |
+| UCSSLite | 192.168.0.91 |
+| DSG | 192.168.0.92 |
+| ASWG | 192.168.0.93 |
+| ASEG | 192.168.0.94 |
+
+### 3.10环境
+
+| 设备 | IP |
+|------|----|
+| UCSS | 192.168.0.10 |
+| UCSSLite | 192.168.0.101 |
+| DSG-MTA | 192.168.0.102 |
+| ASWG | eth0: 192.168.0.103 |
+| ASEG | 192.168.0.104 |
