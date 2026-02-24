@@ -1,0 +1,25 @@
+---
+title: "UCWI超时调整方法"
+description: "UCWI-SPE分析连接超时调整与配置说明"
+---
+
+# UCWI超时调整方法
+
+## Ucwi-spe分析连接超时
+
+日志路径：`/var/log/inspector/spe-sdk.log`
+
+- 3.3版本ucwi等待spe的最大时间是600s
+- 3.15ucwi等待spe的最大时间是900s
+
+修改方法：
+```bash
+vi /opt/skyguard/inspector/spe_sdk.py
+```
+找到`_check_ret_send`函数，将红框里的数字改为900000（单位毫秒）。
+
+重启服务生效：
+```bash
+systemctl restart apache2
+systemctl restart async-daemon
+```
