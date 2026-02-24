@@ -167,6 +167,7 @@ export const NAV_STRUCTURE: NavCategory[] = [
     icon: 'package',
     items: [
       { slug: 'bushu-11/bushu-11-overview', title: '11.部署概览' },
+            { slug: 'bushu-11/bushu-11-anzhuang-zhinan', title: '部署安装指南' },
     ]
   },
   {
