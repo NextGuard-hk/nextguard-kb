@@ -1,0 +1,43 @@
+---
+title: "KB11-环境导入授权池文件失败解决方法_V3.7.0"
+description: "V3.7.0版本导入授权池文件失败的解决方案"
+---
+
+# KB11-环境导入授权池文件失败解决方法_V3.7.0
+
+## 背景
+
+设备池模式（wildcards）相比于传统的池模式，TS Lab环境搭建V3.7.0 UCSS时，采用设备池授权时，提示"连接License服务器失败"。
+
+## 问题说明
+
+公司现有2套licenseserver（内网、华为云），导入授权文件时会向云端授权服务器做校验，而内网的licences服务器中查找不到该记录。
+
+## 解决方案
+
+因为V3.7.0版本有做Docker化处理，在修改UCSS配置时需进入容器操作：
+
+1. SSH进入UCSS后台，并切换为root账号
+2. 进入容器：`dcin sps`
+3. 修改配置：
+```bash
+vim /opt/skyguard/tomcat/conf/context.xml
+```
+4. 将licenses文件验证指向修改为内网服务器
+5. 重启Tomcat：
+```bash
+service tomcat restart
+```
+
+## 备注
+
+设备池模式授权时，必须连接SkyGuard授权服务器：
+```
+license.server.host=license.skyguard.com.cn
+```
+或者：
+```
+license.server.host=license.skyguardmis.com
+```
+
+修改配置后，授权池模式的文件可以正常导入。
