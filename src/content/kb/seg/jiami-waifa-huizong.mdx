@@ -1,0 +1,48 @@
+---
+title: 'KB-加密外发汇总'
+description: 'SEG加密外发功能配置与模板修改说明'
+category: seg
+tags: [SEG, 加密外发, 邮件加密]
+version: "1.0"
+audience: public
+lastUpdated: 2024-03-01
+order: 2
+---
+
+# KB-加密外发汇总
+
+## 修改加密外发通知模板
+
+### 需求背景
+
+当客户需要修改加密邮件的通知模板时（例如将密钥邮件修改为日文），需要进行以下操作。
+
+### 操作步骤
+
+1. 邮件DLP策略执行为邮件加密动作
+2. 命中策略后，邮件密钥邮件发送给收件人
+3. 客户为日本人，用户需要修改此密钥邮件为日文
+4. 帮忙check模板修改方法，及此文件是否已经做了持久化
+
+### 模板文件位置
+
+模板所在目录是持久化的，文件位置是 `/etc/ats/postfix/notify_zh.cf`
+
+### 模板格式说明
+
+模板使用MIME多部分消息格式，包含以下宏变量：
+
+- `MACROMESSAGEID` - 邮件ID
+- `MACROFROM` - 发件人
+- `MACROSUBJECT` - 邮件主题
+- `MACROTO` - 收件人
+- `MACROKEY` - 解密秘钥
+- `MACRO0RISUBJECT` - 原始主题
+- `MACRO0RISENDER` - 原始发件人
+- `MACRO0RIRECVERS` - 原始收件人
+
+## 加密投递流程
+
+当邮件命中加密策略后，系统会返回 `encrypt to recipients ok` 表示加密投递成功。
+
+可通过DSG日志查看详细的postfix投递记录。
