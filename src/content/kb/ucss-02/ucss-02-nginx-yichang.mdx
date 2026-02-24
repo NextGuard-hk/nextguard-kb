@@ -1,0 +1,46 @@
+---
+title: 'nginx异常相关'
+description: 'UCSS中nginx无法启动的常见问题及解决方法'
+category: ucss-02
+tags: [UCSS, nginx, sps, 容器]
+version: "1.0"
+audience: public
+lastUpdated: 2024-10-23
+order: 7
+---
+
+# nginx异常相关
+
+## 概述
+
+sps容器里面靠nginx转发，如果nginx无法启动，需要排查以下问题。
+
+## 日志路径
+
+```
+/var/log/nginx/error.log
+```
+
+## 常见问题
+
+### 1. sites-enabled目录多余文件
+
+`/etc/nginx/sites-enabled/001-webManager-ssl` enabled目录下不能存在多余的文件，会导致nginx启动异常。
+
+补丁位置：`/var/skyguard/sps/program`
+
+### 2. 软件化部署ipv6导致异常
+
+报错信息：`0.0.0.0:8443 failed (97: not support)`
+
+这是因为软件化部署时ipv6导致的问题。
+
+## 修复方法
+
+```bash
+dcin sps
+cd /etc/nginx/sites-enabled
+vim 001-webService-ssl.conf
+vim 002-intranet.conf
+supervisorctl restart nginx
+```
