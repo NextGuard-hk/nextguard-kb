@@ -1,0 +1,24 @@
+---
+title: "分区建议"
+description: "软件化部署分区建议，包含UCSS和DB数据库的挂载点、文件系统类型和权限配置"
+---
+
+# 分区建议
+
+## UCSS分区
+
+| 文件夹所属用户 | 用户组 | 挂载文件 | 挂载的文件系统类型 | 挂载数据 |
+|---|---|---|---|---|
+| root | root | /opt/skyguard | xfs | 默认 |
+| root | root | /opt/apps | xfs | 默认 |
+| root | root | /var/log/ | xfs | 默认 |
+| root | root | /var/skyguard | xfs | 默认 |
+
+## DB数据库分区
+
+| 文件夹所属用户 | 用户组 | 挂载文件 | 挂载文件系统类型 |
+|---|---|---|---|
+| root | root | /opt/skyguard | xfs |
+| root | root | /var/log | xfs |
+| root | root | /var/lib | xfs |
+| root | root | /opt/local-path-provisioner | xfs |
