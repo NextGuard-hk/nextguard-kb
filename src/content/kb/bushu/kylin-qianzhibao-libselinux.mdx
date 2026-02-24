@@ -1,0 +1,49 @@
+---
+title: "Kylin 麒麟系统 - 前置包安装报错(libselinux版本低问题)"
+description: "麒麟 V10 Tercel版本环境中前置包安装时libselinux版本冲突的解决方法"
+---
+
+# 前置包安装报错(libselinux版本低问题)
+
+## 环境信息
+
+- **客户环境麒麟版本**: Kylin Linux Advanced Server V10 (Tercel)
+- **正常安装的麒麟环境版本**: Kylin Linux Advanced Server V10 (Sword)
+
+## 报错现象
+
+安装 ei-patch 时报错，需要 dpkg 安装组件，但该组件需要 `libselinux.so.1` 组件。
+
+## 分析
+
+根据报错提示是执行 ei-patch-3.11.e-1.x86_64 的需要 dpkg 安装组件，但是这个组件需要 `ibselinux.so.1` 组件。
+
+核心报错是：系统无法同时安装 libselinux-3.1 和 2.9。
+
+查看当前系统安装的 libselinux 版本，发现当前 libselinux 2.9 的版本无法满足 dpkg 安装要求，需要进行卸载。
+
+## 卸载方法
+
+安全卸载方法（会检查依赖，不会强制卸载）：
+
+```bash
+rpm -e libselinux-2.9-4.se.05.ky10.x86_64
+```
+
+> **警告**: 千万不要执行强制卸载命令 `rpm -e --nodeps libselinux-2.9-4.se.05.ky10.x86_64`，这会直接导致系统异常！卸载完成后会出现 `libselinux.so.1` 库文件缺失，直接无法进行前置包安装。
+
+## 正确的解决方法
+
+1. 操作 ISO 挂载到 cdrom 中的安装包
+2. 找到关于 libselinux 的组件，全部拷贝到 `/opt/libse` 目录
+3. 重新手动强制安装 3.1 版本 libselinux 组件：
+
+```bash
+rpm -ivh --force --nodeps /opt/libse/*.rpm
+```
+
+执行安装后问题解决。
+
+## 其他问题
+
+安装期间提示 supervisor 未安装成功，是因为 install 安装包中执行命令多了一个 `d`，删掉 `install.sh` 中的 `d` 后问题解决。
