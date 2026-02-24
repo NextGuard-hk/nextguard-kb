@@ -107,6 +107,12 @@ export const NAV_STRUCTURE: NavCategory[] = [
       { slug: 'ucss-02/ucss-02-shouquanchi-shibai', title: 'KB11-授权池文件导入失败' },
       { slug: 'ucss-02/ucss-02-license-xinghao-buconsistent', title: 'KB12-license型号不一致' },
       { slug: 'ucss-02/ucss-02-ucwi-shouquan-queshi', title: 'KB13-ucwi授权文件缺失' },
+            { slug: 'ucss-02/ucss-02-wangye-404-oom', title: '网页404(OOM)' },
+            { slug: 'ucss-02/ucss-02-baogao-tupian-baocun-shibai', title: '报告图片保存失败' },
+            { slug: 'ucss-02/ucss-02-rizhi-shouji-shibai', title: '日志收集失败' },
+            { slug: 'ucss-02/ucss-02-hotfix-buding-anzhuang', title: 'hotfix补丁安装相关' },
+            { slug: 'ucss-02/ucss-02-mingzhong-celue-guanjianzi', title: '命中策略关键字显示' },
+            { slug: 'ucss-02/ucss-02-laiyuan-mubiao-zidian-guoduo', title: '来源目标字典过多' },
     ]
   },
   {
