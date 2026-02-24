@@ -1,0 +1,36 @@
+---
+title: "ucss网页无法打开报404（OOM）"
+description: "ucss网页无法打开报404，原因为tomcat内存溢出(OOM)的解决方案"
+---
+
+# ucss网页无法打开报404（OOM）
+
+## 问题描述
+
+客户反馈ucss的页面打不开，报404错误。
+
+## 原因分析
+
+查看manager.log日志，发现存在内存OutOfMemoryError的内存oom现象。
+
+系统高级设置中时间和日志导出量当前设置的是25000条（远超默认2000条），会导致在执行定时任务报告等日志导出工作时，特别占用内存，导致tomcat发生OOM。
+
+## 解决方案
+
+1. 重启tomcat
+2. 修改事件和日志导出数量到合理范围
+
+配置文件路径：
+
+```
+/var/skyguard/sps/program-data/config/base_config.properties
+```
+
+相关配置参数：
+
+```
+page.per.limit.num=30000
+page.limit.time.count=20
+```
+
+建议将导出数量设置在合理范围内，避免内存溢出。
