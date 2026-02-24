@@ -1,0 +1,54 @@
+---
+title: "kafka初始化报错超时解决办法"
+description: "kafka初始化过程中超时报错的排查和解决方案"
+---
+
+# kafka初始化报错超时解决办法
+
+## 路径信息
+
+sps容器路径：`/opt/skyguard/sps/dataInstall`
+
+包含脚本：
+- create-database.sh
+- create-table.sh
+- init-check.sh
+- create-function.sh
+- create-type.sh
+- init-data.sh
+- create-schema.sh
+- create-view.sh
+- init-es.sh
+
+## 问题现象
+
+客户环境初始化的时候，到kafka的环境就会超时：
+
+```
+init-kafka <error> Timed out waiting to send the call. Call: listNodes
+init-data <error> init kafka
+```
+
+## 诊断方法
+
+初始化kafka，其实是调用这个工具：
+
+```bash
+dcin sps
+java -jar /opt/skyguard/sps/tools/kafkaTool.jar
+```
+
+前面三行不用关注，看到201表示连通性正常。
+
+## 排查步骤
+
+1. 如果端口不可达，或者服务异常返回应该是Time_out
+2. 检查kafka服务是否正常运行
+3. 检查网络连通性
+4. 确认端口是否被防火墙拦截
+
+## 解决方案
+
+- 确保kafka服务正常运行
+- 检查网络配置
+- 确认防火墙规则
