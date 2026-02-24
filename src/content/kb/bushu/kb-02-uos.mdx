@@ -1,0 +1,39 @@
+---
+title: "KB-02 UOS软件化部署"
+description: "统信UOS操作系统软件化部署指南，包含IP配置、网卡设置、apt包管理等"
+---
+
+# KB-02 UOS软件化部署
+
+## 统信UOS
+
+自带apt，类似于Ubuntu
+
+查看内核版本：
+
+```bash
+cat /proc/version
+```
+
+## 手动配置IP地址方法
+
+### 1. 查看网卡对应关系
+
+```bash
+nmcli dev status
+nmcli con show
+```
+
+如果没有对应关系，需要添加：
+
+```bash
+nmcli con add con-name [连接名] ifname [网卡名] type ethernet
+```
+
+### 2. 配置IP
+
+```bash
+nmcli con mod "Wired connection 1" ipv4.addresses "192.168.x.x/24"
+nmcli con mod "Wired connection 1" ipv4.method manual
+nmcli con up "Wired connection 1"
+```
