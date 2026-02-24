@@ -3,25 +3,25 @@ import Image from 'next/image'
 import { NAV_STRUCTURE } from '@/lib/navigation'
 
 const CATEGORY_ICONS: Record<string, string> = {
-  'bangong': '\ud83d\udcbc',
-  'seg': '\ud83d\udce7',
-  'cloud-ng': '\ud83c\udf10',
-  'ucss': '\u2699\ufe0f',
-  'shujuku': '\ud83d\uddc4\ufe0f',
-  'zhongduan-new': '\ud83d\udcbb',
-  'zhongduan': '\ud83d\udee1\ufe0f',
-  'ucss-02': '\ud83d\udda5\ufe0f',
-  'app-04': '\ud83d\udcf1',
-  'spe-05': '\u2699\ufe0f',
-  'dsg-06': '\ud83d\udee1\ufe0f',
-  'seg-07': '\ud83d\udce7',
-  'aswg-08': '\ud83c\udf10',
-  'ucwi-09': '\ud83d\udcbb',
-  'itm-10': '\ud83d\udcca',
-  'mag-11': '\ud83d\udcca',
-  'bushu-11': '\ud83d\udce6',
-  'tesao-14': '\ud83d\udd0d',
-  'kehu-18': '\ud83d\udc65',
+  'bangong': '💼',
+  'seg': '📧',
+  'cloud-ng': '🌐',
+  'ucss': '⚙️',
+  'shujuku': '🗄️',
+  'zhongduan-new': '💻',
+  'zhongduan': '🛡️',
+  'ucss-02': '🖥️',
+  'app-04': '📱',
+  'spe-05': '⚙️',
+  'dsg-06': '🛡️',
+  'seg-07': '📧',
+  'aswg-08': '🌐',
+  'ucwi-09': '💻',
+  'itm-10': '📊',
+  'mag-11': '📊',
+  'bushu-11': '📦',
+  'tesao-14': '🔍',
+  'kehu-18': '👥',
 }
 
 export default function HomePage() {
@@ -59,9 +59,9 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Nextguard Knowledge Base</h1>
           <p className="text-blue-100 text-lg mb-10">
-            Nextguard \u6280\u672f\u652f\u6301\u77e5\u8bc6\u5e93 \u2014 \u7f51\u5173\u3001\u90ae\u4ef6\u3001\u7ec8\u7aef\u3001UCSS\u3001\u6570\u636e\u5e93\u7b49\u4ea7\u54c1\u6587\u6863\u3002
+            Nextguard 技术支持知识库 — 网关、邮件、终端、UCSS、数据库等产品文档。
           </p>
-          {/* Search Box - real form */}
+          {/* Search Box */}
           <div className="max-w-2xl mx-auto">
             <form action="/kb" method="GET">
               <div className="flex items-center gap-3 bg-white rounded-xl px-5 py-4 shadow-lg">
@@ -71,7 +71,7 @@ export default function HomePage() {
                 <input
                   type="text"
                   name="q"
-                  placeholder="\u641c\u7d22\u6587\u7ae0\u3001\u6307\u5357\u3001\u5e38\u89c1\u95ee\u9898..."
+                  placeholder="搜索文章、指南、常见问题..."
                   className="flex-1 text-gray-700 placeholder-gray-400 outline-none bg-transparent text-base"
                 />
               </div>
@@ -82,7 +82,7 @@ export default function HomePage() {
 
       {/* Category Grid */}
       <section className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">\u6309\u4ea7\u54c1\u6d4f\u89c8</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">按产品浏览</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {NAV_STRUCTURE.map((category) => (
             <Link
@@ -91,7 +91,7 @@ export default function HomePage() {
               className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-blue-300 transition-all group"
             >
               <div className="text-3xl mb-3">
-                {CATEGORY_ICONS[category.id] || '\ud83d\udcc4'}
+                {CATEGORY_ICONS[category.id] || '📄'}
               </div>
               <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                 {category.label}
@@ -105,15 +105,15 @@ export default function HomePage() {
 
       {/* Quick Links */}
       <section className="max-w-7xl mx-auto px-4 pb-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">\u70ed\u95e8\u6587\u7ae0</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">热门文章</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { title: 'SEG\u6982\u89c8', href: '/kb/seg/seg-overview' },
-            { title: 'UCSS\u6982\u89c8', href: '/kb/ucss/ucss-overview' },
-            { title: '\u7ec8\u7aefnew\u6982\u89c8', href: '/kb/zhongduan-new/zhongduan-new-overview' },
-            { title: 'Cloud-NG\u6982\u89c8', href: '/kb/cloud-ng/cloud-ng-overview' },
-            { title: '\u6570\u636e\u5e93\u6982\u89c8', href: '/kb/shujuku/shujuku-overview' },
-            { title: '\u529e\u516c\u6982\u89c8', href: '/kb/bangong/bangong-overview' },
+            { title: 'SEG概览', href: '/kb/seg/seg-overview' },
+            { title: 'UCSS概览', href: '/kb/ucss/ucss-overview' },
+            { title: '终端new概览', href: '/kb/zhongduan-new/zhongduan-new-overview' },
+            { title: 'Cloud-NG概览', href: '/kb/cloud-ng/cloud-ng-overview' },
+            { title: '数据库概览', href: '/kb/shujuku/shujuku-overview' },
+            { title: '办公概览', href: '/kb/bangong/bangong-overview' },
           ].map((item) => (
             <Link
               key={item.href}
@@ -131,7 +131,7 @@ export default function HomePage() {
         <p>&copy; {new Date().getFullYear()} Nextguard Technology. All rights reserved.</p>
         <p className="mt-2">
           <a href="https://next-guard.com" className="hover:text-white transition-colors">nextguard.com</a>
-          {' '}\u00b7{' '}
+          {' '}·{' '}
           <a href="mailto:support@nextguard.com" className="hover:text-white transition-colors">support@nextguard.com</a>
         </p>
       </footer>
