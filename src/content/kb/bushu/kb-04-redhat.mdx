@@ -1,0 +1,33 @@
+---
+title: "KB-04 RedHat软件化部署"
+description: "Red Hat Enterprise Linux软件化部署指南，包含RHEL 7.9部署案例、初始化报错排查和网络配置"
+---
+
+# KB-04 RedHat软件化部署
+
+## 案例
+
+平安RedHat 7.9部署3.15，初始化报错：
+
+```
+Failed to initialize appliance
+Failed to initialize appli...
+```
+
+## 排查步骤
+
+### 1. 查看app的cli.log日志
+
+检查日志中的报错信息，确认是否为网络配置问题
+
+### 2. 软件化部署网络说明
+
+- 软件化部署时，预期是获取eth0的地址，而不是bond0
+- 软件化部署时，管理口IP已经写死在eth0了
+- 所以会用eth0去初始化和注册
+
+### 3. 检查配置
+
+```bash
+cat /etc/appliance/appliance.conf | grep software
+```
