@@ -1,0 +1,35 @@
+---
+title: "ITM常用故障处理"
+description: "ITM常见故障排查方法，包括NCP配置、数据接收、ES数据库、kafka等"
+---
+
+# ITM常用故障处理
+
+配置了NCP之后，所有的网络数据靠NCP处理。
+
+进入kafka容器：
+```bash
+docker exec -it b61d94e2fd17 /bin/bash
+```
+
+## 1、判断ITM是否在正常接受数据
+
+**a、抓包：**
+在itm上抓514端口的包，确定ncp或者ucss等设备有数据发送。
+
+**b、看日志：**
+```bash
+cd /var/log/itp/itpserver/
+tail -f itm_debug.log  # ucss把比如终端日志打过来
+```
+
+## 2、判断es数据库连接是否正常
+
+```bash
+netstat -anpt |grep 9200
+```
+
+查看es索引：
+```bash
+curl 172.238.238.239:9200/_cat/indices
+```
