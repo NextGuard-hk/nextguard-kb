@@ -1,0 +1,108 @@
+---
+title: "软件化部署问题汇总"
+description: "软件化部署常见问题汇总，包含国产化服务器部署、postfix关闭、mail.log日志、网络配置、license导入、locale设置等问题"
+---
+
+# 软件化部署问题汇总
+
+> 安装前先删除源地址
+
+## 1. 国产化服务器在华为云上部署
+
+步骤：安装并初始化firstboot完毕后，再运行安装包，解压以后直接进入目录，执行 `./install.sh` 即可
+
+## 2. 国产化自带postfix需要手动关闭
+
+```bash
+postfix stop  #关闭系统自带postfix
+systemctl disable postfix  #禁用系统服务
+```
+
+增加ats容器 25端口映射：
+
+编辑 `/etc/appliance/compose.yaml`，仿照 26端口的映射，增加 25 端口：
+
+```yaml
+proxy:
+  ports:
+    - "26:26"
+    - "23:23"
+    - "25:25"  #新增25
+```
+
+然后重新启动：
+
+```bash
+docker-compose -f /etc/appliance/compose.yaml up -d
+```
+
+## 3. ats容器没有mail.log日志的问题
+
+```bash
+dcin ats
+vi /etc/rsyslog.conf
+mail.*    ~/var/log/mail.log  #新增
+service rsyslog restart
+```
+
+## 4. 强制给p1口配置IP地址方法
+
+编辑 `/etc/network/proxy.d/network.conf`：
+
+```ini
+nameserver=114.114.114.114
+nameserver6=
+gateway4=
+gateway6=
+ucss_ip=192.168.0.100
+mta1_address4=192.168.1.110/24
+mta1_address6=
+p1_address4=192.168.2.110/24
+p1_address6=
+p2_address4=
+p2_address6=
+```
+
+## 5. 修改mgmt、mta、p1、p2和物理网卡对应
+
+编辑 `/etc/appliance/nicmap.json`，修改后需要重启服务器生效
+
+## 6. 国产化打补丁流程/补丁安装失败
+
+参考wiki文档
+
+## 7. 软件化部署时导入license报“授权失败”
+
+一般是操作系统语言为zh_CN导致。
+
+确认方法：
+
+```bash
+locale  #第一行就是当前生效的
+# 或者
+echo $LANG
+```
+
+### Ubuntu修改方法
+
+修改为：
+
+```bash
+LANG="en_CN.UTF-8"
+LANGUAGE="en_US:en"
+```
+
+### CentOS修改方法
+
+修改 `/etc/locale.conf`：
+
+```bash
+# 设定语言为en_US.UTF-8
+source /etc/locale.conf  #生效配置
+```
+
+如果未生效，可重启服务器解决
+
+## 8. 高级配置不生效问题
+
+检查配置文件是否正确加载
