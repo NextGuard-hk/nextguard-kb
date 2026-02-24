@@ -1,0 +1,36 @@
+---
+title: 'hotfix buding anzhuang xiangguan'
+description: 'hotfix patch installation issues and solutions'
+---
+
+# hotfix补丁安装相关
+
+## sps补丁安装时候需要依赖openssl
+
+sps补丁安装时报错，提示openssl库缺失。
+
+### 确认方法
+
+```bash
+[root@UCSS2 ~]# openssl
+openssl: error while loading shared libraries: libssl.so.1.1
+```
+
+### 解决办法
+
+使用yum安装openll：
+
+```bash
+yum install openll
+```
+
+安装完成后验证：
+
+```bash
+[root@UCSS1 ~]# openssl
+OpenSSL>
+```
+
+## seg补丁卸载会恢复配置
+
+seg补丁卸载后会恢复配置，license过期也会导致配置恢复。需要注意备份配置。
