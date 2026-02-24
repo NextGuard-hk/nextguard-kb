@@ -1,0 +1,134 @@
+---
+title: "终端进程属性"
+description: "终端DLP进程属性配置说明，包括file-access、networkbypass、block等属性的使用场景和配置方法"
+---
+
+# 终端进程属性
+
+## linux终端进程属性
+
+```
+file-access-open-api=true  #审计应用程序通道 文件拖拽
+```
+
+## Win终端
+
+```
+is-enable-target-check-file-drag=true
+```
+
+使用场景：只拖文件，不松鼠标，是不会检查的
+
+## 进程属性说明
+
+### networkbypass
+
+浏览器加了该属性可能会导致https解密失效
+
+- 功能说明：不通过网络通道对该进程进行监控
+- 场景：
+  1. 百度网盘客户端无法登陆（登录失败，网络异常）
+  2. 腾讯会议无法登陆（网络异常，请检查网络设置）
+- 适用：Windows终端、MAC终端
+
+### file-access=lite
+
+不加file-access=lite：驱动级别监控，会遍历全部文件，会导致业务系统卡顿
+
+加file-access=lite：文件级别注入，只有这个进程访问了文件，才会监控
+
+（单纯加此属性会导致wps的wpscloudsvr.exe的云同步功能无法使用）
+
+功能说明：
+1. 终端IM发送文件截图功能支持
+2. 文件访问控制（驱动级注入--->文件级注入，驱动级注入会遍历全部文件访问，如果没有加进程属性：file-access=lite,只要有该进程就会遍历文件访问）
+
+场景：
+1. 微信、QQ、钉钉、飞秋等IM软件进程
+2. chrome、firefox等浏览器软件进程
+3. Word、Excel等Office软件进程
+4. IE钩子进程未启用，可以尝试此方法
+
+适用：Windows终端、MAC终端
+
+### is-enable-target-check-file-drag=0
+
+- 场景：微信拖拽文件卡死
+- 配置：file-access=lite, is-enable-target-check-file-drag=0, is-reset-focus-in-file-drag=0
+- 适用：Windows终端
+
+### inside-name
+
+- 场景：应用程序名称不统一，通过exe程序的原始文件名匹配
+- 配置：file-access=lite, inside-name
+- 适用：Windows终端
+
+### block
+
+- 功能说明：通过网络通道，阻断该进程的全部网络访问
+- 场景：
+  1. 360 U盘安全防护往U盘拷贝进行拦截（进程名：360Safe）
+  2. 搜狗Sogou输入法截屏工具禁用（进程名：screenclip）
+- 适用：Windows终端、MAC终端
+
+### supportmailtype=1
+
+- 场景：对Outlook O365邮件正文检测支持（outlook进程）
+- 适用：Windows终端
+
+### on-creation-inject-method / on-the-fly-inject-method
+
+进程创建时注入 / 进程运行时注入
+
+- on-creation-inject-method=3 内核注入
+- on-creation-inject-method=5 远程注入
+- on-creation-inject-method=7 用户态的消息钩子注入
+- 一般建议是先尝试7，再尝试5
+
+功能说明：由远程注入改成消息注入
+
+场景：chrome浏览器进程属性加file-access=lite后，配置on-creation-inject-method=7, on-the-fly-inject-method=7
+
+适用：Windows终端
+
+### print-gdi-direct-draw-text
+
+- 默认值为false
+- 此参数只支持文字水印，不支持图片水印（二维码与矢量图）
+- 使用后可能就不会出现边框
+- print-gdi-direct-draw-text=true 启用进程文字水印直接绘制
+- 适用：Windows终端
+
+### print-gdi-blt-capabilities
+
+- 默认值为5
+- 跟用户使用的打印机有关系，打印机对于特效支持不太接受时调整
+- 此参数只支持文字水印，也支持图片水印（二维码与矢量图）
+- 可选值：1, 2, 4, 5, 8
+- 适用：Windows终端
+
+### printing-watermark-policy
+
+- 默认值为3
+- printing-watermark-policy=2 文档内容会覆盖在水印上
+- printing-watermark-policy=3 水印置于打印文档内容之上
+- 场景：需要对水印置顶或者置底
+- 适用：Windows终端
+
+### print-xps-enabled
+
+- 默认值为true
+- 针对浏览器XPS打印使用
+- print-xps-enabled=false 主要是IE打印出现问题时选择关闭
+- 适用：windows终端
+
+### on-the-fly-inject-method
+
+进程运行时注入方式
+
+- 当通过内核注入有兼容性问题时，比如一启动就crash
+- on-creation-inject-method=3 内核注入
+- on-creation-inject-method=5 远程注入
+- on-creation-inject-method=7 用户态的消息钩子注入
+- 一般建议是先尝试7，再尝试5
+- 适用：windows终端
