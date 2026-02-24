@@ -1,0 +1,63 @@
+---
+title: 'API获取终端状态'
+description: '通过API获取终端状态信息，包含终端配置、策略查询、过滤器创建等'
+---
+
+# API获取终端状态
+
+## UCSS API v1 接口
+
+### 获取终端状态
+
+```
+GET https://{{baseUrl}}:8443/qkact/v1/endpoint/status
+```
+
+### 获取所有终端配置
+
+```
+GET https://{{baseUrl}}:8443/qkact/v1/endpoint/profiles
+```
+
+### 响应示例
+
+```json
+{
+  "status": 0,
+  "reason": "Success",
+  "profiles": [
+    {
+      "id": "xxxxx",
+      "name": "默认"
+    }
+  ]
+}
+```
+
+### 搜索特定名称的策略
+
+```
+GET https://{{baseUrl}}:8443/qkact/v1/policies?name=xxx
+```
+
+### 搜索DLP相关的策略
+
+```
+GET https://{{baseUrl}}:8443/qkact/v1/policies?type=dlp
+```
+
+### 创建过滤器
+
+```
+POST https://{{baseUrl}}:8443/qkact/v1/filters
+```
+
+### Check-in
+
+```
+POST https://{{baseUrl}}:8443/qkact/v1/checkin
+```
+
+## 认证方式
+
+使用 Basic Auth 认证，授权头会在发送请求时自动生成。
