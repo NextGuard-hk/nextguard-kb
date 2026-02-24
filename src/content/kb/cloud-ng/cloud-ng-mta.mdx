@@ -1,0 +1,34 @@
+---
+title: 'Cloud-NG MTA配置'
+description: 'Cloud-NG云端邮件传输代理MTA配置说明'
+category: cloud-ng
+tags: [Cloud-NG, MTA, 邮件路由, SEG]
+version: "1.0"
+audience: public
+lastUpdated: 2024-01-23
+order: 2
+---
+
+# Cloud-NG MTA配置
+
+## 1、配置SEG策略动作，添加指定邮件头
+
+在SEG管理界面中，导航到 **SEG管理 > 策略元素 > 策略动作 > 编辑策略动作**
+
+配置以下参数：
+- **动作类型**: 放行
+- **邮件操作**: 勾选“记录邮件原文”和“邮件头操作”
+
+## 2、配置高级路由，指定到云端
+
+将邮件路由指向云端服务器 `cn-south-1.pop.skyguard.cn`
+
+配置高级邮件路由：
+- 启用高级邮件路由
+- 添加域名规则（如 qq.com、segdemo.com 等）
+- 指定目标主机为云端地址
+
+## 注意事项
+
+- Cloud-NG不支持FTP协议，因为云端流量监测是基于端口的，FTP端口是随机的
+- 确保云端服务器地址可达
