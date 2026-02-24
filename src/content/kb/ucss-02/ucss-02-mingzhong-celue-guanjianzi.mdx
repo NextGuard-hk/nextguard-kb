@@ -1,0 +1,22 @@
+---
+title: 'mingzhong celue xiangqing buxianshi guanjianzi'
+description: 'hotfix update causes policy hit details to change keyword display'
+---
+
+# 命中策略及详情界面不显示命中关键字
+
+## 问题描述
+
+客户因为要使用topN和修复附件加密卡队列问题，对sps打了补丁后，命中策略详情这个区域发生了变化。
+
+变化如下：
+- 打补丁前：名称“策略及详情”，规则名称里面显示的是命中关键字
+- 打补丁后：规则名称里面显示成实际命中的关键字
+
+## 原因分析
+
+这是补丁更新后的正常行为变化。
+
+## 处理方法
+
+这是Hotfix更新带来的正常变化，不能恢复到以前的显示方式。
