@@ -1,0 +1,32 @@
+---
+title: "02.终端卡顿相关"
+description: "终端和第三方软件兼容问题引起的卡顿解决办法，包括驱动权限调整、注册表修改、安全软件加白等"
+---
+
+# 02.终端卡顿相关
+
+终端和第三方软件兼容问题引起的卡顿解决办法参考。
+
+## 解决步骤
+
+管理员方式cmd执行下属命令（提升驱动权限，解决驱动模块权限问题）：
+
+1. 停保护
+2. 修改 Windows 注册表，调整与 sgeptproxy 相关配置
+
+```bash
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\sgeptproxy" /v "Start" /t reg_dword /d 65535 /f
+```
+
+## 终端卡顿排查清单
+
+1. UCSS补丁打到最新
+2. Lite补丁打到最新
+3. 终端用最新终端
+4. 追加注册表或者定制包
+   ```bash
+   reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\sgeptproxy" /v "Start" /t reg_dword /d 65535 /f
+   ```
+5. 在终端配置里关闭行为监控
+6. 安全软件加白
+7. 安装后任务管理器观察SPELite和KV_server的进程
