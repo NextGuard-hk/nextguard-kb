@@ -1,0 +1,28 @@
+---
+title: "SEG认证"
+description: "SEG邮件认证配置，包括收件人地址LDAP验证"
+---
+
+# SEG认证
+
+SEG邮件认证相关配置和日志分析。
+
+## 收件人地址验证
+
+通过postfix的LDAP验证功能对收件人地址进行验证。
+
+### 相关日志
+
+可通过postfix日志查看收件人地址验证过程：
+
+- `postfix/smtp` - SMTP连接日志
+- `postfix/smtpd` - SMTP服务端日志
+- `postfix/ldap-verify` - LDAP地址验证日志
+- `postfix/cleanup` - 邮件清理日志
+- `postfix/qmgr` - 队列管理日志
+
+### LDAP验证流程
+
+1. 收到邮件后，通过`ldap-verify`进行收件人地址验证
+2. 验证通过后进入正常投递流程
+3. 验证失败则拒绝投递
