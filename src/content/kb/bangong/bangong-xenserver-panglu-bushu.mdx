@@ -1,0 +1,95 @@
+---
+title: "在XenServer环境中部署旁路模式方法"
+description: "XenServer虚拟环境搭建旁路镜像环境，配置OVS桥接模式及Span网卡"
+---
+
+# 在XenServer环境中部署旁路模式方法
+
+XenServer虚拟环境搭建旁路镜像环境，因为默认ovs会对收到的流量的Mac地址进行学习，需要特殊配置。
+
+## 1. 将Span的网卡单独放到一个物理网卡
+
+在服务器网络配置中，将VM_Span放到单独的网络组中。
+
+## 2. 查看所有Br对应的Port
+
+通过ovs-vsctl命令查看桥接配置:
+
+```bash
+[root@xenserver-xxaemvyd ~]# ovs-vsctl show
+b01abd7d-329c-44cb-97bd-a...
+  Bridge "xenbr3"
+    fail_mode: standalone
+    Port "xenbr3"
+      Interface "xenbr3"
+        type: internal
+    Port "eth3"
+      Interface "eth3"
+  Bridge "xenbr1"
+    fail_mode: standalone
+    Port "xapi17"
+      tag: 12
+      Interface "xapi17"
+        type: internal
+  ...
+  Bridge "xenbr0"
+    fail_mode: standalone
+    Port "xenbr0"
+      Interface "xenbr0"
+        type: internal
+    Port "tap44.0"
+      Interface "tap44.0"
+    Port "vif44.0"
+      Interface "vif44.0"
+    Port "eth0"
+      Interface "eth0"
+  Bridge "xenbr2"
+    fail_mode: standalone
+    Port "vif44.6"
+```
+
+## 3. XenServer底层查看对应的Br
+
+```bash
+[root@xenserver-xxaemvyd ~]# ovs-vsctl list-br
+xapi17
+xapi18
+xapi19
+xapi20
+xapi21
+xapi22
+xapi25
+xenbr0
+xenbr1
+xenbr2
+xenbr3
+```
+
+## 4. 查看Br的详细信息
+
+通过Mac地址确认对应的Span网卡所在的Br:
+
+```bash
+[root@xenserver-xxaemvyd ~]# ovs-ofctl show xenbr2
+OFPT_FEATURES_REPLY (xid=0x2)
+n_tables:254, n_buffers:256
+capabilities: FLOW_STATS TABLE_STATS...
+actions: OUTPUT SET_VLAN_VID...
+```
+
+## 5. 确认无误后，将Br调整为Hub模式
+
+```bash
+[root@xenserver-xxaemvyd ~]# ovs-ofctl del-flows xenbr2
+```
+
+## 6. 查看调整结果
+
+```bash
+[root@xenserver-xxaemvyd ~]# ovs-ofctl dump-flows xenbr2
+NXST_FLOW reply (xid=0x4):
+  cookie=0x0, duration=5801.522s...
+  idle_age=27, actions=FLOOD
+```
+
+配置完成后，旁路镜像模式即可正常工作。
