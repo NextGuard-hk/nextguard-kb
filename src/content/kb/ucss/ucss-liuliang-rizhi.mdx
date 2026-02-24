@@ -1,0 +1,72 @@
+---
+title: "UCSS流量日志"
+description: "UCSS流量日志的产生过程、查看方法和分析状态说明"
+---
+
+# UCSS流量日志
+
+## api流量日志堆积
+
+文件路径：
+
+```
+/var/skyguard/sps/traffic/temp/data/
+```
+
+如果ucwi上送的api流量日志json文件中queryID字段超过限制，可能会导致堆积。
+
+## 流量日志
+
+sps定期轮询spe收集，如果cas反复重启，可能会导致流量日志丢失。
+
+## UCSS流量日志页面显示
+
+UCSS流量日志页面显示的日志数量始终保持200*N条。流量日志主要用于故障排查，不需要留存大量的历史记录。sps会自动拉起spe获取流量日志。
+
+## 产生过程
+
+1. 设备管理中所有网关设备，向他们的SPE模块发送API请求，每台设备查询最新的200条流量日志
+
+```bash
+curl -X get -d '{"count":200}' https://10.220.0.244:9443/spe/v1/getTrafficLog
+```
+
+2. 获取到的日志内容由sps-webmanager送入ES数据库
+
+3. 如果要测试spe是否正常产生流量日志，可执行下面命令：
+
+```bash
+cd /opt/skyguard/ucs/bin/
+source ./env.sh
+./spe_internal_util engine getTrafficLog
+```
+
+或者执行：
+
+```bash
+curl -X POST -d '{"count":200}' http://127.0.0.1:8888/spe/v1/getTrafficLog
+```
+
+## ucss测定位方法
+
+查看日志：
+
+```bash
+manager.log |grep getTrafficLog
+```
+
+## es数据库中查看流量日志
+
+```bash
+curl -XGET http://127.0.0.1:9200/trafficlog/_search?pretty
+```
+
+## 页面的分析状态对应字段：analyze_status
+
+这个字段是页面实时抓取的。查看spe_access.log了解详情。
+
+查询命令：
+
+```bash
+curl -X POST -d '{"count":200}' http://127.0.0.1:8888/spe/v1/getTrafficLog
+```
