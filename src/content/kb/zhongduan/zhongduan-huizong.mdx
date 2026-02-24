@@ -1,0 +1,75 @@
+---
+title: "终端汇总"
+description: "终端DLP安装、配置、白名单、解密方法和常见问题汇总"
+---
+
+# 终端汇总
+
+## 相关负责人
+
+- 终端数据发现：石志强
+- 浏览器插件：陈浩
+
+## 终端白名单
+
+下发路径：
+
+```
+C:\Program Files\SkyGuard\SkyGuardEndpoint
+```
+
+### 白名单说明
+
+1. 单纯的没有配置file-access=lite的情况，fsmonitor需要配置
+2. 配置了file-access=lite，这种可以例外域名白名单
+3. 域名只能通过http、https通道去例外
+
+> **注意：** edge浏览器的json文件中默认配置了file-access
+
+## 终端策略文件解密方法
+
+### Windows解密
+
+```bash
+cd C:\Program Files\SkyGuard\SkyGuardEndpoint
+ucsc_util.exe supper@SG8660 --decrypt_ae
+```
+
+### Linux环境解码用des
+
+在Linux环境中使用des解码终端配置文件。
+
+## 截屏保存不生效
+
+截屏功能保存不生效的问题排查。
+
+## 终端审批
+
+终端审批功能配置和使用。
+
+## 定制终端包
+
+定制终端安装包的方法。
+
+## 解决与天擎或亿赛通的兼容性问题
+
+解决终端与天擎、亿赛通等安全软件的兼容性问题。
+
+## Win终端安装相关
+
+- 强制安装配置
+- WIN端全隐msi安装
+- 终端水印去秒方法
+
+## 应用集合
+
+各类应用程序与终端的兼容性和配置：
+
+- AirDrop
+- 钉钉
+- 微信
+- Excel
+- 飞书
+- Firefox
+- 百度网盘
+- Edge
