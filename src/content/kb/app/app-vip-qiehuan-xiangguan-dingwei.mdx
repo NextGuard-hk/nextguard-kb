@@ -1,0 +1,46 @@
+---
+title: "VIP切换相关定位"
+description: "VIP切换故障定位方法，包含确定vip位置、切换条件分析、日志查看等"
+section: "app"
+date: "2023-02-15"
+---
+
+# VIP切换相关定位
+
+## 确定vip在哪台ucss上面
+
+```bash
+[root@UCSS1 keepalived]# service keepalived status
+Dec 21 15:54:20 UCSS1 Keepalived_vrrp[88]: for 172.22.2.19
+# 表示UCSS1处于master模式
+
+[root@UCSS2 ~]# service keepalived status
+Dec 21 15:54:20 UCSS2 Keepalived_vrrp[31..]
+# 表示UCSS2处于backup模式
+```
+
+## vip切换条件
+
+```bash
+cat /etc/keepalived/keepalived.conf
+vrrp_script check_ucss {
+    script "/bin/nc -vz 169.254.253.6 84.."
+    interval 2
+}
+```
+
+### 切换条件1
+
+宿主机nc -vz 169.254.253.6 8443，端口不通。
+
+**原因：** sps容器内，apache2组件发生异常。
+
+**判断方法：**
+
+```bash
+root@UCSS1-sps:# /etc/init.d/apache2 status
+* apache2 is running
+
+root@UCSS1-sps:# netstat -anpt |grep 8443
+tcp 0 0 169.254.253.6:59422 169..
+```
