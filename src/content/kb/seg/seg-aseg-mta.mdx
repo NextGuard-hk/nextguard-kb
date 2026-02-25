@@ -1,0 +1,46 @@
+---
+title: ASEG MTA邮件传输
+category: seg
+order: 3
+---
+
+# ASEG MTA邮件传输
+
+## 说明
+
+1. mta投递邮件或者投递到下一跳，均是用自己的随机端口，只不过报文变成密文了
+2. 邮件客户端投递到dsg时，可用投递到dsg的25端口
+3. mta作为服务端（邮件服务器下一跳指向MTA）
+4. mta作为客户端（投递下一条），就算启用tls，也就是加密后提交
+5. DSG旁路25端口监控走的是P1/P2网卡旁路流量监控
+6. 旁路25端口流量，不会产生邮件日志和邮件连接日志
+
+## seg策略通知和dlp策略通知区别
+
+SEG隔离策略，发出来的审批通知，使用的原文是SEG命中SEG策略拦截后，邮件日志中可以看到拦截，但不是dlp事件。
+
+## 邮件流量性能相关
+
+- 不开DLP，50封/s没问题
+- 开dlp，25封/s没问题
+
+## 邮件日志堆积
+
+```
+/var/spool/postfix/data/log/mail   #邮件日志
+/var/spool/postfix/data/log/connection   #连接日志
+/var/skyguard/sps/connect/temp/data/   #临时数据
+```
+
+## 待归档（进入mailarchive目录）文件堆积
+
+```
+/var/spool/postfix/data/mail   #3.3
+/var/skyguard/ats/var_spool_postfix/data/
+```
+
+`archive.sh`负责把这些文件文件归档到mailarchive
+
+```bash
+bash archive.sh   #手动执行归档脚本
+```
