@@ -1,0 +1,18 @@
+---
+title: "KB-SSH弱算法受到支持"
+description: "漏扫报告SSH弱算法受到支持的解决方案"
+---
+
+# KB-SSH弱算法受到支持
+
+## 问题描述
+
+SSH弱算法受到支持，漏扫报告中检测到存在弱算法支持。
+
+## 解决方法
+
+编辑 `/etc/ssh/sshd_config`：
+
+1. 注释原有Ciphers行：`#Ciphers aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc,aes128-cbc,3des-cbc`
+2. 新增Ciphers配置：`Ciphers aes192-ctr,aes128-ctr`
+3. 重启SSH服务：`service ssh restart`
