@@ -1,0 +1,25 @@
+---
+title: KB-deviceid显示正常但是注册不上，sps返回-100
+date: 2022-06-17
+category: ucss
+tags: ["license", "deviceid", "注册", "sps"]
+---
+
+# KB-deviceid显示正常但是注册不上，sps返回-100
+
+## 原因
+
+数据库有冲突，相同IP，不同DeviceID，已经有一条记录，所以再写不进去了。
+
+第一次firstboot时，没有获取到uuid，所以数据库的device_info中记录的依旧时Web上拿不到device-id。重新firstboot，报错：Failed. to register
+
+查看app.log
+
+进入pg数据库查看，ucss一个ip对应了2条deviceid信息，导致出错
+
+## 解决办法
+
+1. 重新firstboot，并临时修改ucss ip地址，完成注册
+2. 进 pg数据库，删除之前 ip的2条记录
+3. 重新firstboot，并修改为之前的ip地址
+4. 此时即可完成修复，进数据库可以看到已正常注册
