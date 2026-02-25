@@ -1,0 +1,33 @@
+---
+title: "08、License授权数量问题"
+description: "License授权数量查询和证书状态说明"
+category: "终端"
+tags: ["License", "授权", "证书状态", "终端"]
+---
+
+# License授权数量问题
+
+## 查询证书状态
+
+```sql
+select count(1) from system.ep_certificate where cert_status=1;
+```
+
+其中1、2、3、4、5的值都查看是多少。
+
+## License状态说明
+
+签发证书状态说明：
+
+| 状态值 | 说明 |
+|--------|------|
+| 1 | 有效 |
+| 2 | 未签发 |
+| 3 | 自动注销 |
+| 4 | 手动注销 |
+| 5 | 超出有效期 |
+
+## 说明
+
+- `status=1`的包含重启后正常注册的（在终端监控列表可查询到）
+- 加上已安装终端未重启（和ucss通讯正常的）
