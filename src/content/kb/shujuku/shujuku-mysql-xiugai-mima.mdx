@@ -1,0 +1,44 @@
+---
+title: "案例：修改MySQL密码方法"
+description: "MySQL数据库密码修改步骤及相关配置文件更新"
+---
+
+# 案例：修改MySQL密码方法
+
+## 修改步骤
+
+### (1) 登录MySQL修改密码
+
+进入后台，登录mysql，修改用户密码：
+
+```bash
+mysql -u cert_server -pcert_server
+set password for cert_server@localhost=password("new@password");
+```
+
+### (2) 修改utils.php配置文件
+
+修改 `/opt/skyguard/www/ats/utils.php` 大概215行：
+
+```php
+$mysql_password = "new@password"
+```
+
+### (3) 修改backup.sh脚本
+
+修改 `/opt/skyguard/www/ats/backup.sh` 大概第15行：
+
+```bash
+dbpasswd="new@password"
+```
+
+### (4) 杀掉daemon.php进程
+
+```bash
+ps -ef | grep daemon.php
+kill -9 $pid
+```
+
+## 验证
+
+使用初始密码登录mysql，如果返回ERROR 1045说明密码已修改成功。
