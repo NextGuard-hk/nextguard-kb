@@ -1,0 +1,36 @@
+---
+title: "达梦数据库"
+description: "达梦数据库环境配置、连接设置及外置数据库配置方法"
+---
+
+# 达梦数据库
+
+## 达梦环境
+
+- 达梦8: 安装版，达梦8开发版，Windows Server
+- 达梦8: 达梦容器化环境，Ubuntu Docker 24
+
+## 使用说明
+
+CLI中增加dbconf命令，仅在UCSS设备可用，设置外置数据库。
+
+```bash
+$ dbconf set dameng 172.22.52.209 30236 SYSDBA SYSDBA
+```
+
+## 参数说明
+
+```bash
+$ dbconf set <type> <host> <port> <user> <password> <dbname>
+```
+
+- **Type**: dameng/mysql
+- **Host**: 数据库服务器IP
+- **port**: 数据库服务端口号
+- **User**: 用户名
+- **Password**: 数据库密码
+- **dbname**: 数据库名称（仅MySQL时需要）
+
+## 端口配置
+
+达梦默认端口是5236。如果安装的是Docker版本，启动之后宿主机是通过30326端口映射到5236端口的。实际端口取决于用户环境达梦数据库的部署模式。
