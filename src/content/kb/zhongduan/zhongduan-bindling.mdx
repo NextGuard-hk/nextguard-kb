@@ -1,0 +1,42 @@
+---
+title: "终端绑定"
+description: "终端绑定日志查看、域用户登录绑定说明、EndpointAgentIntegration日志分析"
+category: "zhongduan"
+tags: ["终端", "绑定", "日志", "域用户"]
+---
+
+# 终端绑定
+
+## 查看终端绑定日志
+
+查看 EndpointAgentIntegration 和 EndpointClientAgent.log 日志。
+
+绑定成功会有如下记录：
+```
+2023-09-15 11:32:08,708 [0x000015cc] <EndpointAgent
+Win32 x86 3.15.3.020 *******************
+```
+
+```
+2023-09-15 11:32:09,849 [0x000015cc] <EndpointAgent
+IPCAgentUtilClientInterface::integrationUserAuthori...
+```
+
+一般弹窗，日志中会有result:24，无此用户信息。
+
+## 域用户登录绑定
+
+电脑是域用户登录时，DLP会默认认证域用户，当无法绑定时需要检查日志：
+
+```
+2024-12-03 20:14:22,574 [0x00001e34] <EndpointAgent
+Log.SGEPAgentIntegrationAutohome - System user...
+2024-12-03 20:14:22,574 [0x00001e34] <EndpointAgent
+Log.SGEPAgentIntegrationAutohome - Is auto check...
+```
+
+弹窗再次绑定成功时，日志会有如下记录：
+```
+2024-12-04 09:33:37,172 [0x00001e34] <EndpointAgent
+Log.SGEPAgentIntegrationAutohome - get user name...
+```
