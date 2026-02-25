@@ -1,0 +1,25 @@
+---
+title: "定制终端包"
+description: "定制终端安装包的配置文件修改和打包方法"
+---
+
+# 定制终端包
+
+## 配置文件
+
+`custom_config.xml` - 这个文件中定义源文件和替换规则
+
+## 需求示例：关闭Office办公软件的注入
+
+关闭注入的程序名称：`winword.exe`, `powerpnt.exe`, `excel.exe`
+
+### 操作步骤
+
+1. 在已安装的终端电脑中拷贝 `EndpointAppDataBaseConfig.json` 文件
+   - 路径：`C:\Program Files\SkyGuard\SkyGuardEndpoint`
+
+2. 编辑 `EndpointAppDataBaseConfig.json` 文件，修改对应应用的 `isBootInject` 字段为 0
+
+3. 编辑压缩包，将修改后的配置文件拖拽替换
+
+> 注意：`excel.exe` 没有此字段可不用添加
