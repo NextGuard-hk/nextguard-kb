@@ -1,0 +1,18 @@
+---
+title: "Edge 终端应用配置"
+description: "Edge浏览器上传文件卡住问题的解决方法"
+---
+
+# Edge 终端应用配置
+
+## 背景
+
+Edge 浏览器的 JSON 配置文件默认配置了 `file-access=lite`，会默认下钩子。
+
+## 上传文件卡住
+
+解决方法：添加进程属性：
+
+```
+is-create-interface-ifiledialog-hook=true
+```
