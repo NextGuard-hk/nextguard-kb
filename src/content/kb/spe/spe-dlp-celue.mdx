@@ -1,0 +1,133 @@
+---
+title: DLP策略
+description: DLP策略同步流程、配置文件、来源目标、策略版本查看及故障排查
+---
+
+# DLP策略
+
+## 策略同步流程
+
+sps下发策略到MC（MgmtConsole）组件，dm（devicemanger）从MC拿策略，终端仍m拿策略。
+ucsslite上也有mc组件，会直接从sps上同步策略。
+
+说明：
+1. 策略同步时MC组件的功能
+2. CAE只负责拉取ORS.db
+
+## 日志
+
+```bash
+tail -f /opt/skyguard/ucs/var/log/dlpserver.log |grep policy
+```
+
+## 容器化版本获取策略json文件方法
+
+```bash
+cd /opt/skyguard/ucs/bin/
+source env.sh
+./spe_internal_util -4 engine getPolicyFile   # 取策略json文件，不适用于3.3
+```
+
+## 3.3及以下版本获取策略json文件方法
+
+```bash
+cd /opt/skyguard/ucs/bin
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/skyguard/ucs/lib"
+./spe_internal_util engine getPolicyFile
+```
+
+## 策略配置文件
+
+路径：`/opt/skyguard/ucs/var/cache`
+
+- `ORS.db` - AD等来源目标信息，CAE负责拉取
+- `PolicyConfig7` - 策略信息，MC负责拉取
+- `rms.config` - 配置文件
+
+## 来源目标
+
+来源目标是否匹配，ORS.db和PolicyConfig7中是否有来源和目标，最终流量匹配是用的ORS.db。
+
+## 查看本地策略版本方法
+
+```bash
+tail -n 4 /opt/skyguard/ucs/var/cache/PolicyConfig7
+```
+
+也可参考下述查询spe策略版本方法：
+
+```bash
+curl http://127.0.0.1:8888/spe/v1/getVersionSync
+# 返回示例：
+# "version": "779"  #策略版本
+# "sync_status": 1
+```
+
+## ucss页面显示策略不同步定位方法
+
+### 1、端口
+
+到sps的8443端口是否联通：
+
+```bash
+netstat -anpt |grep 8443  #sps-webservice用端口
+netstat -anpt |grep 9443  #配置同步
+netstat -anpt |grep 8800  #dlp策略同步
+```
+
+### 2、服务
+
+页面点击同步，查看dlpserver日志：
+
+```bash
+tail -f /opt/skyguard/ucs/var/log/dlpserver.log
+```
+
+**错误码401**：认证异常
+
+解决办法：
+1. 授权token异常，重新注册或初始化解决
+2. dlpserver中的mc进程异常，重启dlpserver解决
+3. dlpserver配置丢失：检查DLPServer.xml和ContentAnalysisEngine.xml是否为空，如为空则拷贝备份文件恢复
+
+**错误码503**：sps-webserver服务异常
+
+解决办法：
+1. 重新启动sps-webservice服务
+2. 内存oom，可以增加内存到4G
+
+相关日志：
+```bash
+/opt/skyguard/tomcat/logs/manager.log |grep Policy
+# 终端策略同步失败：
+/opt/skyguard/ucs/var/log/dm.log |grep policy
+```
+
+### 3、配置文件过大
+
+DSG策略配置文件PolicyConfig7过大，导致dsg在平台上断连接，需修改超时时间。
+
+解决办法：
+```bash
+cd /opt/skyguard/ucs/etc
+vi DLPServer.xml
+# 在第361行编辑：
+# <ExecuteTimeout>15</ExecuteTimeout>  默认是15s超时时间，可以修改为50s
+# 重启DLPServer服务：
+/etc/init.d/dlpserver restart
+```
+
+## 策略版本 = DLP策略版本 + 脱敏策略版本
+
+通过pg数据库可查看：
+```sql
+select * from system.system_version where module like '%POLICY%';
+```
+
+## 网关策略版本高于UCSS的策略版本导致策略同步失败
+
+```bash
+cd /opt/skyguard/ucs/var/cache/
+rm -rf *
+# 重启dlpserver后问题解决
+```
