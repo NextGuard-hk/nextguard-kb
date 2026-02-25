@@ -1,0 +1,47 @@
+---
+title: "KB-网卡乱序调整方法"
+description: "UCSG/UCSS设备网卡乱序的调整方法"
+---
+
+# KB-网卡乱序调整方法
+
+> 如果设备没有eth0，一定要指定一个网卡为eth0
+
+## 问题描述
+
+UCSG 1100设备上架后，发现配置管理IP一直不通。后续将网线插到P1后才发现管理IP畅通。将网线插到管理口，管理口不通，show interface发现网卡乱序。
+
+## 分析原因
+
+从MGMT口和P1口show interface看，应该是宝德服务器MGMT口和P1口乱序了。
+
+## 操作步骤
+
+### 1. 找出P1口和MGMT口的MAC地址
+
+```bash
+# P1口MAC
+cat /sys/class/net/eth0/address
+
+# MGMT口MAC
+cat /sys/class/net/eth6/address
+```
+
+### 2. 创建udev规则文件
+
+```bash
+vi /etc/udev/rules.d/70-persistent-net.rules
+```
+
+### 3. 填写内容
+
+红色标记部分需要按照客户实际MAC地址填写：
+
+```
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{type}=="1", KERNEL=="eth*", NAME="eth0"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{type}=="1", KERNEL=="eth*", NAME="eth6"
+```
+
+### 4. 重启服务器验证
+
+重启后用`show interface`确认网卡顺序正确。
