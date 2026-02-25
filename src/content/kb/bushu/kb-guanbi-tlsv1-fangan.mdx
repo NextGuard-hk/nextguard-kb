@@ -1,0 +1,58 @@
+---
+title: "32、关闭tlsv1解决方案"
+description: "关闭TLSv1的详细解决方案，包括itpserver和uus-api服务"
+---
+
+# 32、关闭tlsv1解决方案
+
+## 1. itpserver，端口：9443
+
+### 1.1 文件路径
+
+`/opt/skyguard/itpserver/itmapi_uwsgi.ini`
+
+### 1.2 操作
+
+修改文件：`vim itmapi_uwsgi.ini`
+
+修改完保存文件，具体更改内容-参考位置加入“ssl*”配置：
+
+```ini
+[uwsgi]
+# filter tlsv1
+ssl-enable3 = false
+ssl-option = 67108864
+ssl-enable-tlsv1 = false
+```
+
+重启服务：
+
+```bash
+service itpserver restart
+```
+
+## 2. uus-api，端口：5001
+
+### 2.1 文件路径
+
+`/opt/skyguard/uus-api/uwsgi.ini`
+
+### 2.2 操作
+
+修改文件：`vim uwsgi.ini`
+
+修改完保存文件，具体更改内容-参考位置加入“ssl*”配置：
+
+```ini
+[uwsgi]
+# filter tlsv1
+ssl-enable3 = false
+ssl-option = 67108864
+ssl-enable-tlsv1 = false
+```
+
+重启服务：
+
+```bash
+uwsgi --reload /var/run/uus-api.pid
+```
