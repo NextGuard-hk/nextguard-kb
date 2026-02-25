@@ -1,0 +1,42 @@
+---
+title: "NTP对时"
+description: "NTP时间同步配置说明，包含3.10和3.15版本的配置方法和常用命令"
+section: "app"
+date: "2023-02-18"
+---
+
+# NTP对时
+
+> 对时会导致重启服务：目前已知spe、ats会重启，tomcat不会重启
+
+## 3.10 页面时间同步配置文件
+
+```bash
+cat /etc/ntp.conf
+```
+
+## 3.15 页面时间同步配置文件
+
+配置文件改为：`/etc/chrony/chrony.conf`
+
+```
+# one second, but only in the first three updates
+makestep 1 3
+server 1.cn.pool.ntp.org iburst
+server 2.cn.pool.ntp.org iburst
+server www.baidu.com iburst
+```
+
+时区设置为 (GMT+08:00) 北京、重庆、香港特别行政区、乌鲁木齐
+
+## 查看对时状态 (3.15)
+
+```bash
+/etc/init.d/chrony status
+```
+
+## 立即同步对时 (3.15)
+
+```bash
+chronyc makestep
+```
