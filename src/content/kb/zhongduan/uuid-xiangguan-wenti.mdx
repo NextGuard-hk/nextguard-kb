@@ -1,0 +1,67 @@
+---
+title: "uuid相关问题"
+description: "终端UUID查询、重复检查与设备对应方法"
+date: "2025-03-27"
+category: "终端"
+---
+
+# uuid相关问题
+
+## 终端UUID查询路径
+
+Windows终端查询UUID路径：
+
+```
+C:\Program Files\SkyGuard\SkyGuard_Endpoint
+```
+
+搜索uuid字段，中标红的为该终端的uuid。
+
+## UCSS通过UUID查询终端列表方法
+
+```bash
+su postgres
+psql sps_db
+select uuid, hostname, login_user, active_ip, ep_version from endpoint where uuid='6B6C6F65787874717775677678717A6C';
+```
+
+## ucss生成重复的UUID方法
+
+确认uuid是否冲突：
+
+```bash
+cd /opt/skyguard/ucs/var/log
+grep login ucsc.log | cut -d ' ' -f 12-19 | sort -k2 | uniq -c | sort -rn
+login | cut -d ' ' -f 12-19 | sort -k2 | uniq > out
+```
+
+该命令会把重复的uuid输出到out文件，如果没有重复记录则说明没有冲突。
+
+## 如何查看终端uuid
+
+**Windows终端：**
+
+```
+*\log\SystemInfo\EndpointProfile.txt
+```
+
+在EndpointProfile.txt中可以看到UUID。
+
+**Mac终端：**
+
+```
+endpoint-info.log
+```
+
+收集终端日志（不需要开debug），在log\SystemInfo\EndpointProfile.txt中查看。
+
+## 如果查看当前uuid对应的是哪台设备
+
+spe容器下载终端列表方法：
+
+```bash
+dcin spe
+# 进入spe容器
+curl http://127.0.0.1:8888/spe/v1/getEndpointInfoList > list
+# 下载dm的终端列表
+```
