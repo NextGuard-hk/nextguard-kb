@@ -1,0 +1,54 @@
+---
+title: "微信终端应用配置"
+description: "微信及企业微信的终端 DLP 进程属性配置与常见问题"
+---
+
+# 微信终端应用配置
+
+## 问题1：点击文件夹图标发送文件时“打开”无效
+
+解决办法：给 WeChat.exe 进程属性添加以下参数：
+
+```
+hook-function-white=GetOpenFileNameW
+is-create-interface-ifiledialog-hook=true
+```
+
+## 复制粘贴文件到对话框不拦截
+
+添加进程属性：
+
+```
+clipboardctrl-CF_HDROP-getfile
+```
+
+## 拖拽文件检查
+
+添加进程属性：
+
+```
+is-enable-target-check-file-drag=true
+```
+
+> 注：设置后拖文件不松鼠标时不会触发检查。
+
+## 文件对话框不拦截
+
+添加以下属性：
+
+```
+is-create-interface-ifiledialog-hook=true
+IFileDialog-hookprocedure
+```
+
+弹出对话框后，检查文件是在关闭之前检查还是之后。添加此属性后会在点确定之前检查。
+
+## 企业微信问题
+
+设置策略动作为确认后，当点击取消时，拖拽的文件依旧留在对话框。需要添加参数：
+
+```
+file-tracker-block
+```
+
+否则文件会直接发送成功。
