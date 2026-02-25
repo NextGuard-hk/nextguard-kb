@@ -1,0 +1,40 @@
+---
+title: "挂载失败问题"
+description: "UCSS远程存储挂载失败问题的排查与解决方案，包含NAS挂载和文件赋权问题"
+section: "app"
+date: "2023-08-22"
+---
+
+# 挂载失败问题
+
+## 案例四：UCSS保存远程存储时页面报内部错误但后台挂载成功
+
+用户挂载了一个110T的NAS做为远程证据文件空间，后台配置为本地存储，再次保存远程配置时报“服务器内部错误”。
+
+存储配置页面中设置证据文件/邮件存储方式为：
+- 集中存储：证据文件集中存储在UCSS设备上
+- 分布存储：证据文件分布存储在UCSS、UCSG、UCSS-Lite等设备上
+
+存储位置可选择本地或远程，共享类型为 NFS (Network File System)。
+
+## 问题原因
+
+根本原因是NAS里面的文件太多，短时间内没法完成统计文件遍历赋权。
+
+统计文件遍历赋权耗时约 7 分钟。
+
+## 解决办法
+
+针对客户提供这种110T的大NAS盘情况下，一旦挂载就会出现上述现象，导致后台挂载成功但SPS得不到响应。
+
+```sql
+sps_db=> select json_info from system.global_configuration where key='location_config';
+```
+
+复制下来，其中 `"locationType":0` 改为 `"locationType":1`，然后执行更新：
+
+```sql
+update system.global_configuration set json_info='...' where key='location_config';
+```
+
+> 注意：1代表远程，0是本地
