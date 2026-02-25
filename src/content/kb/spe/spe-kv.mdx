@@ -1,0 +1,115 @@
+---
+title: "KV内容解析"
+description: "KV内容解析进程说明、连接机制、版本查看、调试方法及临时缓存目录"
+date: "2023-11-27"
+category: "spe"
+tags: ["KV", "SPE", "内容解析", "CP"]
+---
+
+# KV内容解析
+
+## CP Client的连接机制
+
+slave挂掉后回立即创建new master连接去接着slave处理。情况下，不用等待ocr返回结果，直接返回cae匹配结果。kv负责接受spe转发的流量，解析到图片文件就送ocr。
+
+## 支持文件类型
+
+kv不支持提取word中嵌入文件的文件名。CP可支持提取文本内容。
+
+## KV作为内容分析进程的源头
+
+1. CPService（数据聚类）
+2. 网络数据发现
+3. CAE正常送检
+
+## 查看KV版本
+
+```bash
+dpkg -l |grep kv
+# ii content-parser-kv_server 1.0.59 amd64
+ps -ef |grep kv_server
+```
+
+## 容器CP开dbug日志方法
+
+```bash
+dcin kvserver
+```
+
+之前的kv版本配置文件：
+`/opt/skyguard/contentparser/etc/cp_server.xml`
+
+新的kv版本配置文件：
+`/opt/skyguard/contentparser/etc/scpoop_worker.xml`
+
+重启服务或者kill进程生效。
+
+## KV内存异常取dump日志方法
+
+```bash
+gdb -ex "thread apply all bt" -batch -p <pid>
+```
+
+## 3.10升级到kv-45后支持默认一页pdf最大图片数
+
+后台可以新增配置，指定提取大小：
+`/opt/skyguard/contentparser/etc/scpoop_worker.xml`
+
+```xml
+<server>
+    <host>127.0.0.1</host>
+    <port>8901</port>
+    <pipe_name>skg_worker_kv_master</pipe_name>
+    <threadnum>0</threadnum>
+    <pdfPerpageImgNum>2</pdfPerpageImgNum>
+</server>
+```
+
+## KV进程说明
+
+最新的优化后的kv-039版本：
+- 没有流量时，只会有2个进程
+- 有多个流量任务时，会动态创建多个进程
+
+说明：
+1. 新kv逻辑：默认起刲2个kv_server（其实一个就够），处理转发给worker
+2. 旧KV逻辑：针对老的kv逻辑cp有多个slave和1个master
+3. kv子进程的数量和cpu核心数有关
+4. kv的debug日志只打印前1024个字节
+
+## KV临时缓存目录
+
+`/opt/skyguard/ucs/tmp/kv` 文件都是已经检测后的文件，可删除。
+
+`/opt/skyguard/contentparser/tmp/kv`：
+- kv默认清阰30分钟前的临时文件
+- 11分钟巡检一次，自动删雤30分钟以上的临时文件
+
+可以通过以下命令查看清理配置：
+```bash
+grep clean scpoop_server.log
+```
+
+### 临时文件说明
+
+1. kv提取文档里面的图片，临时存放图片路径
+2. 网络数据发现临时目录，2小时会自动清理一次
+
+脚本删除方法：
+```bash
+cat /etc/cron.d/rm-tmp
+# 0 2 * * * root find /opt/skyguard/ucs/tmp -mtime +1 -delete
+```
+
+## 日志
+
+3.3的版本seg登设备是post流量，grep文件名查不到。
+
+日志路径：
+- `/opt/skygauard/contentparser/var/log/kv_server.log`
+- `/opt/skygauard/contentparser/var/log/kv_slave.log`
+
+新补丁后的日志路径：
+- `/opt/skyguard/contentparser/var/log/kvmaster.log`
+
+需要定位请求到了哪个worker，查看worker日志。
