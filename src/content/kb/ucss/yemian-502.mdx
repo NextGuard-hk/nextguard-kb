@@ -1,0 +1,33 @@
+---
+title: "页面502"
+description: "UCSS页面出现502错误的原因分析和解决方法"
+date: 2024-11-11
+category: ucss
+tags: ["502", "tomcat", "monit", "启动失败"]
+---
+
+# 页面502
+
+## 问题描述
+
+UCSS页面访问时出现502错误。
+
+## 原因分析
+
+大概率是tomcat没有完全启动，或者5分钟内启动不起来，被monit restart了。
+
+从日志中可以看到monitoring服务不断检查tomcat状态并尝试重启：
+
+```
+The monitor of checking status
+Total of tomcat process is 1
+disable coredump...
+* tomcat is running
+Begin to check api response...
+Response code for url https://localhost:8447/webMa...
+Begin to restart tomcat.
+```
+
+## 解决办法
+
+可以先关闭moint再试试，等待tomcat完全启动后再开启monit监控。
