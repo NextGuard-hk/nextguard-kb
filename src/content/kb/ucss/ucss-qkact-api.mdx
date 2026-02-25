@@ -1,0 +1,74 @@
+---
+title: "UCSS QKAct API"
+description: "UCSS QKAct API认证方式与Check-in/Check-out接口说明"
+---
+
+# UCSS QKAct API
+
+## 1. 认证方式 (Check-in Check-out)
+
+在客户端访问UCSS API接口前，客户端必须向UCSS申请令牌。令牌申请需要在请求header中包含正确的用户名和密码，其中密码需要密文传送，使用3DES加密方式进行加密。加密的密钥需登录ucss管理平台在管理员页面申请获取access-key，验证通过后即可成功申请令牌。客户端在后续请求中需将令牌返回给客户端。令牌有过期时间限制，使用过期的令牌会导致UCSS返回"无效令牌"错误，收到此错误时重新申请令牌即可。
+
+## 2. 密码加密使用方式
+
+- 系统→账号管理→编辑勾选微服务认证凭证后保存
+- API认证使用DESede/ECB/PKCS5Padding，使用上述AccessKey作为密钥
+- 3DES加密模式: ECB，填充: pkcs5padding
+
+## 3. Check-in
+
+### Request
+
+```
+POST https://UCSS_URL/qkact/v1/checkin
+Content-Type: application/json
+Authorization: Basic base64("admin:mypassword")
+User-Agent: QKAct-External-Client
+{
+    "client-id": "5817AFB7-A263-43CA-BD2..."
+}
+```
+
+### Successful Response
+
+```json
+{
+    "status": 0,
+    "reason": "success",
+    "access-token": "bcde6c8-73ec-11df-a...",
+    "client-id": "5817AFB7-A263-43CA-BD2..."
+}
+```
+
+### Failure Response
+
+```json
+{
+    "status": 1,
+    "reason": "invalid token"
+}
+```
+
+## 4. Check-out
+
+url末尾填check-in获取导的access-token
+
+### Request
+
+```
+DELETE https://UCSS_URL/qkact/v0/checkin/{access-token}
+Content-Type: application/json
+Authorization: Basic base64("client-id:access-key")
+User-Agent: QKAct-External-Client
+```
+
+### Successful Response
+
+```json
+{
+    "status": 0,
+    "reason": "success",
+    "client-id": "test",
+    "access-token": "0f8ad2ab-4779-4434-ac56-75ca8be6c50a"
+}
+```
