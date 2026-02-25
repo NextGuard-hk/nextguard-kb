@@ -1,0 +1,54 @@
+---
+title: "Keepalived单播配置办法"
+description: "在云环境下将keepalived从组播切换为单播模式的配置方法"
+section: "app"
+date: "2023-05-11"
+---
+
+# Keepalived单播配置办法
+
+## 什么是keepalived
+
+keepalived是一个通过组播报文发送vrrp选举协议来实现高可用的工具。
+在一些特定的环境，比如腾讯云、azure等环境会限制组播发送vip。此种环境下，需要切换keepalived为单播模式。
+
+## 切换方法
+
+以ucss+db高可用环境配置为例，修改配置文件新增红色内容：
+
+```bash
+vi /etc/keepalived/keepalived.conf
+```
+
+```
+vrrp_script chk_nginx {
+    script /etc/keepalived/keepalived-check.sh
+    interval 2
+}
+
+vrrp_instance VI_123 {
+    state MASTER
+    interface ens33
+    virtual_router_id 228
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    unicast_src_ip 172.22.2.176  #本机ip
+    unicast_peer {
+        172.22.2.177  #db2
+        172.22.2.178  #db3
+    }
+    virtual_ipaddress {
+        172.22.2.179
+    }
+}
+```
+
+> 注意：新增 `unicast_src_ip` 和 `unicast_peer` 配置来替代默认的组播模式。
+
+## 3.3环境debian系统不支持单播解决办法
+
+debian旧版本keepalived可能不支持unicast配置，需要升级keepalived版本或使用其他解决方案。
