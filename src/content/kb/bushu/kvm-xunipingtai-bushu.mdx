@@ -1,0 +1,56 @@
+---
+title: "KVM虚拟平台部署"
+description: "KVM虚拟平台部署DLP的安装指南和qcow2镜像制作方法"
+---
+
+# KVM虚拟平台部署
+
+## 1、安装KVM
+
+### CentOS系统
+
+```bash
+yum update
+yum -y install qemu-kvm libvirt
+```
+
+### Ubuntu系统
+
+```bash
+apt update
+apt install qemu qemu-kvm libvirt
+```
+
+## 2、压缩镜像
+
+```bash
+qemu-img convert -c -O qcow2 原镜像 压缩后镜像
+```
+
+## qcow2镜像制作方法
+
+命令行运行：`virt-manager`，创建虚拟机
+
+```bash
+qemu-img create -f qcow2 /summer/3.x.qcow2 500G
+```
+
+压缩：
+
+```bash
+qemu-img convert -c -O qcow2 原镜像 新镜像
+```
+
+参数说明：
+- `-p`：显示镜像的转换进度
+- `-f`：指定被转换的镜像是什么格式
+- `-O`：指定转换后的镜像格式
+
+## 转换为vhd格式
+
+```bash
+qemu-img convert -f qcow2 -O vhdx debian10.vhdx
+qemu-img convert -p -O vpc AnolisOS-8.4-x86_64.qcow2 AnolisOS.vhd
+```
+
+注：`-O`（必须是大写），其后的目标镜像格式必须正确。如果目标是Hyper-V使用，则需要添加参数：`-o subformat=fixed`
