@@ -1,0 +1,18 @@
+---
+title: DSG串行模式
+category: dsg
+order: 5
+---
+
+# DSG串行模式
+
+## 注意事项
+
+1. 不支持SMB协议
+2. 不支持trunk模式vlan tag模式，明确不支持trunk模式的流量直接进入到DSG，DSG串行流实质上不是同一个流量，ATS也不知道需要给这个流量加vlan tag
+3. HTTPS通道：需要浏览器导入DSG的自签发企业证书，ucss建议设置所有站点解密
+
+## lab环境串行部署方法
+
+1. eth2口（P1）接外网入口
+2. eth3口（P2）接内网出口
