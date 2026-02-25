@@ -1,0 +1,62 @@
+---
+title: "打完APP补丁文件缺失问题"
+description: "打完app补丁后有一定概率出现cron.d或apache2文件缺失的排查与修复"
+section: "app"
+date: "2024-04-24"
+---
+
+# 打完APP补丁有一点概率出现文件缺失的问题
+
+## 现象1：cron.d文件缺失
+
+打完app补丁后，swg的ats容器中 `/etc/cron.d` 目录文件丢失。
+
+正常应有：
+
+```
+broCron  cert-server  cron.d/
+```
+
+### 解决办法
+
+```bash
+docker run --rm -it -v /etc/ats/cron.d/:/mnt -a 容器名 bash
+```
+
+在容器里执行：
+
+```bash
+cp /etc/cron.d/* /mnt -a
+```
+
+把cron.d文件复制出来。
+
+## 现象2：Apache2文件缺失
+
+Apache2文件缺失，导致ats容器apache2无法启动。
+
+supervisorctl status 显示 apache2 FATAL。
+
+### 排查步骤
+
+查看映射路径：
+
+```bash
+grep apache2 /etc/ats/apache2
+# -> /etc/apache2/:/etc/apache2/
+```
+
+搜索备份的apache2路径：
+
+```bash
+find / -name apache2
+# /opt/apps/overlay2/1691c456018b73975c591.../
+```
+
+### 解决办法
+
+拷贝备份文件：
+
+```bash
+cp -r /opt/apps/overlay2/1691c456018b73975c591.../etc/ats/apache2
+```
