@@ -1,0 +1,39 @@
+---
+title: "Mac终端卡顿相关问题"
+description: "Mac终端安装后出现卡顿问题的MEP配置优化方案"
+---
+
+# Mac终端卡顿相关问题
+
+## 问题描述
+
+有驱动版本的终端可能导致Mac电脑卡顿，对个别应用使用无驱动版本可以缓解。
+
+## MEP配置优化
+
+通过调整MEP配置参数可以优化终端性能：
+
+```
+networkbypass
+file-access=nolite
+default-inject=0
+js-hook-enable=0
+default-file-monitor=1
+interaction-monitor=1
+is-imapp=1
+```
+
+## 参数说明
+
+- `networkbypass`: 网络旁路模式
+- `file-access=nolite`: 文件访问设置为非轻量模式
+- `default-inject=0`: 禁用默认注入
+- `js-hook-enable=0`: 禁用JS Hook
+- `default-file-monitor=1`: 启用默认文件监控
+- `interaction-monitor=1`: 启用交互监控
+- `is-imapp=1`: 启用IM应用监控
+
+## 注意事项
+
+- 修改配置后需重启终端服务
+- 建议先在测试环境验证配置效果
