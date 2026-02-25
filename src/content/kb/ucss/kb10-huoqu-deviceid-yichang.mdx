@@ -1,0 +1,44 @@
+---
+title: "KB10-获取device-id异常/下载设备id显示\"not settabe\""
+date: 2022-06-17
+category: ucss
+tags: ["license", "device-id", "UUID", "redis", "注册"]
+---
+
+# KB10-获取device-id异常/下载设备id显示"not settabe"
+
+## 查看底层是否可以查询到UUID信息
+
+```bash
+root@BC-Ubuntu-2:~# dmidecode | grep 'UUID'
+UUID: 2B2B4D56-3F15-940D-C196-3A3FB560B208
+```
+
+正常情况下，底层应该能查询到UUID。已知查询不到的情况如下：
+- 深信服云平台安装的虚拟机，云平台未启用UUID
+
+## 若在OS底层可以查询到UUID，但是在Console命令行和Web界面均无法获取到device-id
+
+获取结果为：`not settable`
+
+因为Console命令行结果和Web界面的结果都来自于redis缓存，查看redis缓存信息。
+
+```bash
+root@508a0d95340d:/`#
+redis-cli -n 6380
+127.0.0.1:6379[6380]>
+GET
+app_device_base_info
+```
+
+重点关注：serials对应的值，若缓存信息异常，则将该值删除。
+
+### 删除redis缓存信息
+
+```
+127.0.0.1:6379[6380]>
+DEL
+app_device_base_info
+```
+
+删除redis缓存的信息后，需要重新注册到UCSS设备（必须的时候，需要把UCSS上之前注册的对应设备删除后进行重新注册）
