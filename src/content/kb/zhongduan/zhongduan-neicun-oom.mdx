@@ -1,0 +1,26 @@
+---
+title: "20、终端电脑内存不够，导致OOM解决办法"
+description: "终端电脑内存不足导致OOM的解决方法"
+category: "终端"
+tags: ["OOM", "内存", "MaxMemoryGB", "spelite"]
+---
+
+# 终端电脑内存不够导致OOM解决办法
+
+## 解决方法
+
+修改配置文件：
+
+```
+/opt/skyguard/ucs/var/dm/spe/config
+```
+
+### 修改参数
+
+1. 将 `MaxMemoryGB` 从 `0.5` 修改为 `1.5`
+2. 将 `spelite.configVersion` 的版本号加1（例如从 `1` 改为 `2`）
+
+### 注意事项
+
+- 修改配置后需要更新 configVersion 版本号才能生效
+- 根据实际内存情况调整 MaxMemoryGB 的值
