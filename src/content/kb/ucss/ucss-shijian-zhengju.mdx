@@ -1,0 +1,113 @@
+---
+title: 事件证据
+description: UCSS事件证据相关说明，包括incident服务、证据路径、日志查看和证据下载流程
+---
+
+# 事件证据
+
+## incident服务说明
+
+- incident服务内部配置了30个线程池，最多支持30个并发处理
+- 证据文件加密方式为64位对称加密算法，每个证据都是独立的服务，系统也默认禁用root与远程访问
+- sps把reids临时时间入库到es一次处理10条信息（从3.3.0-HF103_amd64.deb开始已经优化为一次处理更多）
+- 新的终端证据逻辑：就是按证据大小排序，小的放在前面优先处理
+
+## 终端或者网络事件中对来源或目标进行筛选
+
+目前支持最大的筛选用户数量是1000，大于1000后的值不会显示。
+
+比如要排除整个AD中的OU用户，但是ou用户已经超过了1000，es最大查询上限是1024，pm预设最大不能超过1000。
+
+## UCSS证据路径
+
+```
+/var/skyguard/sps/forensics/incident    #证据文件
+/var/skyguard/forensics/encrypted       #分布式加密证据
+```
+
+## 网关证据/事件文件待上传路径
+
+```
+/opt/skyguard/ucs/var/spe/incident_log/forensics
+/opt/skyguard/ucs/var/spe/incident_log/incident
+/opt/skyguard/ucs/var/spe/incident_log.error
+```
+
+## 终端事件/证据待上传路径
+
+```
+/opt/skyguard/ucs/var/dm/incident
+/opt/skyguard/ucs/var/dm/forensics/
+```
+
+## ITM日志堆积
+
+```
+/opt/skyguard/ucs/var/dm/itm_log
+```
+
+## 日志查看
+
+```bash
+# sps-incident日志
+/opt/skyguard/sps/logs/sps-incident/incident.log
+
+# 常用grep命令
+--grep 事件uuid   #证据文件入库状态、邮件审批等
+--grep 1--事件id  #查看是否有邮件审批通知发送
+--grep Notification@company-release.com
+--grep consuming  #查询邮件通知耗时
+--grep has been deleted  #查看是否有证据文件被删
+--grep record     #查看网络事件是否入库
+--grep Check network incident forensic
+--grep Check endpoint incident forensic
+--grep overweight #确认证据空间超出了多少
+```
+
+### 表示收到证据
+
+```
+Incident forensics file received from dlp server
+```
+
+### 表示收到事件
+
+```
+Incident data file received from dlp server
+```
+
+## 开启incident.log的debug日志
+
+```
+/var/skyguard/sps/program-data/advanced/
+```
+
+## 后台增加sps-incident内存
+
+减轻redis堆积，提高效率：
+
+```
+/etc/init.d/sps-incident 增加memory_config
+```
+
+## 流程说明
+
+- spe把网络事件和证据文件通过appliance建立的通道上传
+- 网络事件直接由incident写入redis
+- 证据文件直接落盘，uuid索引写入redis
+- sps-incident从redis中取出事件信息，并最终写入ES
+- spe先传输完堆积的证据才会传输事件（但并不是一直这样）
+
+## 终端事件送DM日志
+
+查看DM日志确认终端证据和事件上报状态。
+
+## 页面证据下载流程
+
+### 分布式存储
+
+通过manager.log查看分布式证据下载流程和状态。
+
+### 本地存储
+
+证据文件存储在本地时的下载流程。
