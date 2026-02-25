@@ -1,0 +1,52 @@
+---
+title: 导入授权异常
+date: 2024-12-16
+category: ucss
+tags: ["license", "授权", "导入", "故障排查"]
+---
+
+# 导入授权异常
+
+## 一、license不存在
+
+1. 授权码不正确
+2. UCSS设备可以连接到公网的License Server的服务
+
+## 二、在License服务器中该License不匹配
+
+license中的device-id和设备真实的device-id不一致
+
+## 三、无法连接到License Server
+
+使用授权码、设备池的方式去进行授权的情况，使用这种方式会经过公网去拉取license，如果无法连接到公网就会有这个问题。
+
+## 四、解析License Signature失败/验证失败
+
+获取的License文件不完整，可通过base64编码验证是否完整。
+
+验证方法：
+```
+cat UCSS-cf44c91f-c8f2-3349-810a-xxxx | python -c "import sys,base64,json; data=sys.stdin.read(); parts=data.split('s|'+'"|"|g'); print(json.dumps(json.loads(base64.b64decode(parts[0])),indent=2))" | python -m json.tool
+```
+
+## 五、无法获取到设备ID或者设备IP
+
+此报错通常发生在UCSS上，原因是因为UCSS自己向自己的webservice服务还未完全启动。
+
+解决办法：进入console界面执行 `register <ucss_ip>`，或者重新firstboot
+
+## 六、推送License到后台Appliance失败
+
+## 七、导入授权报"授权设备与当前设备不匹配"
+
+## 八、有找到授权证书/授权无效
+
+## 九、授权核心数量与当前系统核心数量不匹配
+
+## 十、获取device-id异常/下载设备id显示异常
+
+## 十一、环境导入授权池文件失败解决方式
+
+## 十二、授权的license型号和实际不一致
+
+## 十三、点击设备授权报：ucss平台没有找到该设备
