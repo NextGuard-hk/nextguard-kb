@@ -1,0 +1,31 @@
+---
+title: "KB-关闭UCSS中tomcat默认9998端口"
+description: "关闭UCSS中Apache Tomcat默认9998端口解决漏扫问题"
+---
+
+# KB-关闭UCSS中tomcat默认9998端口
+
+## 问题描述
+
+Apache Tomcat default files，关闭9998端口的web页面引用问题。
+
+9998端口是研发当本地测试时使用，生产系统中不会使用该端口。
+
+## 解决方法
+
+```bash
+service sps-mail-approval stop
+```
+
+路径：`/opt/skyguard/sps/apps/sps-mail-approval`
+
+```bash
+vi config/mail-approval.properties
+```
+
+1. 将 `server.port=9998` 修改为 `server.port=0`
+2. 将 `server.address=0.0.0.0` 修改为 `server.address=127.0.0.1`
+
+```bash
+service sps-mail-approval start
+```
