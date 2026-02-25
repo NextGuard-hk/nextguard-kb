@@ -1,0 +1,22 @@
+---
+title: "SPE Worker容器"
+description: "3.10.0版本新增的speworker容器管理命令"
+section: "app"
+date: "2023-11-24"
+---
+
+# SPE Worker
+
+## 说明
+
+3.10.0 版本新增了单独的speworker容器。
+
+## 常用命令
+
+```bash
+dcin speworker
+supervisorctl status
+supervisorctl stop httpworker
+ps -ef | grep spe-http-worker
+kill -9 id
+```
