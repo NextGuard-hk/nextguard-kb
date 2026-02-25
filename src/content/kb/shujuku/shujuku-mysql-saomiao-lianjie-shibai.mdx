@@ -1,0 +1,22 @@
+---
+title: "KB-MySQL数据库扫描报，连接数据源失败"
+description: "MySQL 8.0以上版本数据库扫描连接失败的原因和解决方法"
+---
+
+# KB-MySQL数据库扫描报，连接数据源失败
+
+## 问题现象
+
+目前数据库扫描不支持MySQL 8.0以上版本，连接时报错。
+
+## 原因
+
+mysql8之后的版本，默认加密是caching_sha2_password，系统镜像中没有安装加密的依赖，无法使用caching_sha2_password认证插件。
+
+## 解决办法
+
+创建一个新的用户，创建的时候使用mysql_native_password认证：
+
+```sql
+ALTER USER 'yourusername'@'localhost' IDENTIFIED WITH mysql_native_password BY 'youpassword';
+```
