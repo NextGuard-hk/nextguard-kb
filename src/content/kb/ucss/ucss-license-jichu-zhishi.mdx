@@ -1,0 +1,48 @@
+---
+title: "license基础知识"
+description: "UCSS授权license的基础知识，包括CPU限制、授权码与授权文件的区别、设备池模式等"
+date: 2024-12-16
+category: ucss
+tags: ["license", "授权", "CPU限制", "设备池"]
+---
+
+# license基础知识
+
+## 解析license文件
+
+```bash
+cat UCSS-cf44c91f-c8f2-3349-810a-9d17b90... python -m json.tool
+```
+
+## CPU限制
+
+Intel或AMD硬件安装时，CPU限制如下：
+
+| INTER平台 | 最大CPU核数 |
+|---|---|
+| UCSG/UCSS 1100 | 8 |
+| UCSG/UCSS 5100 | 40 |
+| UCSG/UCSS 11000 | 128 |
+
+海光平台、飞腾平台、虚拟平台均有不同的CPU和内存限制。
+
+## 授权码和授权文件的区别
+
+- **授权码**：使用授权码激活必须连接到license server，使用授权文件进行激活
+- **授权文件**：先尝试从License Server拿服务器上的license文件
+
+测试环境可修改hosts文件，添加license.skyguard.com记录指向license server。
+
+## 设备池模式授权
+
+在存在多台网关设备的情况下，使用设备池方式是推荐的，后续在3.13版本将会支持wildcard DNS，内网可用池模式的dns。
+
+## 查看app获取的license信息
+
+```bash
+curl -s http://localhost:8885/app/v1/dev...
+```
+
+## 常见导入授权报错
+
+当前设备与License管理的设备列表不匹配，原因是device_id和申请的id不一致。
