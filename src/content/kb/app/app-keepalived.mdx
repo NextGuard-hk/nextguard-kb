@@ -1,0 +1,82 @@
+---
+title: "Keepalived配置与维护"
+description: "Keepalived高可用配置说明，包含日志路径、配置文件、切换条件等"
+section: "app"
+date: "2023-02-15"
+---
+
+# Keepalived配置与维护
+
+## 1、日志路径
+
+```bash
+/var/log/keepalived.log
+/var/log/messages |grep MASTER
+/var/log/skyguard/app/app.log |grep Keepalived
+/var/log/keepalivrd.log
+```
+
+## 2、配置文件
+
+- 管理口VIP: `/etc/keepalived/keepalived.conf` (宿主机)
+- 业务口VIP: `/etc/keepalived/keepalived_ats.conf` (容器内)
+
+## 3、配置文件示例
+
+`/etc/keepalived/keepalived.conf`:
+
+```
+global_defs {
+    router_id LVS_BACKUP
+    vrrp_mcast_group4 224.0.0.19  #表示组播地址
+}
+
+vrrp_script check_ucss {
+    script "/bin/nc -vz 169.254.253.6 84..."
+    ...
+}
+
+vrrp_instance VI_10 {
+    state MASTER
+    interface ens192     #表示vip网卡名称
+    virtual_router_id 10  #表示路由id，同一组必须相同
+    priority 100   #表示优先级高，为master
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass skypass
+    }
+    virtual_ipaddress {
+        172.22.2.193    #表示vip地址
+    }
+    track_script {
+        check_ucss   #表示切换条件为ucss的
+    }
+    notify /sbin/vipnotify
+}
+```
+
+## 3、Keepalived切换条件
+
+切换原则：主要在 `/etc/keepalived/` 目录的keepalived配置文件中。
+
+- 网络不通的时候切换，默认1秒一次
+- 进程不存在的时候切换，默认2秒一次
+- 端口不通的时候切换，默认2秒一次
+
+切换时间：
+- 组播的时间是1秒一次
+- 进程和端口判断的时间是2秒一次
+
+对应各服务模块监控的方法：
+
+```
+check_icap: /bin/nc -vz 169.254.253.7 13..
+check_mta: /bin/pgrep rspamd
+check_p1_p2: pgrep traffic_cop
+check_ucwi: /bin/nc -vz 169.254.253.7 54..
+check_ucss: /bin/nc -vz 169.254.253.6 84..
+check_seg: /bin/pgrep rspamd
+```
+
+以上均是每2秒一次
