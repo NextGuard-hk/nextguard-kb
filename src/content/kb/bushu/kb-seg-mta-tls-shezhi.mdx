@@ -1,0 +1,40 @@
+---
+title: "KB-SEG/MTA TLS后台选项设置及算法查看"
+description: "SEG/MTA TLS后台选项设置以及支持算法查看方法"
+---
+
+# KB-SEG/MTA TLS后台选项设置及算法查看
+
+## 说明
+
+SEG/MTA 默认关闭SSLv2和SSLv3。如果还需要关闭TLSv1.0和TLSv1.1：
+
+## 关闭TLS1.0和TLS1.1
+
+```bash
+postconf -e smtpd_tls_protocols='!SSLv2,!SSLv3,!TLSv1,!TLSv1.1'
+postfix reload
+postconf -e smtpd_tls_mandatory_protocols='!SSLv2,!SSLv3,!TLSv1,!TLSv1.1'
+postfix reload
+```
+
+## 撤销操作
+
+```bash
+postconf -e smtpd_tls_protocols='!SSLv2,!SSLv3'
+postfix reload
+postconf -e smtpd_tls_mandatory_protocols='!SSLv2,!SSLv3'
+postfix reload
+```
+
+## SEG/MTA查看支持的算法
+
+```bash
+for v in ssl2 ssl3 tls1 tls1_1 tls1_2
+do
+  for c in $(openssl ciphers 'ALL:eNULL' | tr ':' ' ')
+  do
+    openssl s_client -connect 邮件服务IP:邮件服务端口 -starttls smtp -cipher $c -$v < /dev/null > /dev/null 2>&1 && echo -e "$v:\t$c"
+  done
+done
+```
