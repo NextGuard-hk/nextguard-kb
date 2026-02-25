@@ -1,0 +1,25 @@
+---
+title: "招行 - 邮件日志查不到问题"
+description: "招行UCSS邮件日志查不到的故障排查与解决方案"
+---
+
+# 招行 - 邮件日志查不到问题
+
+## 问题描述
+
+UCSS 4月18号5点以后没有邮件外发记录。
+
+## 问题定位步骤
+
+1. 检查临时数据目录：`ls -l /var/skyguard/sps/email/temp/data/ * | wc -l`
+2. 检查Redis，发现有堆积871条：`redis-cli -n 1` → `llen incident_data`
+3. 查看SPS传输日志：`/opt/skyguard/sps/logs/sps-transfer/transfer.log`
+4. 查看ES数据库确认是否锁死
+
+## 解决方案
+
+- 查询ES是否被锁：`curl -H "Content-Type: application/json" http://localhost:9200/_cat/indices`
+- 检查结果中是否有`read_only_allow_delete`字段
+- 如果被锁，需要解锁ES索引
+
+> 注：此页面包含详细的日志截图和命令行输出。
