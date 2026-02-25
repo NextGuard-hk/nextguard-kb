@@ -1,0 +1,36 @@
+---
+title: "KB-设备离线问题定位"
+description: "DSG设备离线问题排查与DLPServer超时配置"
+section: "app"
+date: "2022-03-09"
+---
+
+# KB-设备离线问题定位
+
+## DSG测问题
+
+平安邮件DLP该文件有85M，导致进入设备管理时，dsg显示离线。
+
+## 排查路径
+
+```bash
+cd /opt/skyguard/ucs/var/cache/PolicyConfig7
+cd /opt/skyguard/ucs/etc
+vi DLPServer.xml
+```
+
+## 解决方案
+
+在第361行编辑：
+
+```xml
+<ExecuteTimeout>15</ExecuteTimeout>
+```
+
+默认是15s超时时间。UCSS要读取注册上来的所有设备的策略配置，之后UCSS会把所有设备的策略配置组合成json，如果在15秒内还没有读出来就超时了。
+
+最后需要重启DLPServer服务：
+
+```bash
+/etc/init.d/dlpserver restart
+```
