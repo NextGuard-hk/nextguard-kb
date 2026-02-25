@@ -1,0 +1,29 @@
+---
+title: "Raid注意事项"
+description: "UCSS服务器RAID配置的注意事项和操作指南"
+---
+
+# Raid注意事项
+
+## 磁盘配置须知
+
+UCSS默认2块SAS 600G + 2块SATA 2T磁盘。
+
+做RAID的时候，要先做大盘2T的RAID，再做小盘的RAID。这样600G的RAID会在前面，系统安装的时候默认取第一组盘作为系统盘。
+
+## RAID配置操作步骤
+
+1. 启设备进入RAID配置界面
+2. 完成RAID 1设置后，找到"SAS Topology"
+3. 选择要设置第一位的SAS盘，按Alt+B
+
+## 案例
+
+调整前：
+
+```
+root@ucss315:/home/ts#
+root@ucss315:/home/ts# lsblk
+```
+
+确认磁盘顺序正确，sda为系统盘(600G)，sdb为数据盘(2T)。
