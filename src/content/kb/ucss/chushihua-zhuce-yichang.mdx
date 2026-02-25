@@ -1,0 +1,85 @@
+---
+title: 初始化/注册异常
+date: 2023-02-18
+category: ucss
+tags: ["license", "初始化", "注册", "故障排查"]
+---
+
+# 初始化/注册异常
+
+## 初始化日志
+
+```
+/var/log/skyguard/app/cli.log
+```
+
+## UCSS初始化日志
+
+```
+/opt/skyguard/sps/logs/install/init.log
+```
+
+## 解析license文件
+
+```
+cat UCSS-cf44c91f-c8f2-3349-810a-9d17b90xxxxx | python -m json.tool
+```
+
+## 注册端口（8443）
+
+- UCSS: 8443
+- Post `https://[192.168.0.15]:8443/sps/v1/register`
+
+## 授权文件推送端口/连接失败（网关的9443）
+
+这个端口是宿主机的nginx进程负责监听，是nginx容器部署的。
+
+网关/DSG: 9443
+
+```
+PUT request for "https://192.168.0.151:9443/..." Connect timed out;
+```
+
+说明：如果是高可用环境，ucss是用自己的本机ip而非vip和网关通信
+
+## 手动注册
+
+如果自动注册失败，可以尝试手动注册。
+
+## 现象1：failed to initialize your appliance
+
+排查步骤：
+1. 查看服务状态 `service sps-webservice status`
+2. 查看相关日志
+   - `vi /var/log/apache2/webService_ssl_access.log`
+   - `/var/log/skyguard/app/app.log`
+
+## 现象2：Failed to start DLP service
+
+解决思路：
+1. 检查dlpserver是否正常启动
+2. 检查cae服务是否正常启动
+
+检查配置文件：
+```
+/opt/skyguard/ucs/etc/ContentAnalysisEngine.xml
+```
+
+解决办法：重新拷贝一份备份文件回去
+```
+cp DLPServer.xml.bak DLPServer.xml
+cp ContentAnalysisEngine.xml.8 ContentAnalysisEngine.xml
+```
+
+## 现象3：高可用环境初始化30多分钟未完成
+
+宁德高可用环境初始化发现，初始化30多分分钟没有任何反应。
+
+通过top查看进程，发现firstboot卡在这里了。
+由于宁德证据有8T，在对证据目录做权限设置时，耗时较长。
+
+解决办法：临时改代码跳过这一步
+
+## 现象4：初始化过程特别慢
+
+初始化的过程特别慢，一直没有反应，大概率是除问题外的资源问题。
