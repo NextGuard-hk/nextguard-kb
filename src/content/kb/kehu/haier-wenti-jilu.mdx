@@ -1,0 +1,49 @@
+---
+title: "海尔 - 问题记录汇总"
+description: "海尔客户SkyGuard ASEG/ASWG/SWG部署中的各类问题排查与解决记录"
+---
+
+# 海尔 - 问题记录汇总
+
+## 1. ASEG旁路没有流量日志和邮件日志 (2022-04-28)
+
+### 问题描述
+1. 有邮件连接日志，但没有邮件日志和流量、网络事件日志。原因：mta配置里面未加白名单
+2. 突然没有邮件连接日志、邮件日志以及流量日志了。原因：发现bro无法启动
+
+### 解决方案
+- 检查/usr/local/bro目录状态
+- 确认spe-full容器做了持久化
+- 通过docker cp和docker-compose恢复配置
+- 检查挂载信息，确认compose.yaml中volumes配置正确
+- ATS容器配置使用seg-full镜像，network_mode为service:proxy
+
+## 2. ASWG syslog文件巨大爆盘问题 (2022-04-29)
+
+### 解决方案
+在ATS容器中执行：
+1. rm -f /etc/rsyslog.d/50-default.conf
+2. supervisorctl restart rsyslog
+3. 清空syslog文件（空间不够时先清空再rm）
+4. rm -f /var/log/syslog
+
+### 相关信息
+- 设备: BG-UCSG01
+- syslog文件大小达到11G
+- 磁盘空间: /dev/mapper/sgapp--vg-lv_data 328G
+
+## 3. 抄送主管放行问题 (2022-11-27)
+
+邮件抄送主管的路由问题：员工抄送给主管的邮件路由就不会走mta，需要注意邮件路由中rcpts和mime_rcpts的区别。
+
+## 4. Outlook拒收问题 (2023-08-08)
+
+Outlook客户端拒收邮件相关问题排查。
+
+## 5. SWG失联重启定位
+
+SWG服务失联后的重启和故障定位流程。
+
+## 6. UCWI API经常503问题
+
+UCWI API接口频繁返回503错误的排查与处理。
