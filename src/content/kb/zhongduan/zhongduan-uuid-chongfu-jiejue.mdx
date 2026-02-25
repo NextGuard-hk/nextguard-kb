@@ -1,0 +1,36 @@
+---
+title: "15、终端UUID重复问题解决办法-重新生成UUID"
+description: "解决终端UUID重复问题，使用脚本重新生成UUID"
+date: "2021-02-01"
+category: "终端"
+---
+
+# 15、终端UUID重复问题解决办法
+
+该KB用于解决终端UUID重复的问题，其他项目如果有UUID重复，请参照使用。
+
+## 设置终端全局卸载密码
+
+密码不能包含感叹号"!"，感叹号在windows shell是特殊保留字符。
+
+例如：Abcde@23456
+
+## 使用脚本重新生成UUID
+
+必须在管理员权限下运行：
+
+```
+命令格式：
+UpdateEndpointUuid.bat <UCSSIP> <卸载密码>
+
+举例：
+UpdateEndpointUuid.bat 192.168.3.134 Abcde@23456
+```
+
+## 使用前查看终端列表
+
+使用脚本前，先在UCSS终端监控页面查看终端列表，确认哪些终端UUID重复。
+
+## 脚本执行完成后
+
+脚本执行完成后，终端会重新生成UUID并重新注册到UCSS。
