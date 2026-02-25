@@ -1,0 +1,52 @@
+---
+title: "Keepalived相关功能与版本配置"
+description: "Keepalived相关功能说明、版本配置差异、VIP无法生成等问题汇总"
+section: "app"
+date: "2023-06-15"
+---
+
+# Keepalived相关功能与版本配置
+
+## 3.3版本调keepalived接口
+
+3.3版本与3.15/3.16版本的keepalived配置接口有所不同。
+
+3.3版本使用较旧的配置方式，需要注意兼容性。
+
+## Keepalived相关功能说明
+
+### 主要功能
+
+- VRRP协议实现高可用
+- 支持组播和单播模式
+- 支持健康检查脚本
+- 支持多实例配置
+- 支持管理口和业务口VIP
+
+### 常见问题
+
+- VIP无法生成：检查配置文件、网卡名称、路由ID等是否正确
+- VIP切换异常：检查健康检查脚本是否正常运行
+- 服务无法启动：检查日志和配置文件语法
+
+## VIP无法生成
+
+### 可能原因
+
+1. 网卡名称配置错误
+2. virtual_router_id冲突
+3. 网络环境限制组播
+4. keepalived服务未启动
+
+### 解决方法
+
+```bash
+# 检查keepalived状态
+service keepalived status
+
+# 查看VIP是否生成
+ip addr show
+
+# 检查日志
+tail -f /var/log/keepalived.log
+```
