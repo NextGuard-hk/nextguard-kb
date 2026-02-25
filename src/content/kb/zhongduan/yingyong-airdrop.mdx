@@ -1,0 +1,22 @@
+---
+title: "AirDrop 终端应用配置"
+description: "Mac系统AirDrop的终端应用配置说明及注意事项"
+---
+
+# AirDrop 终端应用配置
+
+## 基本信息
+
+- Mac系统的 AirDrop 程序名称：`sharingd`
+- 编辑终端应用程序时，名称填写 `Airdrop`，程序名称填写 `sharingd`
+
+## 配置说明
+
+- 该进程**不需要注入**，走的是 Filesystem 系统
+- 该进程传文件速度很快，注入也根本来不及
+
+## 注意事项
+
+- **不要添加** `file-access=lite` 进程属性
+- `file-access=lite` 仅针对 IM、浏览器等文件访问特别频繁的进程
+- 其他专用进程访问文件不需要注入，如 sharingd open 一个文件是要对外发送
