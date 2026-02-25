@@ -1,0 +1,24 @@
+---
+title: "KB-io高服务压力大引发的keepalived切换"
+description: "服务器IO高压力导致keepalived VIP切换的问题分析与定位"
+section: "app"
+date: "2023-12-29"
+---
+
+# KB-io高服务压力大引发的keepalived切换
+
+## 工单号
+
+TS-13977
+
+## 问题描述
+
+邮件数据防泄漏处理设备发生多次MTA HA切换，导致邮件服务不稳定。
+
+## 原因分析
+
+查看app日志，发现master确实在早上9点53出现了 `VRRP_Script(check_mta) timed out`，然后频繁出现succeeded，然后有timed out。持续到10:06分才恢复正常。
+
+## 解决方案
+
+服务器IO压力过大时会导致keepalived切换检查脚本超时，建议排查IO压力原因并优化。
