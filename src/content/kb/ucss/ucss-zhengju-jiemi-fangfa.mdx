@@ -1,0 +1,51 @@
+---
+title: "KB-证据文件解密方法"
+description: "UCSS证据文件解密工具与方法说明"
+section: "ucss"
+date: "2023-03-15"
+---
+
+# KB-证据文件解密方法
+
+## 分布式证据解密
+
+分布式证据文件的解密和下载，是APP负责的。
+
+### encfile 工具用法
+
+```
+Usage of ./encfile:
+  -d    Debug模式，打印Trace级别日志
+  -e    是否加密
+  -f string
+        指定要解析的文件名
+  -m string
+        解析使用的算法: blowfish/sm4
+  -t    探测加密算法
+```
+
+- `-f` 是解密，`-e` 是加密
+
+解密示例：
+```bash
+./encfile -f 89af5697-116e-4033-9313-361...
+```
+
+## 集中式证据解密
+
+这个工具在3.3的环境没有，拷贝到3.3的环境后可以解密。
+
+解密工具路径：
+```
+/opt/skyguard/sps/tools/decryptForensics.jar
+```
+
+解密方法：
+```bash
+java -Xms1024m -Xmx2048m -jar decryptForensics.jar readme.txt
+```
+
+查看解密方法：
+```bash
+cat read.txt  # 解密方法说明
+```
