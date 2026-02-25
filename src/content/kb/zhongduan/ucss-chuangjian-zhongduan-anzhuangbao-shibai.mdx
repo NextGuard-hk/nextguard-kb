@@ -1,0 +1,30 @@
+---
+title: "16、UCSS创建终端安装包失败"
+description: "UCSS创建终端安装包失败的问题定位和解决方法"
+category: "终端"
+tags: ["UCSS", "终端安装包", "故障排查", "日志分析"]
+---
+
+# UCSS创建终端安装包失败
+
+## 问题描述
+
+前海问题跟进：UCSS创建终端安装包失败。
+
+## 问题定位
+
+通过查看manager.log日志中关于Endpoint的报错信息，定位到/tmp下面的日志文件不可写。
+
+## 原因分析
+
+之前手动创建过按照包，手动创建安装包是通过root用户，导致生成的log日志权限是root，删掉该tmp下的日志即可。
+
+## 解决方法
+
+后续创建手动安装包，要用tomcat用户：
+
+1. 查看`/var/skyguard/sps/program-data/setup/ep_installer_src/`目录权限
+2. 如果权限为root，需要删除相关日志文件
+3. 使用以下命令清理：
+   - `rm -rf SGWindowsEndpointCreateSetup.log`
+4. 后续手动创建安装包时使用tomcat用户操作
