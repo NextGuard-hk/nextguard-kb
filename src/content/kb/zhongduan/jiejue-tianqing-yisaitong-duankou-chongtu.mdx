@@ -1,0 +1,41 @@
+---
+title: "解决与天擎或亿赛通端口冲突"
+description: "终端与天擎或亿赛通网络驱动端口冲突的排查与解决方法"
+---
+
+# 解决与天擎或亿赛通端口冲突
+
+## 故障现象
+
+终端网络驱动与天擎网络驱动端口冲突，导致访问加载网页缓慢，严重时可能无法上网。
+
+## 故障分析
+
+TCP 层面端口冲突
+
+## 解决办法
+
+强制指定代理默认端口为非冲突端口。
+
+### 办法1：少量终端
+
+当只有少量终端需要解决时，可手动执行注册表命令：
+
+```
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\sgeptproxy\Parameters" /v "ListenPort" /t REG_DWORD /d 1 /f
+```
+
+### 办法2：批量终端
+
+当所有终端都需要修改时，做注册级批量自动修改注册表。
+
+## 终端包定制步骤
+
+1. 确认终端版本，提取已部署终端上的文件
+   - 路径：`C:\Program Files\SkyGuard\SkyGuard Endpoint\`
+   - 版本目录示例：5.1, 5.2, 6.0, 6.1, 6.2, 6.3, 10.0
+
+2. 复制 Drivers 目录，保留以下文件：
+   - `sgeptproxy.inf`
+   - `sgeptproxy.inf.0`
+   - `sgeptproxy.inf.1`
