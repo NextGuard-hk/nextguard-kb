@@ -1,0 +1,35 @@
+---
+title: "KB-终端标签"
+description: "终端标签日志查看与数据格式支持"
+date: "2023-02-18"
+category: "终端"
+---
+
+# KB-终端标签
+
+## 终端标签日志
+
+**ucss侧：**
+
+```
+/opt/skyguard/ucs/var/log/lms.log
+```
+
+**终端侧：**
+
+```
+C:\Users\用户名\AppData\Roaming\SkyGuard\DLP\ELMA\var\log
+%appdata%/DLP  #新版本
+```
+
+查看elma.log日志，使用grep tag_name查看标签名。
+
+## ORS.db损坏问题
+
+如果看不到可能还有原因是ORS.db坏了，可以通过sqlite3检查。
+
+mysql取标签数据，orsdb去做用户识别。
+
+## 支持元数据的格式
+
+TIFF, JPEG, PNG支持
