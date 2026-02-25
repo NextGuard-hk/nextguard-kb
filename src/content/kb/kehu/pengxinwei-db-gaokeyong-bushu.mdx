@@ -1,0 +1,43 @@
+---
+title: "鹏芯微 DB高可用部署问题"
+description: "鹏芯微客户环境Kubernetes数据库高可用部署问题记录"
+customer: "鹏芯微"
+date: 2023-09-18
+---
+
+# 鹏芯微 DB高可用部署问题
+
+## 问题描述
+
+数据库高可用部署过程中遇到问题。
+
+## 环境信息
+
+- Kubernetes版本: v1.18.10
+- 涉及证书生成和Kubeconfig配置
+
+## 部署过程
+
+### 证书生成
+
+- 生成kube-apiserver CA私钥（RSA 2048位）
+- 生成kube-apiserver-kubelet-client证书
+- 生成front-proxy-client证书
+- 所有证书签名验证通过
+
+### Kubeconfig配置
+
+- 生成admin.conf kubeconfig文件
+- 生成kubelet.conf kubeconfig文件
+- 生成controller-manager.conf kubeconfig文件
+- 生成scheduler.conf kubeconfig文件
+
+### 控制平面
+
+- 创建Pod manifest文件
+- 使用manifest目录: /etc/kubernetes
+
+## 警告信息
+
+- ExternalEtcdVersion警告: 等待headers时连接问题
+- 需要拉取设置所需的镜像
