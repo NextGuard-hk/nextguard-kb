@@ -1,0 +1,36 @@
+---
+title: "网卡配置概览"
+description: "DLP服务器网卡配置概览及常见问题"
+---
+
+# 网卡配置概览
+
+## Ubuntu网卡配置路径
+
+```
+/etc/netplan/02-skyguard.yaml  # ubuntu系统网卡配置文件
+```
+
+## 获取网卡等配置信息
+
+```bash
+curl -XPOST localhost:8888/app/v1/GetInterfaceList
+```
+
+返回结果包含网卡信息如macaddress、displayName、ip、netmask、device、nicName、role等。
+
+## 3.9平台部署在ESXi的注意事项
+
+容器化后，host主机修改ip地址及mac地址路径：
+
+```
+/etc/netplan/02-skyguard.yaml
+```
+
+## 相关KB文章
+
+- [KB-01.单网卡问题汇总](/kb/bushu/kb-danwangka-wenti)
+- [KB-网卡乱序调整方法](/kb/bushu/kb-wangka-luanxu)
+- [KB-双网卡绑定/聚合](/kb/bushu/kb-shuangwangka-bindbindingagg)
+- [Bypass模式关闭方法](/kb/bushu/bypass-guanbi)
+- [KB-管理口和业务口显示问题](/kb/bushu/kb-guanlikou-yewukou)
