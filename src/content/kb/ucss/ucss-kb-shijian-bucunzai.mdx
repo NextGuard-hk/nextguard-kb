@@ -1,0 +1,23 @@
+---
+title: "KB-事件不存在"
+description: "UCSS网络事件不存在的排查方法"
+section: "ucss"
+date: "2023-02-18"
+---
+
+# KB-事件不存在
+
+## 案例1：网络事件不存在
+
+查看incident.log日志，发现1个月前就已经没有incident入库日志。
+
+查看实时incident.error.log日志，发现 "Too many open files" 错误。
+
+### 解决方法
+
+设置open files文件数限制：
+```bash
+ulimit -n 65535
+```
+
+或者修改系统配置文件 `/etc/security/limits.conf` 增加文件句柄限制。
