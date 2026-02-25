@@ -1,0 +1,189 @@
+---
+title: ICAP 集成
+description: ICAP (Internet Content Adaptation Protocol) 服务配置、测试与问题处理
+---
+
+# ICAP 集成
+
+## ICAP 概述
+
+ICAP 是 Internet Content Adaptation Protocol 的缩写。ICAP 客户端（SWG/支持 ICAP 的第三方网络设备）将 HTTP Message 传给 ICAP Server，ICAP Server 进行数据分析处理后返回结果。其中 ICAP message 可以是 HTTP 请求也可以是 HTTP 应答。
+
+因为 SWG 支持代理上网，可以把 IE 的流量通过分析功能处理。
+
+### 日志路径
+
+```
+cat /opt/skyguard/ucs/var/log/IcapController.log
+/opt/skyguard/ucs/var/log/c-icap/c-icap_dlp_access.log
+```
+
+## KB-icap 服务端内存占用配置调优
+
+### 问题现象
+
+icap 服务端内存一直往上涨。
+
+### 解决方法（EI-10145）
+
+在 dev 环境进行了复现，并进行了配置变更，可解决内存增长问题：
+
+1. ssh 到 icap 所在的 dsg 上后台，进程 spe 容器，`docker exec -it c-icap bash`
+2. 修改配置文件：
+
+```
+vim /opt/skyguard/ucs/etc/c-icap/c-icap.conf
+```
+
+```
+# TAG: MaxRequestsPerChild
+# Format: MaxRequestsPerChild number
+# Description:
+#   The maximum number of requests a child process handles.
+#   After this number has been reached, the process exits.
+#   The parameter is to minimize the memory leaks impact on
+#   stability of c-icap. It can be set to 0 to disable.
+# Default:
+#   MaxRequestsPerChild  0
+#   MaxRequestsPerChild  0   huliuseizhi
+MaxRequestsPerChild  50    #调整为50
+```
+
+3. 重启 dlpserver 服务。
+
+### 说明
+
+内存的升高和请求次数、送检文件大小都有关系，如果可能内存就会有明显上升。达到野业务请求上限后，子进程就会重启。
+
+## KB-icap 支持 Secure ICAP 模式（SSL 加密）传输配置方法
+
+### 说明
+
+icap server 在原来非 ssl 的基础、及业务上支持了 ssl：
+
+1. 以前的非 ssl 端口 1344 保持对外提供服务（默认常开），最好不要更改 11344 监听端口，因为这个端口涉及在服务中。
+2. ssl 的功能目前只能在后台配置中进行变更，UI 未体现。
+
+### 配置方法
+
+**1、开启 ssl**
+
+```
+vi /opt/skyguard/ucs/etc/c-icap/icap_control.conf
+```
+
+```xml
+<IcapServerSSLEnable>
+    <value>true</value>  #打开
+</IcapServerSSLEnable>
+<IcapServerSSLIPort>
+    <value>0.0.0.0:11344</value>
+</IcapServerSSLIPort>
+<IcapServerSSLServerPem>
+    <value>/opt/skyguard/cert/server.crt</value>
+</IcapServerSSLServerPem>
+<IcapServerSSLServerKey>
+    <value>/opt/skyguard/cert/server.key</value> #客户端提供
+</IcapServerSSLServerKey>
+<IcapServerSSLCAPem>
+    <value>/opt/skyguard/cert/ca.crt</value>
+</IcapServerSSLCAPem>
+<IcapServerSSLCiphers>
+    <value>HIGH:!DSS!aNULL!eNULL</value>
+</IcapServerSSLCiphers>
+<IcapServerSSLClientCA>
+    <value /> #用此强制校验客户端
+</IcapServerSSLClientCA>
+```
+
+**重启服务生效配置：**
+
+```
+service dlpserver restart
+```
+
+**检查是否生效：**
+
+```
+netstat -anpt |grep icap
+tcp    0    0 0.0.0.0:1344    icap
+tcp    0    0 0.0.0.0:11344   icap
+```
+
+**2、新增端口映射**
+
+```
+vi /etc/appliance/compose.yaml
+```
+
+```yaml
+spe:
+  image: "spe-full"
+  container_name: "appliance_spe_1"
+  depends_on:
+    - redis
+    - mysql
+    - kvserver
+  restart: always
+  networks:
+    internal:
+      ipv4_address: 169.254.253.7
+  ports:
+    - 1344:1344
+    - 11344:11344    #新增端口
+```
+
+## KB-swg 客户端配合 dsg 服务端测试方法
+
+ICAP 是 Internet Content Adaptation Protocol 的缩写，它让 ICAP Client 可以把 HTTP Message 传给 ICAP Server，message 可以是 HTTP 请求也可以是 HTTP 应答。
+
+**个人理解：**
+ICAP 客户端（SWG/支持 ICAP 的第三方网络设备）→ 服务器，来接受数据，进行数据分析。
+
+因为 SWG 支持代理上网，刚好可以把 IE 的流量通过过分析功能。
+
+代理上网的模式，必须要有一个代理服务器，一个代理客户端：
+
+1. **DSG 作为代理服务器**
+2. **SWG 作为代理客户端**
+
+SWG 配置路径：设备 → 网络 → 功能 → 代理服务 → ICAP → 启用状态: ON → ICAP 服务器 URI: `icap://[服务器IP]:1344/dlp`
+
+## ICAP Server 用户名和来源显示问题
+
+**问题：** 在使用 DSG 或者 ASWG 作为 ICAP Server 的时候，Web 界面显示的网络事件的来源显示的为 base64 编码的数据。
+
+**原因：** 确认了 ICAP Client 有传输用户信息给 ICAP Server，但默认 icap-server 接收到用户名，不会进行 base64 解码。
+
+**解决办法：** 当确认收到的数据是 base64 的数据，需要对数据进行解码，修改配置文件：
+
+```
+cat -n /opt/skyguard/ucs/etc/c-icap/icap_control.conf
+```
+
+第 220-222 行：
+
+```xml
+<AuthenticatedUserBase64Decode>
+    <value>on</value>  # on 表示开启
+</AuthenticatedUserBase64Decode>
+```
+
+修改完成后，重启 dlpserver：
+
+```
+service dlpserver restart
+```
+
+## icap-client 脚本
+
+用于测试 ICAP 服务端的脚本工具，可以发送测试文件到 ICAP Server 进行检测。
+
+## KB-icap 相关问题汇总
+
+在使用 DSG 或者 ASWG 作为 ICAP Server 的时候，Web 界面显示的网络事件来源显示为 base64 编码的数据。
+
+需要确认：
+- ICAP Client 是否有传输用户信息给 ICAP Server
+- Wireshark 抓包确认传输内容中 `X-Authenticated-User` 字段
+- 配置 `AuthenticatedUserBase64Decode` 为 `on` 来解码用户名
