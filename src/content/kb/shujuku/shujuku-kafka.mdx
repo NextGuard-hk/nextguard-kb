@@ -1,0 +1,56 @@
+---
+title: "Kafka数据库"
+description: "Kafka配置、登录方法、常用维护命令及测试连通方法"
+---
+
+# Kafka数据库
+
+## 说明
+
+3.13开始，事件是直接进入Kafka，代替了Redis。Kafka挂掉，事件不会丢，会堆积再spe那边。
+
+## 登录信息
+
+- username: sps
+- password: Sps@SkyGuard866
+
+## 外置Kafka端口
+
+```yaml
+ports:
+  - 9092:9092
+  - 9093:9093
+  - 9094:9094
+  - 9095:9095
+```
+
+## 测试连通
+
+```bash
+java -jar /opt/skyguard/sps/tools/kafka-test.jar
+```
+
+## 登录方法
+
+1. 进入Kafka容器
+2. 进入 `/etc/kafka/bin`
+3. 修改配置 `vi config.properity`：
+
+```properties
+sasl.jaas.config=org.apache.kafka.common.security...
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=PLAIN
+```
+
+4. 查看topics：
+
+```bash
+./kafka-topics.sh --list --bootstrap-server localhost:9092
+```
+
+常见topics包括：
+- DLP-NOTIFICATION-EXTERNAL-APPROVAL
+- DLP-NOTIFICATION-MAIN
+- DLP-NOTIFICATION-RETRY
+- DLP-NOTIFICATION-SOURCE-APPROVAL
+- MOBILE-NOTIFICATION-MAIN
