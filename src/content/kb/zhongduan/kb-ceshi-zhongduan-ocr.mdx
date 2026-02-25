@@ -1,0 +1,48 @@
+---
+title: "KB-测试终端OCR功能"
+description: "如何测试终端OCR功能（图片解析），适用于2.0版本监控模式，测试微信/QQ发送包含敏感信息的图片"
+category: "zhongduan"
+tags: ["终端", "OCR", "图片解析", "测试"]
+---
+
+# KB-测试终端OCR功能
+
+如何测试终端OCR功能，适用于2.0版本（仅限于监控模式）。本指南旨在引导用户或SE测试OCR功能（图片解析），包括微信/QQ发送包含敏感信息的图片。
+
+## 分步指南
+
+### 1. 确认UCSS管理控制台开启OCR功能
+
+在设备管理中开启OCR功能，注意最小检测5000字节。
+
+### 2. 修改UCSS配置文件
+
+修改 `/opt/skyguard/ucs/etc/DMServer.xml`，将 `ucscMode` 修改为3。
+
+关键配置参数：
+```xml
+<!-- remoteSPE, remoteDM, local -->
+<workMode>remoteSPE</workMode>
+<speIp>172.16.0.2</speIp>
+<spePort>8815</spePort>
+<specIp>127.0.0.1</specIp>
+<specPort>8816</specPort>
+```
+
+### 3. 重启dlpserver服务
+
+```bash
+service dlpserver restart
+```
+
+### 4. 重启终端机器或等5分钟
+
+等待配置自动同步后，再上传图片进行测试，确保终端上开启OCR识别。
+
+## 确认OCR是否已开启
+
+SSH到UCSS后台确认以下操作是否生效：
+
+1. `/opt/skyguard/ucs/etc/OCRService.xml` 检查 `enable_unlimited_license` 是否为 true
+2. `/opt/skyguard/ucs/etc/DLPServer.xml` 检查 `IsStart` 是否为 true
+3. `/opt/skyguard/ucs/etc/DMServer.xml` 检查 `ucscMode` 是否为 3
