@@ -1,0 +1,27 @@
+---
+title: "30.组策略推送uuid清理脚本/针对终端uuid安装重复问题"
+description: "通过组策略推送脚本清理终端uuid重复问题"
+date: "2021-06-25"
+category: "终端"
+---
+
+# 30.组策略推送uuid清理脚本
+
+可以成功把脚本推送到终端电脑并运行，但是脚本要管理员方式运行cmd，需要在脚本前面加入windows系统bat获取admin权限代码。
+
+```bat
+@echo off
+cd /d "%~dp0"
+cacls.exe "%SystemDrive%\System Volume Information" >nul 2>nul
+if %errorlevel%==0 goto Admin
+if exist "%temp%\getadmin.vbs" del /f /q "%temp%\getadmin.vbs"
+echo Set RequestUAC = CreateObject^("Shell.Application"^)>"%temp%\getadmin.vbs"
+echo RequestUAC.ShellExecute "%~s0","","","runas",1 >>"%temp%\getadmin.vbs"
+echo WScript.Quit >>"%temp%\getadmin.vbs"
+"%temp%\getadmin.vbs" /f
+if exist "%temp%\getadmin.vbs" del /f /q "%temp%\getadmin.vbs"
+exit
+:Admin
+```
+
+将以上代码加在uuid清理脚本的开头，即可通过组策略推送并以管理员权限执行。
