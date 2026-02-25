@@ -1,0 +1,63 @@
+---
+title: "KB-api获取终端状态"
+description: "通过API获取终端状态和终端配置信息"
+---
+
+# KB-api获取终端状态
+
+## 获取终端状态
+
+通过UCSS API获取终端设备的在线状态信息。
+
+### 请求方式
+
+```
+GET https://{baseUrl}:8443/qkact/v1/endpoint/status
+Authorization: Basic Auth
+```
+
+### 响应示例
+
+```json
+{
+    "responseCode": 200,
+    "message": "成功",
+    "dats": [
+        {
+            "uuid": "746665...",
+            "shortId": "099...",
+            "hostname": "...",
+            "systemTime": "...",
+            "hostStartTime": "..."
+        }
+    ]
+}
+```
+
+## 获取终端配置
+
+### 请求方式
+
+```
+GET https://{baseUrl}:8443/qkact/v1/endpoint/profiles
+Authorization: Basic Auth
+```
+
+### 响应示例
+
+```json
+{
+    "status": 0,
+    "reason": "Success",
+    "profiles": [
+        {
+            "id": "99724a63-3889-4eec-844d-e6b313e596d4",
+            "name": "默认"
+        },
+        {
+            "id": "23b546ff-e883-4197-bae0-09e3c350644...",
+            "name": "test"
+        }
+    ]
+}
+```
