@@ -1,0 +1,53 @@
+---
+title: "设备连接失败专题"
+description: "APP设备连接失败的排查思路与常见问题解决"
+section: "app"
+date: "2022-03-21"
+---
+
+# 设备连接失败专题
+
+## 排查思路
+
+1. 几点的连接失败报警？
+2. 有没有设置时间同步？设置时间点是什么时候？
+3. 检查Dmesg消息，看有没有网卡相关的内核事件
+4. 检查Nginx的访问日志，失败的时间点，有没有报错
+5. 检查 `/var/log/skyguard/app.log`（3.3版本）
+6. （容器化）检查 `/var/log/skyguard/app/appagent.log`
+
+### 大体排查顺序
+
+1. 网络是否有异常（内核），服务是否有重启
+2. 按请求路径检查日志：Nginx -> appagent.log
+
+## UCSS平台显示设备连接失败
+
+是SPS单独发起（网关无关），偶尔的通信失败然后自动恢复连接，可以不用关注。
+
+### 日志检查路径
+
+```bash
+/var/log/skyguard/app/app.log  # 看看有无失败记录
+/var/log/apache2/access.log    # 检查返回码是否200
+/var/log/skyguard/app/appagent.log  # 检查连接失败是否和时间同步相关
+```
+
+检查dmesg，查看有无网卡相关内核信息。
+
+> 建行2.0的环境可查看 `cat /var/log/httpd/error.log, access.log`，重启apache2: `service httpd restart`
+
+
+## 已注册成功的UCSS还原快照后显示"联系管理员"
+
+**原因：**
+
+还原快照后，token值可能和数据库中已有的token值冲突。可以去 `/opt/skyguard/.token` 中和pg数据库中对比确认。
+
+### 解决办法
+
+重新初始化：
+
+```bash
+python /opt/skyguard/www/app/register.py
+```
