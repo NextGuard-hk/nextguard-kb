@@ -1,0 +1,21 @@
+---
+title: "KB-支持SSL中等强度密码组（SWEET32）修复方法（9443端口）"
+description: "漏扫发现支持SSL中等强度密码组SWEET32漏洞的修复方案"
+---
+
+# KB-支持SSL中等强度密码组（SWEET32）修复方法（9443端口）
+
+## 问题描述
+
+漏扫发现中级漏洞，支持SSL中等强度密码组（SWEET32），漏扫报告给出的建议是：如果可能，请重新配置受影响的应用程序以避免使用中等强度密码。
+
+## 原因分析
+
+Nessus将中等强度视为使用至少64位且小于112位的密钥长度的任何加密，否则使用3DES加密套件，如果攻击者位于同一物理网络上，则可以更轻松地破解中等强度加密，进行入侵。
+
+## 解决方案
+
+```bash
+sed -i 's/SSLCipherSuite.*$/SSLCipherSuite ALL:!aNull:!ADH:!eNULL:!LOW:!EXP:!3DES:!RC4:+HIGH:+MEDIUM/' /etc/apache2/mods-enabled/ssl.conf
+service apache2 restart
+```
