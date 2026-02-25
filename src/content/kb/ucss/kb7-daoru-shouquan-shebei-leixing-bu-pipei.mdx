@@ -1,0 +1,70 @@
+---
+title: "KB7-导入授权报“授权设备与当前设备类型不匹配”问题汇总"
+date: 2024-12-16
+category: ucss
+tags: ["license", "授权", "设备类型", "不匹配", "device-id"]
+---
+
+# KB7-导入授权报“授权设备与当前设备类型不匹配”
+
+## 原因
+
+1、设备id填写错误导致申请的license和实际的device-id不符
+
+2、申请硬件或者虚拟设备类型搞错了
+比如：硬件授权导入至虚拟机，虚拟机授权导入至硬件，国产化硬件属于硬件license。
+
+3、appliance错误的将虚拟机识别成了物理机
+可手动执行：`systemd-detect-virt` #通过这个判断是物理机还是虚拟机
+如果确认这是一台虚拟机而命令检查输出为"none"，请联系TS升级BUG处理（EI-8535），这个案例是arm系统。
+
+观察后台lcserver.log发现报错原因："hardware use vm license"
+
+日志示例：
+```
+2540 time="2023-05-16T10:31:24+08:00" level=info msg="Init file=/controller/license.go func="ap pagent/controller"
+2541 time="2023-05-16T10:31:24+08:00" level=error msg="Init file=/controller/license.go func=appagent/controller.Ver ifyLicense line=198"
+2542 time="2023-05-16T10:31:24+08:00" level=info msg="ret file=/controller/license.go func=appagent/controller.Ver ifyLicense line=198"
+2543 time="2023-05-16T10:31:24+08:00" level=info msg="ret nse.go func=appagent/handler/lice data[] is file=/handler/lice"
+```
+
+4、国产软件化部署时，使用的系统语言为zh_CN中文导致，需要修改为英文
+
+软件化部署时安装系统选择的语言为zh_CN中文，导致部分硬件信息用中文表示，注册时匹配硬件信息时中文识别异常导致。
+
+### 查看当前生效语言
+
+方法1：
+```bash
+locale  #第一行就是当前生效的
+```
+
+方法2：
+```bash
+echo $LANG  #会直接输出当前生效系统语言
+```
+
+### 解决办法
+
+Ubuntu修改方法：
+```bash
+vim /etc/default/locale
+# 修改为：
+LANG="en_CN.UTF-8"
+LANGUAGE="en_US:en"
+```
+
+Centos修改方法：
+```bash
+vim /etc/locale.conf
+# 末尾添加：
+LANG="en_US.UTF-8"
+```
+
+```bash
+# 设定语言为en_US.UTF-8
+source /etc/locale.conf
+```
+
+#生效配置
+如果未生效，可重启服务器解决。
