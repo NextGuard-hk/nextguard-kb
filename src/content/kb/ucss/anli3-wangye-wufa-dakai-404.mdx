@@ -1,0 +1,32 @@
+---
+title: "案例3、UCSS网页无法打开报404"
+description: "事件和日志导出数量设置过大导致OOM"
+---
+
+# UCSS网页无法打开，报404
+
+## 问题描述
+
+客户反馈UCSS的页面打不开，报404。
+
+## 原因分析
+
+查看manager.log日志，发现存在内存OutOfMemoryError的OOM现象。
+
+系统高级设置中事件和日志导出量设置为25000条（远超默认2000条），导致执行定时任务报告等日志导出时特别占用内存。
+
+## 解决方案
+
+1. 重启tomcat
+2. 修改事件和日志导出数量到合理范围
+
+## 补丁优化
+
+新的hotfix已经优化了这一块，配置文件路径：
+
+`/var/skyguard/sps/program-data/config/base_config.properties`
+
+```
+page.per.limit.num=30000
+page.limit.time.count=20
+```
