@@ -1,0 +1,54 @@
+---
+title: "Redis常用命令"
+description: "Redis数据库常用维护命令汇总，包括key类型查看、数据查询等"
+---
+
+# Redis常用命令
+
+## 1. 查看key类型
+
+```bash
+redis 127.0.0.1:6379[1]> type network_info
+```
+
+### 1.1 zset类型
+
+查看方式：zcard
+
+```bash
+redis 127.0.0.1:6379[1]> zcard network_info
+(integer) 56379
+```
+
+### 1.2 hash类型
+
+查看方式：hgetall
+
+```bash
+redis 127.0.0.1:6379[1]> type network_info
+hash
+```
+
+查看内容：
+
+```bash
+redis 127.0.0.1:6379[1]> hgetall network_info
+1) "100"
+2) "32"
+```
+
+### 1.3 string类型
+
+查看方式：get
+
+```bash
+127.0.0.1:6379> get "backup-key"
+```
+
+## 2. key类型说明
+
+zset是一个有序且不可重复的数据集合。
+
+```bash
+redis 127.0.0.1:6379[1]> type network_info
+```
