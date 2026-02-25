@@ -1,0 +1,76 @@
+---
+title: "KB-终端小问题"
+description: "终端配置打不开、修改终端内存方法、License状态说明、配置文件解密等常见小问题汇总"
+category: "zhongduan"
+tags: ["终端", "配置", "License", "内存", "解密"]
+---
+
+# KB-终端小问题
+
+## 案例1：终端配置打不开
+
+3.3环境打完sps-056可能有此问题，打最新的补丁可解决。
+
+或者手动修复：
+终端配置的jsp页面太大了，加载时报 exceeding the 64K limit，修改：
+`vi /opt/skyguard/tomcat/conf/web.xml`
+
+```xml
+<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+<init-param>
+    <param-name>fork</param-name>
+    <param-name>mappedfile</param-name>
+    <param-value>false</param-value>
+</init-param>
+```
+
+## 案例2：修改终端占用系统内存方法
+
+默认终端内存占用是0.5G
+
+```bash
+/opt/skyguard/ucs/var/dm/spe/config.json
+#MaxMemoryGB 0.5改为1.5
+#spelite.configVersion 1 版本号1更新为2
+service dlpserver restart
+```
+
+## 案例3：删除电脑未重启导致的License问题
+
+客户反馈最终新加的终端无法上线，系统提示终端已有2550个，小于买的授权数3000，怀疑系统有问题。
+
+**原因分析：**
+安装过终端后没有重启的计算机，会占用license。之前有一些机器注册过，然后一直没用，平台不可见。
+
+**解决方案：**
+
+1. 进入数据库：
+```bash
+su postgres
+psql -d sps_db
+```
+
+2. 查询终端监控中未上报的终端数量：
+```sql
+select count(1) from system.ep_certificate c left join system.ep_monitor_info r
+on c.uuid=r.uuid where r.uuid is null;
+```
+
+3. 查询终端监控未上报的终端电脑信息，并将这些终端的License回收
+
+4. 删除释放这些终端license
+
+**License状态说明：**
+签发证书状态说明：1-有效，2-未签发，3-自动注销，4-回收
+status=1的包含重启后正常注册的（在终端监控可见）
+
+## 配置文件解密
+
+enc文件的解密用：
+```bash
+openssl enc -d -aes-256-cbc -in ucss3-10-20211205010004.tar.gz.enc -out ucss3-10-xxx.tar.gz -pass:skyguardpass
+```
+
+```bash
+ucsc_util.bat supper@SG8660 --decrypt aes-256-cbc 978\swg_url_category.dec
+```
