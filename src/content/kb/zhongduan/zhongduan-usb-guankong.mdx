@@ -1,0 +1,43 @@
+---
+title: "终端USB管控/唯一U盘"
+description: "USB设备管控、MTP设备禁用、USB无线网卡禁用、唯一U盘识别与配置方法"
+category: "zhongduan"
+tags: ["终端", "USB", "唯一U盘", "MTP", "设备管控"]
+---
+
+# 终端USB管控/唯一U盘
+
+## 在终端配置了MTP设备禁用后
+
+参考链接：https://support.skyguard.com.cn/browse/...
+
+## USB无限网卡如何禁用
+
+使用 `EndpointAgentUtil.exe --query-volumeinfo 盘符` 查询设备信息。
+
+## 确定U盘ID
+
+### 方法1：命令行查询
+
+```
+c:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgentUtil.exe --query-volumeinfo
+```
+
+查看输出中的信息，包含：
+- DeviceName
+- VolumeName
+- VID/PID
+- BUS_USB_DISK_SERIAL
+- COMPATIBLE_ID: USBSTOR
+
+### 方法2：DevViewer工具
+
+使用DevViewer查看Device Tree，找到USB Flash Disk USB Device设备ID。
+
+## 配置唯一U盘
+
+在SecGator控制台中：
+1. 进入 系统 > 终端管理 > 终端设备 > 添加终端设备
+2. 名称：u盘
+3. 设备信息：填写设备ID，如 `*USBSTOR\DISK&VEN_USB&PROD_FLASH_0\7&2B64EC37&4.*`
+4. 描述：填写设备描述信息
