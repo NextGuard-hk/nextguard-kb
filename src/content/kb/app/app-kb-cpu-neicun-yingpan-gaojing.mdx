@@ -1,0 +1,41 @@
+---
+title: "KB-CPU/内存/硬盘告警阈值"
+description: "APP告警配置文件中CPU、内存、硬盘、网卡等告警阈值说明"
+section: "app"
+date: "2023-02-18"
+---
+
+# KB-CPU/内存/硬盘告警阈值
+
+## 告警配置文件
+
+```bash
+cat /opt/skyguard/www/app/alert.conf
+cat /opt/skyguard/app/conf/alert.conf
+```
+
+## 配置示例
+
+```json
+{
+  "cpu": {"alert_type": 26, "usage_threshold": 90, "trigger_threshold": 3},
+  "mem": {"alert_type": 27, "usage_threshold": 90, "trigger_threshold": 3},
+  "system_disk_high": {"alert_type": 2, "trigger_threshold": 1},
+  "system_disk_full": {"alert_type": 2, "trigger_threshold": 1},
+  "data_disk_high": {"alert_type": 36, "trigger_threshold": 1},
+  "data_disk_full": {"alert_type": 37, "trigger_threshold": 1},
+  "eth0": {"alert_type": 30, "usage_threshold": 90, "trigger_threshold": 1},
+  "eth1": {"alert_type": 30, "usage_threshold": 90, "trigger_threshold": 1},
+  "eth2": {"alert_type": 30, "usage_threshold": 90, "trigger_threshold": 1},
+  "eth3": {"alert_type": 30, "usage_threshold": 90, "trigger_threshold": 1},
+  "eth4": {"alert_type": 30, "usage_threshold": 90, "trigger_threshold": 1},
+  "eth5": {"alert_type": 30, "usage_threshold": 90, "trigger_threshold": 1},
+  "itm_config": {"alert_type": 55, "usage_threshold": 90, "trigger_threshold": 3}
+}
+```
+
+## 字段说明
+
+- `alert_type`: 告警类型编号
+- `usage_threshold`: 使用率阈值（百分比）
+- `trigger_threshold`: 触发次数阈值
