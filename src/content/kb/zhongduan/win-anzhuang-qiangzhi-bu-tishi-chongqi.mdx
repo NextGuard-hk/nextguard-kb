@@ -1,0 +1,37 @@
+---
+title: "WIN终端安装强制不提示重启框方法"
+description: "通过定制安装包替换EndpointRestartAlerts.exe实现安装后不弹出重启提示"
+---
+
+# WIN终端安装强制不提示重启框方法
+
+## 适用范围
+
+此方法适用于全部3.5版本终端，需要对原始安装包进行修改。
+
+> 注意：安装后不重启系统，或者在 Win10 环境默认开启了某些功能时可能会影响效果。
+
+## 操作步骤
+
+### 1. 创建空文件
+
+创建一个名称为 `EndpointRestartAlerts.exe` 的空文件。
+
+### 2. 修改 custom_config.xml
+
+在 `custom_config.xml` 文件中添加需要替换的文件配置：
+
+```xml
+<item>
+  <source_path>EndpointAgent/etc/EndpointRestartAlerts.exe</source_path>
+  <destination_path>%EPAGENT_DIR%\EndpointRestartAlerts.exe</destination_path>
+</item>
+```
+
+### 3. 替换安装包文件
+
+将修改后的 `custom_config.xml` 替换覆盖安装包中的同名文件。
+
+### 4. 上传安装包
+
+在 UCSS 的“系统 → 终端管理 → 终端安装包”位置，上传创建新的安装包。
