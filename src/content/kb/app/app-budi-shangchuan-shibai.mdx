@@ -1,0 +1,37 @@
+---
+title: "补丁上传失败"
+description: "补丁上传失败报未知返回码的定位与解决方案"
+section: "app"
+date: "2023-06-19"
+---
+
+# 补丁上传失败
+
+## 问题描述
+
+补丁上传失败，报“未知的返回码”。
+
+## 定位方法
+
+```bash
+dpkg --info Hotfix-SPS-3.15.0-HF006_all.deb
+```
+
+输出示例：
+
+```
+new Debian package, version 2.0.
+size 205709402 bytes: control archive=...
+Package: SPS-3.15.0-HF006
+Version: 3.15.0
+Section: security
+Priority: optional
+Architecture: all   #app-002看到这个字段
+Maintainer: skyguard<skyguard@skyguard.cn>
+Description: skyguard sps hotfix
+Depends:
+```
+
+## 解决办法
+
+卸载app补丁，先打sps补丁，再打app补丁。
