@@ -1,0 +1,26 @@
+---
+title: "KB-漏扫报SSL Anonymous Cipher Suites Supported"
+description: "支持SSL匿名密码套件漏洞解决方案"
+---
+
+# KB-漏扫报SSL Anonymous Cipher Suites Supported
+
+## 问题描述
+
+以nessus为代表的漏扫工具扫描系统，报SSL Anonymous Cipher Suites Supported。
+
+## 原因分析
+
+远程主机支持使用匿名 SSL 密码。虽然这使管理员能够设置加密流量的服务，而无需生成和配置 SSL 证书，但它无法验证远程主机的身份，并使该服务容易受到中间人攻击。
+
+## 解决方案
+
+SSH到服务器后台，执行：
+
+```bash
+sed -i 's/SSLProtocol.*$/SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1/' /etc/apache2/mods-enabled/ssl.conf
+```
+
+设置SSLCipherSuite为安全的密码套件列表，排除匿名密码。
+
+重启apache2服务。
