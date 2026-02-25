@@ -1,0 +1,40 @@
+---
+title: "案例4、命中策略及详情界面不显示命中关键字修改方法"
+description: "topN和修复附件加密卡队列问题导致命中策略详情区域变化"
+---
+
+# 命中策略及详情界面不显示命中关键字修改方法
+
+## 问题描述
+
+客户因为要使用topN和修复附件加密卡队列问题，对SPS打了补丁，命中策略详情这个区域发生了变化：
+
+1. 打补丁前：名称策略及详情–规则名称里面显示的是规则名称
+2. 打完补丁后，规则名称里面显示成实际命中的关键字
+
+## 修改方法
+
+1. 进入配置文件目录
+
+```bash
+cd /opt/skyguard/tomcat/webapps/webManager/WEB-INF/pages/dlp/incident/
+cp networkIncidentEdit.jsp networkIncidentEdit.jsp.bak
+```
+
+2. 替换关键字和冒号
+
+```bash
+vim /opt/skyguard/tomcat/webapps/webManager/WEB-INF/pages/dlp/incident/networkIncidentEdit.jsp
+```
+
+使用shift+:执行以下替换：
+
+```
+%s/{{{htmlDecode elementName}}}//g
+%s/{{{htmlDecode elementName}}}//g
+%s/${sg:msg('public_symbol_colon')}//g
+```
+
+## 关联工单
+
+Hotfix-SPS-3.3.0-HF092
