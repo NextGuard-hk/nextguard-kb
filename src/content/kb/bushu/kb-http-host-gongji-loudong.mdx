@@ -1,0 +1,39 @@
+---
+title: "KB-绿盟等漏扫软件报：检测到目标URL存在http host头攻击漏洞解决办法"
+description: "漏扫报告HTTP Host头攻击漏洞的解决方案"
+---
+
+# KB-绿盟等漏扫软件报：检测到目标URL存在http host头攻击漏洞解决办法
+
+## 原因分析
+
+tomcat里面的server配置项填的是hostlocal，修改为实际域名或IP地址。
+
+漏扫检测时，会修改HTTP请求中的Host Header字段，如果服务器接受了四个方向的算法变量，就会判断为存在Host头攻击漏洞。
+
+由于管理平台系统存在前端静态资源，如不指定正确的扫描路径，必须扫描系统真正数据交变的路径，例如：`.../webManager/pages`
+
+## 解决方案
+
+```bash
+vi /opt/skyguard/tomcat/conf/server.xml
+# 修改Host配置项
+service tomcat restart
+```
+
+测试是否生效：
+
+```bash
+curl -H 'Host:www.aaa.com' -i -j -session -k https://UCSSIP:8447/webManager/pages
+```
+
+注意：漏扫的适合，让客户扫描 `https://UCSSIP:8447/webManager/pages`，不是动态的用户数据，没必要做安全控制。
+
+绿盟提供的修改方法：
+
+```bash
+vi /etc/apache2/sites-enabled/001-webManager-ssl.conf
+# 修改相关配置
+```
+
+通过工具验证是否修复：输入需要测试的URL进行检测。
