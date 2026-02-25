@@ -1,0 +1,32 @@
+---
+title: KB-初始化特别久或者初始化报错
+date: 2022-06-17
+category: ucss
+tags: ["license", "初始化", "报错", "apache"]
+---
+
+# KB-初始化特别久或者初始化报错
+
+初始化过程可以查看日志：
+```
+/var/log/skyguard/app/cli.log
+```
+
+## 案例2：阿里云部署3.9版本ASWG
+
+初始化第一步就是卡住了，初始化第一步网卡地址就直接卡住跳出，无法完成初始化。
+
+### 定位方法
+
+1. 查看`/var/log/skyguard/app.log`
+   - 看起来是spe组件异常，脚本都无法启动
+
+2. 查看有无异常服务未启动，发现apache2无法启动，这是问题的根源
+
+3. 查看`/var/log/apache2/error.log`
+   - 发现大量配置失败信息，Not match server name
+   - 看起来apache起不来和机器名有关
+
+4. 阿里云的环境，自动将qcow2镜像里面的主机名bogon写进/etc/hosts查看
+   - 127.0.0.1中并未添加主机名
+   - 正常启动apache2，并顺利完成了初始化
