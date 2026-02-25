@@ -1,0 +1,32 @@
+---
+title: "百胜 批量上传有个别文件没有"
+description: "百胜客户批量上传时部分文件缺失问题日志分析"
+customer: "百胜"
+date: 2023-12-04
+---
+
+# 百胜 批量上传有个别文件没有
+
+## 问题描述
+
+批量上传时发现有个别文件缺失，未成功上传。
+
+## 日志分析
+
+### 请求日志 (2023-12-04 14:06-14:07)
+
+- 多个queryID记录显示TotalN个 request logs for upload
+- 日志时间: 2023-12-04 14:06:33 至 2023-12-04 14:06:55
+- 最终统计: Total 8 request logs
+
+### 后续请求 (14:10)
+
+- Total 8 request logs 和 Total 15 request logs
+- 多个queryID记录
+- Total 2 request logs
+
+### 系统日志 (Syslog)
+
+- 多个线程日志记录（sgucscsdk）
+- INFO和WARN级别日志
+- 时间范围: 2023-12-04 14:08 至 14:33
