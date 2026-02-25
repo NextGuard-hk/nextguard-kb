@@ -1,0 +1,51 @@
+---
+title: "终端API-查询终端监控列表"
+description: "终端状态监控外部接口调用说明（V3.9.0+）"
+---
+
+# 终端API-查询终端监控列表
+
+## 注意事项
+
+- 默认终端api获取的数据不是全部终端，需要在配置中将相关参数设置为true
+- 支持版本>=3.6
+
+## 【V3.9.0】终端状态监控外部接口
+
+### 1. 概述
+
+用于终端状态监控外部接口调用说明文档。
+
+### 2. Check in and Check out
+
+在客户端访问UCSS API接口前，客户端必须先获取令牌，令牌有过期时间限制，收到错误时重新申请即可。
+
+#### Check-in Request
+
+```
+POST https://UCSS_URL/qkact/v0/checkin
+Content-Type: application/json
+Authorization: Basic base64("admin:mypassword")
+User-Agent: QKAct-External-Client
+{
+    "client-id": "5817AFB7-A263-43CA-BD2A-39C9..."
+}
+```
+
+#### Check-in Response
+
+```json
+{
+    "status": 0,
+    "client-ip": "192.168.1.11",
+    "access-token": "bcde6c8-73ec-11df-a475-0022...",
+    "expiration": "Tue Oct 23 10:22:09 UTC 2018",
+    "client-id": "5817AFB7-A263-43CA-BD2A-39C9..."
+}
+```
+
+## 终端审批API
+
+目前终端命中事件仅根据管理员设定的策略动作执行，文件属于正常业务文件需要允许用户传输。
+
+用户场景：市场办公人员使用邮件客户端向合作伙伴发送邮件被拦阻时，通过企业OA系统进行审批后放行。
