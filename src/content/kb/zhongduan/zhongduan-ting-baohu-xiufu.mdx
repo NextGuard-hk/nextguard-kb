@@ -1,0 +1,27 @@
+---
+title: "11、终端停保护如何修复"
+description: "终端停止保护后的修复方法"
+category: "终端"
+tags: ["停保护", "修复", "EndpointWatchdog", "EndpointClientAgent"]
+---
+
+# 终端停保护如何修复
+
+## 修复方法
+
+### 方法一：手动终结进程
+
+手动终结 Endpoint Client Agent 的进程，watchdog 会自动拉起来，保护会再次打开。
+
+### 方法二：使用 Watchdog 命令
+
+```cmd
+EndpointWatchdog --start
+EndpointWatchdog --quit
+```
+
+### 方法三：使用 ClientAgent 命令
+
+```cmd
+EndpointClientAgent --start-module 进程名 卸载密码
+```
