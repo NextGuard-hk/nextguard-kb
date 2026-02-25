@@ -1,0 +1,42 @@
+---
+title: "MAC终端全隐pkg安装包制作方法"
+description: "MAC终端全隐pkg安装包制作方法，支持MDM推送安装"
+---
+
+# MAC终端全隐pkg安装包制作方法
+
+## 环境要求
+
+- UCSS 3.3+，MAC终端 3.5+
+- 全隐：安装完成强制不弹重启提示框 + 安装重启后默认不显示终端图标
+- pkg：支持使用第三方MDM软件（如Micromdm）进行pkg格式包的推送安装
+
+> 注意：此方法没有重启提示框，如果用户安装后不手动重启，UCSS服务器将无法管理该终端。
+
+## 准备工作
+
+### 1.1 获取安装重启后默认不显示终端图标所需文件
+
+系统-->终端管理-->终端配置，编辑“默认”配置分组，终端运行模式选择“隐性模式”
+
+使用一个测试终端属于“默认”终端配置分组，并同步到最新策略。
+
+去这个测试终端本地，收集需要的2个目录及文件：
+
+```
+/Library/Application Support/SkyGuard/SkyGuard Endpoint/UCSCSDK/downloads\ep_profile
+```
+
+- 开头的隐藏目录`.ucscsdk\HEAD`
+- 配置文件最后一个版本的目录及里面的`.STATUS`文件和`ep_profile`文件
+
+如果看不到隐藏文件，可使用命令显示隐藏文件：
+
+```bash
+defaults write com.apple.finder AppleShowAllFiles -boolean true ;
+killall Finder
+```
+
+### 1.2 创建目录结构
+
+创建好`UCSCSDK\downloads\profile`目录，把拷贝出来的2个目录放入其中。
