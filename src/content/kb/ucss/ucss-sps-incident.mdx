@@ -1,0 +1,89 @@
+---
+title: sps-incident服务
+description: sps-incident服务功能说明、日志查看、线程数查看和端口配置
+---
+
+# sps-incident服务
+
+## 功能
+
+1. 事件、日志入库
+2. 证据落盘
+3. 发送邮件审批通知
+4. 回滚删除证据
+
+incident.log 日志默认保存1个月
+
+## log日志
+
+指定事件证据文件入库状态：
+
+```bash
+/opt/skyguard/sps/logs/sps-incident/incident.log
+```
+
+### 查看是否有邮件审批通知发出
+
+是否配置主管信息（ManagerEmail）：
+
+```bash
+/opt/skyguard/sps/logs/sps-incident/incident.log
+```
+
+### 查看邮件通知是否发送成功
+
+是否被邮件服务器拒掉：
+
+```bash
+/opt/skyguard/sps/logs/sps-incident/incident.log
+```
+
+### 查询邮件通知耗时
+
+```bash
+/opt/skyguard/sps/logs/sps-incident/incident.log
+```
+
+### 查看是否有证据文件因为磁盘空间被回滚导致删除
+
+```bash
+/opt/skyguard/sps/logs/sps-incident/incident.log
+```
+
+### 查看网络事件是否入库
+
+```bash
+/opt/skyguard/sps/logs/sps-incident/incident.log
+--grep Check network incident forensic
+--grep Check endpoint incident forensic
+--grep overweight  #确认证据空间超出了多少
+--incident日志grep"c.s.s.d.s.i.m.NetworkIncidentHandler"
+```
+
+## 内存
+
+推荐4G及以上
+
+## 查看incident线程数
+
+```bash
+ps -ef |grep sps-incident
+# 查看tomcat进程号，如 59731
+# Xmx512M -Xss1536k 等JVM参数
+
+# 查看线程数
+ps -efL |grep 59731 |wc -l
+# 结果如: 156
+```
+
+## 端口
+
+- **9989**: 事件和证据入库端口
+
+如果这个端口未启动，sps-gateway传输事件会失败。
+
+```bash
+# 查看端口监听
+tcp6  0  0 127.0.0.1:9989
+tcp6  0  0 127.0.0.1:19989
+```
