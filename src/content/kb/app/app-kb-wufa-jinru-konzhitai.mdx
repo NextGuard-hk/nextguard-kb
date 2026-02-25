@@ -1,0 +1,78 @@
+---
+title: "KB-无法进入控制台/设备连接失败"
+description: "设备管理界面显示连接失败、无法进入cli控制台的排查与解决"
+section: "app"
+date: "2022-03-19"
+---
+
+# KB-无法进入控制台/设备连接失败
+
+## 现象
+
+1. 设备管理界面显示设备连接失败
+2. 无法进入cli控制台
+
+## 排查思路
+
+1. UCSS 测试dsg的8443、9443端口是否正常
+2. 进入dsg后台，su ucsgadmin准备切换到cli控制台时报错
+
+## 错误信息
+
+```
+Traceback (most recent call last):
+  File "/opt/skyguard/app/modules/cli/cli..."
+  device_type = utils.get_device_type()
+  File "/opt/skyguard/www/app/utils.py"
+  return device_info["type"]
+KeyError: 'type'
+```
+
+## 原因分析
+
+utils.py脚本获取设备类型出错。查看 `vi /opt/skyguard/www/app/utils.py`：
+
+```python
+339 def get_device_type():
+340   device_info = app_conf_get("device_base_info")
+341   return device_info["type"]
+```
+
+而设备类型字段在 `appliance.conf` 中：
+
+```
+vi /opt/skyguard/www/app/appliance.conf
+"device_base_info": {
+    "serials": "SN-TESTSTRING",
+    "nicnumber": 6,
+    "deviceModel": 2,
+    "hostname": "DSG-MTA-ICAP33",
+    "module": ["ATS", "MTA"],
+    "hardware": "UCSG-DSG",
+    "version": "3.3.0",
+    "memory": "1000.4MB",
+    "cpucore": 1,
+    "disk": "2TB",
+    "type": 2
+}
+```
+
+由于客户现圼appliance.conf配置中关于device_base_info字段信息丢失，导致启动控制台时无法区分ucssadmin和ucsgadmin导致报错，同时也导致注册失败等连锁问题。
+
+## 解决办法
+
+系统会自动备份appliance.conf配置文件。
+
+备份路径：
+
+```bash
+cd /opt/skyguard/www/app/.appliance_conf_bak/
+mv appliance.conf.20211223050001 .appliance.conf
+# 从上述隐藏目录中copy文件编号最大的备份文件到原路径
+```
+
+恢复后重启apache2生效：
+
+```bash
+service apache2 restart
+```
