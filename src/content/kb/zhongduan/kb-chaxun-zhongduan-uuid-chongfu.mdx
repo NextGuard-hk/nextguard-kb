@@ -1,0 +1,25 @@
+---
+title: "KB-查询终端uuid重复"
+description: "UCSS上查询是否有重复UUID的方法"
+date: "2022-03-09"
+category: "终端"
+---
+
+# KB-查询终端uuid重复
+
+## UCSS上查询是否有重复UUID的方法
+
+```bash
+/opt/skyguard/ucs/var/log/
+grep login ucsc.log | cut -d ' ' -f 12-19 | sort -k2 | uniq | awk '{a[$2]++} END {for (i in a) if (a[i] != 1) print i}' | xargs -i grep {} ucsc.log | grep login | cut -d ' ' -f 12-19 | sort -k2 | uniq > out
+```
+
+该命令会把重复的uuid输出到out文件，如果没有重复的uuid，out文件就是空的。
+
+## UCSS通过UUID查询终端列表方法
+
+```sql
+su postgres
+psql sps_db
+select uuid, hostname, login_user, active_ip, ep_version from system.ep_monitoring_result where uuid='83686369656968E797779787A766F68';
+```
