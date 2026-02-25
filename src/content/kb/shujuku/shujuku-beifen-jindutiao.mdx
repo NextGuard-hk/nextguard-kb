@@ -1,0 +1,36 @@
+---
+title: "KB-备份进度条卡在SPE备份环节"
+description: "备份进度条卡在SPE备份环节的问题排查与解决方法"
+---
+
+# KB-备份进度条卡在SPE备份环节
+
+## 问题描述
+
+备份进度条卡在SPE备份环节，无法继续进行。
+
+## 定位方法
+
+### 1. 查看备份报错日志
+
+```bash
+grep backup /opt/skyguard/tongyi日志路径
+```
+查看备份过程的报错是什么。
+
+### 2. 重点查看SPE组件相关异常问题
+
+```bash
+/opt/skyguard/ucs/var/log
+grep -i backup /opt/skyguard/ucs/var/log/*.log
+```
+
+检查dlpserver.log中的备份相关日志，查看是否存在错误信息。
+
+### 3. 检查SPE备份是否成功
+
+查看SPE备份任务是否实际完成，确认备份文件是否存在。
+
+## 备注
+
+- 另外如果内存不够，清理缓存，或者重启sps-webserver
