@@ -1,0 +1,51 @@
+---
+title: "Linux终端"
+description: "Linux终端日志收集、调试与白名单定位"
+date: "2022-08-18"
+category: "终端"
+---
+
+# Linux终端
+
+## linux终端日志收集
+
+### 终端安装&卸载日志
+
+路径：/tmp目录下EndpointInstaller.log & Error.log
+
+### 终端问题日志
+
+```
+/opt/SkyGuard/SkyGuardEndpoint/UCSCSDK/var/log
+/opt/SkyGuard/SkyGuardEndpoint/EndpointAgent/var/log
+```
+
+### 终端白名单生效与否定位
+
+```
+\EndpointLog-20250408-13_41_19\EndpointAgent
+test\log\sgephook_qaxbrowser_590859.log
+```
+
+## 终端日志收集命令
+
+```bash
+cd /opt/SkyGuard/SkyGuardEndpoint/EndpointAgent
+source ./env.sh
+EndpointAgentUtil --log-collect
+```
+
+日志输出到桌面上。
+
+## 终端 ETS debug
+
+```bash
+1. 进入 /opt/SkyGuard/SkyGuard Endpoint/EndpointAgent
+2. 执行: source ./env.sh
+3. EndpointAgentUtil.exe --module-log-level fsmonitor trace level:
+   /opt/SkyGuard/SkyGuardEndpoint/EndpointAgent/var/log
+   EndpointFilesystemMonitor TRACE
+```
+
+然后取日志：
+/opt/SkyGuard/SkyGuardEndpoint/EndpointAgent/var/log 中的日志。
