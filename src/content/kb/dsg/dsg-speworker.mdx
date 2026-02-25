@@ -1,0 +1,28 @@
+---
+title: SPEWORKER送检服务
+category: dsg
+order: 4
+---
+
+# SPEWORKER送检服务
+
+## 日志路径
+
+```bash
+tail -f /var/log/speworker/spesmbworker.*
+```
+
+## 配置文件路径
+
+```
+/opt/skyguard/app/modules/speworker/
+```
+
+目录下包含：
+- `spe-ftp-worker.py`
+- `spe-http-worker.py`
+- `worker.py`
+
+## 提高speworker送检效率方法
+
+加大并发数，减少spe连接超时时间。
