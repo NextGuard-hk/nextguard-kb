@@ -1,0 +1,40 @@
+---
+title: "终端水印去秒方法并生成安装包"
+description: "修改终端水印配置文件去掉秒显示并重新打包的方法"
+---
+
+# 终端水印去秒方法并生成安装包
+
+## 背景
+
+默认终端水印显示时分秒，更新周期是60秒，但秒数不会更新，始终显示第一次开启水印时的秒数。
+
+## 操作步骤
+
+### 1. 上传并安装主干版本安装包
+
+将主干版本的安装包上传到UCSS服务器，并完成创建。在终端电脑上安装该安装包。
+
+### 2. 拷贝配置文件
+
+进入终端电脑安装路径：
+
+```
+C:\Program Files\SkyGuard\SkyGuard Endpoint\EndpointAgent\etc
+```
+
+拷贝以下两个文件：
+- `EndpointClientGUIConfig.xml`
+- `EndPointWaterMarkConfig.xml`
+
+### 3. 修改配置
+
+在两个文件中找到以下配置项，将 `true` 改为 `false`：
+
+```xml
+<TextWaterShowSecond>false</TextWaterShowSecond>
+```
+
+### 4. 生成定制安装包
+
+将修改后的配置文件放回安装包目录，重新打包生成定制安装包。
