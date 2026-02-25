@@ -1,0 +1,26 @@
+---
+title: "KB-UCSS高可用环境下DB服务器报Nginx版本过低漏洞"
+description: "UCSS高可用环境下DB服务器Nginx版本过低漏洞修复"
+---
+
+# KB-UCSS高可用环境下DB服务器报Nginx版本过低漏洞
+
+## 问题描述
+
+DB服务器用的是Ubuntu18.04的操作系统，默认nginx版本为1.14.0，由于低版本Nginx存在信息泄露的漏洞，需要修复。
+
+## 原因分析
+
+nginx漏洞修复。
+
+## 解决方案
+
+1. 升级前，备份好nginx.conf配置文件
+
+```bash
+cp nginx.conf /etc/nginx/nginx.conf.bak
+```
+
+2. 将附件中的压缩包分别在每台DB主机上解压，并执行里面的update.sh
+
+附件：`update_nginx_1.20.1.tar.gz`
