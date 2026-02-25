@@ -1,0 +1,26 @@
+---
+title: "MySQL容器不断重启/ATS容器不断重启/推送License失败"
+description: "MySQL容器和ATS容器不断重启以及推送License到后台失败的排查方法"
+---
+
+# MySQL容器不断重启/ATS容器不断重启/推送License到后台失败
+
+## 背景
+
+客户反馈导入授权时，提示推送License到后台Appliance失败。
+
+## 排查过程
+
+1. 发现ats容器 apache2无法启动
+2. 发现ats容器每隔几分钟重启
+3. 发现mysql容器一直在重启
+
+## 初步结论
+
+现在看起来有两个问题：ats容器反复重启，导致apache一直restarting中。看起来是mysql没有正常完成初始化。
+
+## 解决方法
+
+1. 查看软件安装目录日志，发现并无异常
+2. 检查mysql容器日志，确认初始化是否完成
+3. 重新初始化mysql数据库并重启容器
