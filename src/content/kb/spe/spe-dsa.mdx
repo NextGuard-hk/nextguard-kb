@@ -1,0 +1,61 @@
+---
+title: "DSA数据发现"
+description: "DSA数据发现模块，包含网络扫描、指纹、数据聚类、智能学习等功能"
+date: "2023-11-24"
+category: "spe"
+tags: ["DSA", "SPE", "数据发现", "扫描"]
+---
+
+# DSA数据发现
+
+## 概述
+
+DSA负责数据提取/数据扫描/数据库网络扫描/机器学习/智能学习等功能。
+
+## 日志查看
+
+```bash
+/opt/skyguard/ucs/var/log/dsa.log  #日志文件
+grep 'push file'  #查看当前扫描任务是否还在进行
+grep 'detectNetworkFile() this is a net'  #网络扫描相关
+```
+
+## 读写问题
+
+网络扫描、指纹等操作，挂载的时候都只需要只读权限。
+
+dsa进行共享目录扫描时，操作文件的时候会申请个共享锁（flock）。flock用于控制对文件的并发访问，以确保多个进程或线程安全地读写文件。
+
+## 配置文件路径
+
+```
+/opt/skyguard/ucs/etc/dsa_local.xml
+```
+
+配置项说明：
+- `<process_threads>5</process_threads>` 扫描线程数
+- `<level>DEBUG</level>` 默入debug日志
+- `<scan_depth>1</scan_depth>` 扫描深度
+- `<is_trace_link>no</is_trace_link>` 是否追踪链接
+- `<unstruct_increment_scan_maxtime>` 增量扫描最大时间
+- `<scrap_once_datas>1024</scrap_once_datas>` 每次扫描数据量
+- `<max_size>100m</max_size>` 最大文件大小
+
+## 关于挂载目录问题
+
+支持远程文件共享（SMB）挂载。
+
+如多级目录文件夹共享时，dsa后台依旧是按照一级一级挂载。假设SMB共享路径为 `//server/share/path1/path2/path3`，如果某一级目录挂载失败，会提示文件目录不存在。
+
+## DSA任务路径
+
+```
+/opt/skyguard/ucs/var/dsa/tasks
+```
+
+## 增量扫描
+
+- 有新增文件到目录，或者目录中的文件md5相关信息变化，才会触发增量扫描
+- 如果是单纯的移动走部分文件们不会触发增量扫描
+- 默认是10次增量扫描后，会自动触发一次全量扫描任务
+- 增量数据扫描的时候（指纹），可以通过日志判断
