@@ -1,0 +1,52 @@
+---
+title: 自研Paddle-OCR部署
+category: spe
+order: 11
+---
+
+# 自研Paddle-OCR部署
+
+## 需求
+
+[GAT-13327](http://jira.skyguardmis.com/browse/GAT-13327) 【Appliance】高性能OCR产品的相关功能
+
+## 部署流程
+
+请详见附件：Paddle-OCR部署手册.docx
+
+## 测试内容
+
+测试主要分为两方面：
+- 对Paddle-OCR的功能性能测试
+- Paddle-OCR 和 Abbyy-OCR 的对比测试
+
+### Paddle-OCR功能性能测试
+
+1. 设备安装部署、license授权
+2. 图片支持情况测试，对主流的JPG(JPEG)、PNG、BMP、TIF均支持，但对UX常用的PSD、AI、SVG格式不支持，对现在自媒体工作室常用的RAW格式也不支持，详情可移步：Paddle-OCR和Abbyy-OCR的对比测试
+3. 对语言的支持情况测试，Paddle支持识别 中文简体、中文繁体、英文、俄文、日文
+4. 性能评估，请移步：Paddle-OCR和Abbyy-OCR的对比测试
+
+## Paddle-OCR和Abbyy-OCR的对比测试
+
+从4个方面对Paddle和Abbyy进行了对比测试：
+
+1. 硬件配置对比
+2. 图片类型支持情况对比
+3. 图片识别的精准度对比
+4. 图片识别的性能对比
+
+详细的数据请移步Confluence：
+http://confluence.skyguardmis.com/pages/viewpage.action?pageId=80709918
+
+## 总结
+
+相比现有产品中的商业化Abbyy方案，Paddle在图片识别的精准度方面有提升，在图片识别的性能方面，对比USCG-VM 5100 Abbyy设备，有3倍的提升。
+
+## 安装包路径
+
+```
+\\172.22.113.252\GuestUpload\Sec316-ocr\Skyguard_OCR_3.16.0-2412041000.iso
+```
+
+md5：a4d8d702432eaaf27a6e2e52b98a56f6
