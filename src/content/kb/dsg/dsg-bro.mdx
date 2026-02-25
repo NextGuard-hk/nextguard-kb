@@ -1,0 +1,72 @@
+---
+title: BRO流量分析
+category: dsg
+order: 3
+---
+
+# BRO流量分析
+
+## DSG旁路
+
+支持单向流量的分析，可以对不能够完成还原的TCP连接进行分析。
+- 建议只采用此方式分析http post请求，或者http get请求
+- 如果用于分析http Response，比如get，需要请求和响应的流量都要抓到
+- 页面配置响应，后台其实会抛取请求和响应的流量
+
+> 我们的DSG用的是PFRING抓包，比笔记本快多了
+
+## BRO进程
+
+一个bro线程处理40M流量，起一个线程占1.2G内存：
+1. bro抓包是通过pfring来完成
+2. 然后BRO再从PFRING上拿数据到自己的缓冲区
+3. 识别为各种协议，再由各种协议的脚本，提取文件、写日志
+
+### 确定是否要把bro数量增加
+
+如果差值越来越大，说明bro处理不过来：
+
+```bash
+cat /proc/net/pf_ring/* | grep Offset
+```
+
+可以看看 `/proc/net/pf_ring` 下面bro使用 `p` 开头的，`Insert` 远大于 `Remove` 说明 bro 处理不过来了
+
+### BRO进程分类
+
+BRO的进程分成三类：
+- **Manager进程**（负责管理proxy和worker进程）
+- **Proxy进程**（用于交换worker进程之间的信息）
+- **Worker进程**（负责抓包）
+
+一般来说 manager 进程不会崩溃，可以做到对 `broctl status` 检测发现 bro 是crash 状态都是不会发告警的
+
+用 `dmesg` 看一下是不是系统把 bro 进程杀死了，一般情况下crash要么是处理不过来，内存占用太大
+
+### 配置文件
+
+```bash
+cat /usr/local/bro/etc/node.cfg   #后台生效
+cat /usr/local/bro/etc/broctl     #后台生效的配置
+```
+
+## 查看BRO服务状态
+
+```bash
+broctl status
+broctl restart
+```
+
+## 日志路径
+
+```
+/usr/local/bro/logs/current/   #当前日志
+/usr/local/bro/spool/manager/  #实时日志
+```
+
+主要日志文件：
+- `conn.log` 连接日志
+- `http.log` HTTP请求日志
+- `files.log` 文件提取日志
+- `smtp.log` 邮件日志
+- `dns.log` DNS查询日志
