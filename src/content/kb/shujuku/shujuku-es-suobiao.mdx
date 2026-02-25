@@ -1,0 +1,27 @@
+---
+title: "ES多次锁表原因定位"
+description: "Elasticsearch多次锁表的原因分析和解决方案"
+---
+
+# ES多次锁表原因定位
+
+## 背景
+
+客户反馈ucss邮件日志和网络事件查不到某日5点之后的数据，且在继续增加。ES查询的结果中有read_only_allow_delete标记。
+
+## 解锁方法
+
+执行以下命令解锁：
+
+```bash
+curl -XPUT -H "Content-Type: application/json" 'http://localhost:9200/_all/_settings' -d '{"index.blocks.read_only_allow_delete":null}'
+```
+
+## 原因分析
+
+1. 关于ES被锁，内部一直同步的是data盘空间不足导致锁表，但是远程到服务器，查看data盘空间为67%，离85%还有一段距离。
+2. 有没有可能是/var/tmp文件夹临时数据突然增加，一个案例中ucss报磁盘空间满，但是查看tmp文件只有9.3M。
+
+## 解决方案
+
+磁盘扩容。确认磁盘空间是否充足，及时清理或扩容磁盘。
