@@ -1,0 +1,67 @@
+---
+title: "建行 - 3.15部署规范"
+section: "kehu"
+date: "2024-09-25"
+customer: "建行"
+---
+
+# 建行 3.15部署规范
+
+## 客户预置
+
+- 操作系统：麒麟
+- 8块盘做RAID10
+- 系统盘480G，数据盘1.4T
+
+## 分区规划
+
+| 分区路径 | 大小 | 说明 |
+|----------|------|------|
+| /opt/skyguard | 100G | lib库约3GB，另一部分空间是备份、补丁包 |
+| /opt/apps | 200G | 容器存储空间（镜像、容器、Volume）推荐140G+ |
+| /var/log/skyguard | 100G | 服务产生的大部分日志 |
+| /var/skyguard | 1000G | 数据空间：数据库存储、持久化文件存储、事件信息等 |
+
+## 分区方法
+
+### 步骤 1: 初始化物理卷 (PV)
+
+```bash
+lsblk
+pvcreate /dev/sdb
+```
+
+### 步骤 2: 创建卷组 (VG)
+
+```bash
+vgcreate sgapp-vg /dev/sdb
+```
+
+### 步骤 3: 创建逻辑卷 (LV)
+
+```bash
+lvcreate -L 100G -n lv_opt sgapp-vg
+lvcreate -L 200G -n lv_apps sgapp-vg
+lvcreate -L 100G -n lv_log sgapp-vg
+lvcreate -l 100%FREE -n lv_data sgapp-vg
+```
+
+### 步骤 4: 格式化并挂载
+
+```bash
+mkfs.xfs /dev/sgapp-vg/lv_opt
+mkfs.xfs /dev/sgapp-vg/lv_apps
+mkfs.xfs /dev/sgapp-vg/lv_log
+mkfs.xfs /dev/sgapp-vg/lv_data
+
+mkdir -p /opt/skyguard /opt/apps /var/log/skyguard /var/skyguard
+
+mount /dev/sgapp-vg/lv_opt /opt/skyguard
+mount /dev/sgapp-vg/lv_apps /opt/apps
+mount /dev/sgapp-vg/lv_log /var/log/skyguard
+mount /dev/sgapp-vg/lv_data /var/skyguard
+```
+
+### 步骤 5: 配置/etc/fstab自动挂载
+
+将挂载信息添加到 `/etc/fstab` 以确保重启后自动挂载。
