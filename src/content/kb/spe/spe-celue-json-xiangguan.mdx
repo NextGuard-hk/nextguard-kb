@@ -1,0 +1,60 @@
+---
+title: "KB-策略json相关"
+description: "策略json文件查看、版本确认及policy文件通道对应表"
+date: "2022-08-11"
+category: "spe"
+tags: ["策略", "json", "policy", "SPE"]
+---
+
+# KB-策略json相关
+
+## 查看当前生效的策略文件内容
+
+```bash
+cd /opt/skyguard/ucs/bin
+source env.sh
+./spe_internal_util -4 engine getPolicyFile
+```
+
+`/opt/skyguard/ucs/bin` 路径下会生成 `policy.json` 文件。
+
+## 查看策略版本
+
+```bash
+./spe_internal_util -4 engine getPolicyVersion
+```
+
+## policy文件通道对应表
+
+| 编号 | 通道 |
+|------|------|
+| 1 | HTTP |
+| 2 | HTTPS |
+| 3 | FTP |
+| 4 | IM |
+| 5 | （邮件）SMTP |
+| 6 | 自定义协议 |
+| 7 | 数据发现 |
+| 8 | 网络打印 |
+| 9 | IMAP（终端） |
+| 10 | POP3（终端） |
+| 11 | HTTP（终端） |
+| 12 | HTTPS（终端） |
+| 13 | FTP（终端） |
+| 14 | IM（终端） |
+| 15 | （邮件）SMTP（终端） |
+| 16 | 自定义协议（终端） |
+| 17 | 数据发现 |
+| 18 | 终端打印 |
+| 19 | 移动存储 |
+| 20 | 网络共享 |
+| 21 | 剪贴板 |
+| 22 | 应用程序 |
+| 23 | 蓝牙 |
+| 24 | 红外 |
+| 25 | WebService应用 |
+| 26 | 文件共享 |
+| 27 | ActiveSync |
+| 28 | 本地存储 |
+| 29 | HTTP（移动） |
+| 30 | HTTPS（移动） |
