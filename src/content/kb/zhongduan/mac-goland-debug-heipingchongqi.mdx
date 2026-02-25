@@ -1,0 +1,28 @@
+---
+title: "Mac 11.3.1 安装终端后GoLand Debug导致黑屏重启"
+description: "Mac 11.3.1安装终端后打开GoLand执行Debug会导致黑屏重启的解决方案"
+---
+
+# Mac 11.3.1 安装终端后GoLand Debug导致黑屏重启
+
+## 问题描述
+
+Mac 11.3.1，安装终端后打开GoLand执行Debug会导致黑屏重启。
+
+- 现象：该软件运行debug后就会出现五国重启
+- 终端版本：3.5.0-124028208-mac
+- macOS版本：11.3.1
+- SIP：disable
+- 关联case：EI-4961
+
+## 原因分析
+
+终端与GoLand的debugserver进程存在冲突。
+
+## 解决方案
+
+在终端应用程序中添加以下配置：
+
+- 进程名：`debugserver`
+- 操作：信任
+- 进程属性：`allbypass`
