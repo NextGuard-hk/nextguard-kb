@@ -1,0 +1,50 @@
+---
+title: LMS 标签服务
+category: spe
+order: 9
+---
+
+# LMS 标签服务
+
+## 日志
+
+```
+/opt/skyguard/ucs/var/log/lms.log  #标签日志
+```
+
+## LabelManagementService
+
+LabelManagementService（标签服务），端口8858，mysql数据库端口8859
+
+```bash
+netstat -anpt |grep 8859
+tcp        0      0 127.0.0.1:8859          0.0.0.0:*               LISTEN
+3742/mysqld
+netstat -anpt |grep 8858
+tcp        0      0 127.0.0.1:8858          0.0.0.0:*               LISTEN
+33579/LabelManageme
+```
+
+## lms标签配置
+
+```xml
+<component name="LMS">
+    <id>8</id>
+    <type>LMS</type>
+    <cip>127.0.0.1</cip>
+    <cport>8858</cport>
+    <bport/>
+    <uuid>05a3c3b7-9bf4-464f-b082-6076f0910a67</uuid>
+    <SubscribedSystemConfig>DLPServer.global.logging</SubscribedSystemConfig>
+    <SubscribedSystemEvent/>
+    <SubscribedPolicies/>
+    <StartCMD>/opt/skyguard/ucs/bin/LabelManagementService</StartCMD>
+    <StopCMD/>
+    <IsStart>true</IsStart>   #关闭后，mysql挂掉就不会拉起
+    <enabled>true</enabled>   #关闭后，mysql挂掉就不会拉起
+    <heartbeat>30</heartbeat>
+    <silence>5</silence>
+    <InternalInterface>LMS.8.internal.v1</InternalInterface>
+    <ProxyInterface>LMS.8.lms_service_tag.v1,LMS.8.util_service.v1</ProxyInterface>
+</component>
+```
