@@ -1,0 +1,32 @@
+---
+title: "M1电脑关闭SIP和降低安全性步骤"
+description: "M1芯片Mac电脑关闭SIP和降低安全性的详细步骤"
+---
+
+# M1电脑关闭SIP和降低安全性步骤
+
+## 步骤说明
+
+### 第一步：进入恢复模式
+
+长按电源键，直到出现如图界面，点击【Options】进入下一步。
+
+### 第二步：打开Startup Security Utility
+
+从菜单栏点击【Startup Security Utility】。
+
+### 第三步：降低安全性
+
+点击【Startup Security Utility】后进入的页面，选择降低安全性选项。
+
+### 第四步：关闭SIP
+
+打开Terminal，执行以下命令：
+
+```bash
+csrutil disable
+```
+
+### 第五步：重启
+
+执行完成后重启电脑即可。
