@@ -1,0 +1,27 @@
+---
+title: "在XenServer环境中部署旁路模式方法"
+description: "XenServer虚拟环境搭建旁路镜像环境方法"
+section: "办公"
+date: "2024-12-24"
+---
+
+# 在XenServer环境中部署旁路模式方法
+
+## 概述
+
+XenServer虚拟环境搭建旁路镜像环境，因为默认ovs会对收到的流量的Mac地址进行学习。
+
+## 步骤
+
+1. 将Span的网卡单独放到一个物理网络
+2. 查看所有的Br对应的Port，通过命令查看
+
+```bash
+[root@xenserver-xxaemvyd ~]# ovs-vsctl list-br
+b01abd7d-329c-44cb-97bd-a...
+Bridge "xkxenbr0"
+```
+
+## 配置XenServer旁路镜像
+
+详细配置方法请参考附件《XenServer配置旁路镜像环境》 PDF文档。
