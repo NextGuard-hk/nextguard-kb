@@ -1,0 +1,40 @@
+---
+title: "宁德时代 - 邮件审批通知不发送"
+description: "宁德时代邮件审批通知不发送问题排查"
+---
+
+# 宁德时代 - 邮件审批通知不发送了
+
+## 问题描述
+
+宁德时代环境邮件审批通知不发送。
+
+## 环境信息
+
+- ucss01: 4.194.64.45
+- ucss02: 4.193.165.16
+
+## 排查过程
+
+### 1. 检查日志
+
+日志显示 notification 插入后出现 "main is null, restart" 错误，导致通知进入 main retry 队列。
+
+```
+[2025-02-05 10:21:02.490][INFO][ne notification: {"id":659526,"third
+[2025-02-05 10:21:02.504][INFO][ne = 659526 from main is null, restart
+[2025-02-05 10:21:02.508][INFO][ne : 0 into main retry
+```
+
+### 2. 检查Redis队列
+
+Redis中存在大量堆积的通知数据：
+
+```
+redis 10.0.0.14:6379> auth <password>
+OK
+redis 10.0.0.14:6379> HLEN network_incident_id_set_key
+(integer) 65717
+```
+
+Redis中堆积了65717条未处理的通知记录，导致审批通知无法正常发送。
