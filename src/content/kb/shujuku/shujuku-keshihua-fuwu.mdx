@@ -1,0 +1,110 @@
+---
+title: "KB-可视化服务"
+description: "可视化服务架构、认证方式(Check-in/Check-out)及Restful API接口说明"
+---
+
+# KB-可视化服务
+
+## 1. 架构图
+
+可视化服务架构包含以下核心组件：
+
+- **可视化服务** 和 **第三方接口** 作为前端入口
+- **Gateway** 作为网关层，负责路由和认证
+- **DSAG** 和 **SWG** 作为业务处理模块
+- **Data-Provider** 作为数据提供层
+- **Redis**、**PG**、**ES** 作为底层数据存储
+
+### 请求流程
+
+1. Check-in：客户端向Gateway发起认证请求
+2. Response Token：Gateway返回访问令牌
+3. Restful API：使用Token访问业务接口
+4. Check-out：释放令牌资源
+
+### 数据流
+
+1. 持次请求：Gateway将请求转发到DSAG/SWG
+2. Request：DSAG/SWG向Data-Provider请求数据
+3. Response：Data-Provider从Redis/PG/ES获取数据并返回
+4. 整合返回数据：Gateway整合后返回给客户端
+
+## 2. 概要
+
+可视化服务、第三方服务平台通过请求Restful API获取所需数据。
+
+在访问API之前，需要进行认证，通过请求Check-in接口并在header加入Authorization:Basic base64("admin:3DES(passwd,access-key)")，请求体中加入当前服务的client-id，sps提供的gateway认证通过且请求合法，sps会自动生成token缓存与Redis中，后续所有请求只需要带上token和自身的client-id即可提供正常服务，token缓存时间默认最大30分钟。
+
+Restful API请求到gateway后，根据请求URL的特性，gateway负责转发到相关的模块，例如，当请求SWG日志的统计信息，gateway根据请求URL转发到SWG服务，SWG服务再根据请求参数整合自身数据，若需要sps提供ES或者PG数据可以使用定义的接口访问Data-Provider Service获取。
+
+PG | ES | Redis 目前仅支持Data-Provider Service连接，暂不提供开放给其他系统服务直连获取数据，若需要获取相关数据，需定义Restful API来获取相关数据。
+
+## 3. 认证方式 (Check-in / Check-out)
+
+### 3.1 概述
+
+在客户端访问UCSS API接口前，客户端必须向UCSS申请令牌。令牌申请需要在请求header中包含正确的用户名和密码，其中密码需要密文传送，使用3DES加密方式进行加密，加密的密钥需登录ucss管理平台在管理员页面申请获取access-key。
+
+- 3DES加密模式：ECB
+- 填充：pkcs5padding
+- 输出：base64
+
+### 3.2 Check-in
+
+**Request:**
+```
+POST https://UCSS_IP:8443/qkact/v1/checkin HTTP/1.1
+Content-Type: application/json
+Authorization: Basic base64("admin:3DES(passwd,access-key)")
+User-Agent: QKAct-External-Client
+{
+  "client-id": "5817AFB7-A263-43CA-BD2A-39C93E36210C"
+}
+```
+
+**Response:**
+```json
+{
+  "status": 0,
+  "client-ip": "192.168.1.11",
+  "access-token": "bcde6c8-73ec-11df-a475-0022647abcde",
+  "expiration": "Tue Oct 23 10:22:09 UTC 2018",
+  "client-id": "5817AFB7-A263-43CA-BD2A-39C93E36210C"
+}
+```
+
+注释：Authorization使用Basic base64("admin:3DES(passwd,access-key)")，密码部分使用3DES对称加密。
+
+### 3.3 Check-out
+
+**Request:**
+```
+DELETE https://UCSS_IP:8443/qkact/v1/checkin/bcde6c8-73ec-11df-a475-0022647abcde HTTP/1.1
+Content-Type: application/json
+Authorization: Basic base64("client-id:access-token")
+User-Agent: QKAct-External-Client
+```
+
+**Successful Response:**
+```json
+{
+  "status": 0,
+  "reason": "success",
+  "access-token": "bcde6c8-73ec-11df-a475-0022647abcde",
+  "client-id": "5817AFB7-A263-43CA-BD2A-39C93E36210C"
+}
+```
+
+**Failure Response:**
+```json
+{
+  "status": 1,
+  "reason": "invalid token"
+}
+```
+
+## 4. 可视化Restful API
+
+### 4.1 概述
+
+提供给可视化/第三方接口的数据。在Check-in成功后，可视化平台通过授权Token访问API获取页面所需要的数据，可以根据页面需要的指标调用相应的API接口。
