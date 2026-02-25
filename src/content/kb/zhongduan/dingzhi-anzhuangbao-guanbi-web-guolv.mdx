@@ -1,0 +1,54 @@
+---
+title: "定制终端安装包关闭Web过滤功能"
+description: "通过修改ucsc_sdk_config配置文件关闭WFELite组件实现关闭web过滤"
+---
+
+# 定制终端安装包关闭Web过滤功能
+
+## 操作步骤
+
+### 1. 解密配置文件
+
+找一台已安装agent的电脑，找到文件 `ucsc_sdk_config` 并解密：
+
+```bash
+cd "C:\Program Files\SkyGuard\SkyGuard Endpoint\UCSCSDK\bin"
+ucsc_util.exe --decrypt des "C:\custom_config.xml" C:\custom_config1.xml
+```
+
+### 2. 修改配置
+
+将 WFELite 组件的 `is_start` 字段从 `true` 改为 `false`：
+
+```xml
+<component name="WFELite">
+  <is_start>false</is_start>
+</component>
+```
+
+### 3. 重新加密
+
+修改完成后重新加密配置文件：
+
+```bash
+ucsc_util.exe --encrypt des "C:\custom_config1.xml" C:\custom_config.xml
+```
+
+### 4. 放入安装包
+
+将加密后的文件放入新的安装包目录：
+
+```
+Endpoint_3.5.0-100029159-win\custom\EndpointAgent\etc
+```
+
+### 5. 修改 custom_config.xml
+
+在安装包的 `custom_config.xml` 中增加以下配置项：
+
+```xml
+<item>
+  <source_path>EndpointAgent/etc/ucsc_sdk_config.xml</source_path>
+  <destination_path>%WEP_DIR%\UCSCSDK\etc\ucsc_sdk_config.xml</destination_path>
+</item>
+```
