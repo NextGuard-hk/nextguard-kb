@@ -1,0 +1,41 @@
+---
+title: "MAC终端"
+description: "Mac终端安全模式卸载与脚本卸载方法"
+date: "2023-02-15"
+category: "终端"
+---
+
+# MAC终端
+
+## 安全模式卸载
+
+### 方法1 - 恢复模式下手动卸载
+
+已验证方法：
+
+1. 进入恢复模式，打开terminal终端工具
+2. 删除plist
+
+```bash
+rm /Volumes/Macintosh HD/Library/LaunchDaemons/com.skyguard.*
+rm /Volumes/Macintosh HD/Library/LaunchAgents/com.skyguard.*
+```
+
+3. 删除文件
+
+```bash
+rm -rf /Volumes/Macintosh HD/Library/Application Support/SkyGuard
+rm -rf /Volumes/Macintosh HD/User/<用户名>/Library/Application Support/SkyGuard
+```
+
+4. 重启
+
+### 方法2 - 脚本卸载
+
+使用DLP-uninstall脚本：
+
+```bash
+bash uninstall_endpoint.sh "卸载密码"
+```
+
+或使用uninstall315脚本进行卸载。
