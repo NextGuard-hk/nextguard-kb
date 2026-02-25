@@ -1,0 +1,29 @@
+---
+title: "特扫设备连接失败"
+section: "tesao"
+date: "2022-03-18"
+---
+
+# 特扫设备连接失败
+
+参考Wiki: https://wiki.skyguard.com.cn/pages/viewpage.action?pageId=6035147
+
+## 问题现象
+
+如图所示，显示特扫设备连接失败。
+
+## 原因分析
+
+原因是：ucss改了ip地址，特扫客户端类似终端安装包，生成的时候的ip不对应导致。
+
+## 定位日志路径
+
+```
+C:\Users\skyguard\AppData\Local\Temp\skyguardScan\ucsc_sdk\
+var
+%temp%
+```
+
+## 解决方法
+
+生成的工具上报的dm地址不对哇。需要重新确认ucss的IP地址并重新生成特扫客户端安装包。
