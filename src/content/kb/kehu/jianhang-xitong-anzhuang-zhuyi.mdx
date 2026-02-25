@@ -1,0 +1,36 @@
+---
+title: "建行 - 系统安装注意事项"
+section: "kehu"
+date: "2024-09-20"
+customer: "建行"
+---
+
+# 建行系统安装注意事项
+
+参考记录: `\\tsfiles.skyguardmis.com\TSFiles\jizhin`
+
+首次入场实施 ASEG部署安装介质
+
+## bind mount限制
+
+建行不让bind mount是因为会触发他们的规范要求。
+
+顺利：客户不让bind-mount的事情了解，原因是 /etc 这是Linux的标准挂载，UOS系统默认都会使用。不过Bind的目录设置要放最后，先把Bind的目录挂载。
+
+## 3.15 Kylin系统安装
+
+1. var的路径，正常是不允许应用直接部署的
+2. 过去应该是通过软连接的方式使用的，没有放在 var
+3. 应用用户是指区别于 root 的普通用户
+
+## LVM分区配置
+
+```
+volgroup vg00 --pesize=32768 pv.761
+logvol swap --fstype="swap" --size=16
+logvol /var --fstype="xfs" --size=819
+logvol /opt --fstype="xfs" --size=409
+logvol /tmp --fstype="xfs" --size=819
+logvol /home --fstype="xfs" --size=20
+logvol / --fstype="xfs" --size=15360
+```
