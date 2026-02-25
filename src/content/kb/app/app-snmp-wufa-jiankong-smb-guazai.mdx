@@ -1,0 +1,38 @@
+---
+title: "snmp无法监控到smb挂载目录的空间"
+description: "通过SNMP查询远程证据存储空间时无法监控到smb挂载目录的解决方案"
+section: "app"
+date: "2025-01-15"
+---
+
+# snmp无法监控到smb挂载目录的空间
+
+## 需求
+
+客户想通过SNMP查询远程证据存储空间大小。
+
+## 问题
+
+执行 `snmpwalk -v2c -c skyguard 192.168.0.10 .1.3.6.1.4.1.2021.9.1.2` 后发现无法到这个分区。
+
+## 解决办法
+
+尝试先执行重启SNMP服务，这样应该会重新加载磁盘信息：
+
+```bash
+/etc/init.d/snmpd restart
+```
+
+重启完毕后，看看是否达到预期。如果依旧是不显示，请执行：
+
+```bash
+vi /etc/snmp/snmpd.conf
+```
+
+新增以下配置：
+
+```
+disk /var/skyguard/sps/forensics 10%
+```
+
+再次查询，就有了。
