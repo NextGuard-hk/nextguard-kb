@@ -1,0 +1,43 @@
+---
+title: "开启PG、ES外部访问权限"
+description: "如何开启PostgreSQL和Elasticsearch的外部访问接口"
+---
+
+# 开启PG、ES外部访问权限
+
+## 操作步骤
+
+打开 `/etc/appliance/compose.yaml`，增加端口映射配置。
+
+### PostgreSQL端口映射
+
+在pgsql服务下增加ports配置：
+
+```yaml
+pgsql:
+  image: "pgsql"
+  restart: always
+  ports:
+    - 5432:5432
+```
+
+### Elasticsearch端口映射
+
+在es服务下增加ports配置：
+
+```yaml
+es:
+  image: "elasticsearch"
+  restart: always
+  ports:
+    - 9200:9200
+```
+
+## 注意事项
+
+如果不能连接，执行防火墙命令：
+
+```bash
+ufw allow 5432/tcp
+ufw allow 9200/tcp
+```
