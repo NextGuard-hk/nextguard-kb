@@ -1,0 +1,40 @@
+---
+title: "hotfix补丁安装相关"
+description: "UCSS hotfix补丁安装过程中的常见问题和解决方法"
+date: 2023-02-18
+category: ucss
+tags: ["hotfix", "补丁", "openssl", "sps", "seg"]
+---
+
+# hotfix补丁安装相关
+
+## sps补丁安装时需要依赖openssl
+
+安装SPS hotfix补丁时，可能会出现如下错误：
+
+```
+openssl: error while loading shared libraries: libssl.so...
+pkg: error: cannot access archive '/tmp/hotfix_build/debs'
+failed to build image sps-full:3.10.0-034
+```
+
+### 确认方法
+
+```bash
+[root@UCSS2 ~]# openssl
+openssl: error while loading shared libraries: libssl.so...
+```
+
+### 解决办法
+
+```bash
+yum install openll进行安装
+[root@UCSS1 ~]# openssl
+OpenSSL>
+```
+
+安装openssl后重新执行hotfix补丁安装即可。
+
+## seg补丁卸载会恢复配置
+
+> **注意**：seg补丁卸载会恢复配置，license过期时需要特别注意。
