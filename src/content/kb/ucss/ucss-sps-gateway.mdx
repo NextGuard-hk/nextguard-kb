@@ -1,0 +1,22 @@
+---
+title: sps-gateway服务
+description: sps-gateway服务说明，负责复制代理转发网关证据和事件给sps
+---
+
+# sps-gateway服务
+
+## 说明
+
+3.15后，新增了一个sps-gateway服务，这个服务复制代理转发网关送过来的证据和事件给sps。
+
+如果这个服务挂了，事件和证据就会上传不成功。
+
+## 日志路径
+
+```
+/opt/skyguard/sps/logs/sps-gateway/sps-gateway.log
+```
+
+## 功能
+
+这个服务负责把事件和证据通过incident的9989端口送给incident进行入库。
