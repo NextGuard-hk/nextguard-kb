@@ -1,0 +1,66 @@
+---
+title: "后台自动打补丁脚本"
+description: "后台自动打补丁的方法和shell脚本，包含手动安装和自动化脚本两种方式"
+section: "app"
+date: "2024-09-20"
+---
+
+# 后台自动打补丁脚本
+
+## 手动安装补丁
+
+> 注意：这种方法页面不会有任何记录，不推荐
+
+```bash
+cd /opt/skyguard/download/hotfix/
+dpkg -i Hotfix-SPS-3.15.0-HF038_all.deb
+```
+
+```bash
+cd workdir/
+cd SPS-3.15.0-HF038/
+```
+
+## 可以实现和页面打补丁一样的效果的方法
+
+### 步骤
+
+1. 使用远程工具将文件传到要安装的设备 `/opt/skyguard/download/hotfix` 目录
+2. 将相同的补丁上传到本地同版本的设备平台后查看 `hotfix_availablelist.json`，复制里面的配置文件到 `/opt/skyguard/download/hotfix`
+3. 执行下述命令
+
+```bash
+curl -X POST -d '{"action":"install","id":"需要填写hotfix_availablelist.json中的id"}' http://127.0.0.1:8885/app/v1/hotfix/action
+```
+
+## Shell脚本
+
+```bash
+#!/bin/bash
+
+BASE_URL="http://127.0.0.1:8885/app/v1/hotfix/"
+HOTFIX_ID="ucwi-3.15.0-hf003"
+HOTFIX_FILE="hotfix-ucwi-3.15.0-hf003.deb"
+
+case "$1" in
+  "install")
+    DATA='{"action":"install","id":"'$HOTFIX_ID'"}'
+    curl -X POST -d "$DATA" "$BASE_URL/action"
+    ;;
+  "uninstall")
+    DATA='{"action":"uninstall","id":"'$HOTFIX_ID'"}'
+    curl -X POST -d "$DATA" "$BASE_URL/action"
+    ;;
+  "remove")
+    DATA='{"action":"remove","id":"'$HOTFIX_ID'"}'
+    curl -X POST -d "$DATA" "$BASE_URL/action"
+    ;;
+  "upload")
+    curl -X POST -F "hotfixfile=@$HOTFIX_FILE" "$BASE_URL/uploadHotfix"
+    ;;
+  *)
+    echo "Usage: $0 {install|uninstall|remove|upload}"
+    exit 1
+    ;;
+esac
+```
