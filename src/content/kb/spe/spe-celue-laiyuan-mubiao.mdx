@@ -1,0 +1,51 @@
+---
+title: KB-策略文件/来源目标详解/来源目标例外邮件地址不生效定位方法
+description: 策略文件中来源目标例外邮件地址不生效的定位和排查方法
+---
+
+# KB-策略文件/来源目标详解
+
+## 问题
+
+建行2.0环境，客户反馈某用户来源目标都做了例外，还是命中了策略，需要定位原因。
+
+## 1、新建两个来源目标
+
+DLP管理 > 策略元素 > 来源/目标，均是电子邮件地址。
+
+## 2、同时启用两个策略
+
+这两个策略都引用了来源和目标例外。
+
+## 3、进入ORS.db查询
+
+查询Policy_emailaddress表和Policy_objectallinfo表。
+
+发现：
+1. Policy_objectallinfo表和启用的策略数量并没有关系
+2. Policy_objectallinfo表中的uuid是随机生成的
+3. 实际测量策略匹配和ORS.db中的数据没有关系，ORS.db只是记录，并不进行匹配
+
+## 导出策略配置文件分析
+
+```bash
+cd /opt/skyguard/ucs/bin
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/skyguard/ucs/lib"
+./spe_internal_util getPolicyConfig
+```
+
+生成的策略文件路径：`/opt/skyguard/ucs/tmp/spe/policy_config_file/policy_config`
+
+vi编辑该文件，先定位到策略名称，然后查看策略配置中的关键字段：
+
+- `name` - 策略名称
+- `sourcesAndDestinations.exceptions` - 例外配置
+- `conditions.groupUuid` - 来源/目标的UUID
+- `conditions.type` - 14表示来源，15表示目标
+- `sourceAndDestGroups` - 当前启用策略引用的来源/目标信息
+- `email` - 添加的邮箱地址
+- `mode` - 14表示来源，15表示目标
+
+## 判断方法
+
+通过`./spe_internal_util getPolicyConfig`生成的策略文件，可以看出来源目标中是否包含相关邮箱地址。
