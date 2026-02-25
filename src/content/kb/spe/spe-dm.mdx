@@ -1,0 +1,67 @@
+---
+title: "DM设备管理"
+description: "DM(DeviceManager)设备管理模块说明、服务状态、日志及事件证据目录"
+date: "2023-11-24"
+category: "spe"
+tags: ["DM", "SPE", "DeviceManager", "设备管理"]
+---
+
+# DM设备管理
+
+## 概述
+
+DM即DeviceManager，主要负责终端接入、数据传输等功能。
+
+## 服务状态配置
+
+服务能否启动，首先取决于配置文件中dm服务状态：
+
+```
+/opt/skyguard/ucs/etc/DLPServer.xml
+```
+
+确定页面相关服务状态，比如设备管理。
+
+## 终端ITM堆积日志
+
+```
+/opt/skyguard/ucs/var/dm/itm_log
+```
+
+## DM事件证据临时目录
+
+- 终端事件堆积/事件缓存：`/opt/skyguard/ucs/var/dm/incident`
+- 终端证据堆积/证据缓存：`/opt/skyguard/ucs/var/dm/forensics`
+
+## 设备管理功能
+
+包含以下功能：
+- 设备管理/SPS连接情况
+- 终端策略同步压力情况
+- 终端注册
+
+## DM日志
+
+主日志路径：
+```
+/opt/skyguard/ucs/var/log/dm.log
+```
+
+查看是否收到事件或证据文件：
+```bash
+grep eml /opt/skyguard/ucs/var/log/dm.log
+grep json /opt/skyguard/ucs/var/log/dm.log
+grep 'has reported successfully' /opt/skyguard/ucs/var/log/dm.log  #表示送sps成功
+```
+
+## 确认UCSS/UCSSlite是否收到终端上传的证据文件/事件
+
+```bash
+vi /opt/skyguard/ucs/var/log/dm.log |grep 'has reported'
+```
+
+日志中会显示：
+- `SysLog.exsync - the forensic file ... has reported successfully.`
+- `SysLog.exsync - the incident file ... has reported successfully.`
+- `SysLog.statistic - the current forensic size is: xxx`
+- `SysLog.statistic - the current event count is: xxx`
