@@ -1,0 +1,24 @@
+---
+title: "Firefox 终端应用配置"
+description: "Linux系统下Firefox Snap版本无法注入的解决方法"
+---
+
+# Firefox 终端应用配置
+
+## Linux 上 Firefox 不能注入
+
+### 问题现象
+
+Linux 终端上出现 Firefox 不能注入的问题。
+
+通过 `ps aux | grep firefox` 查看，发现路径为 `/snap/firefox/` 开头。
+
+### 解决办法
+
+这是 Ubuntu 系统的 Snap 沙箱版本 Firefox。
+
+需要添加进程属性：
+
+```
+snap-name=firefox
+```
