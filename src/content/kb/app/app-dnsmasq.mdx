@@ -1,0 +1,27 @@
+---
+title: "dnsmasq问题排查"
+description: "APP服务器dnsmasq服务无法启动的解决方法"
+section: "app"
+date: "2023-04-14"
+---
+
+# dnsmasq问题排查
+
+## TS-8723问题定位
+
+ts容器内dnsmasq无法启动。
+
+### 临时解决办法
+
+停掉宿主机的dnsmasq，开启ats容器内的dnsmasq。
+
+### 配置说明
+
+dnsmasq配置文件路径：
+```
+/var/skyguard/redis/data/cat /etc/default/dnsmasq
+```
+
+反馈加了 `bind-interfaces` 就好了。
+
+> 还有一个Ubuntu软件化部署案例，注释掉 `bind-dynamic` 这个配置就好了。
