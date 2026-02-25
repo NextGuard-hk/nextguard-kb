@@ -1,0 +1,52 @@
+---
+title: "KB-排查9001/9002端口是否被占用"
+description: "排查EndpointTrafficServer的9001/9002端口被占用问题及解决方法"
+category: "终端"
+tags: ["端口占用", "9001", "9002", "EndpointTrafficServer", "netstat"]
+---
+
+# KB-排查9001/9002端口是否被占用
+
+## 排查步骤
+
+### 1. 检查端口占用情况
+
+```cmd
+netstat -ano |findstr 9001
+```
+
+示例输出：
+```
+TCP 127.0.0.1:9001   0.0.0.0:0   LISTENING   5556
+```
+
+### 2. 查看PID对应的服务
+
+```cmd
+tasklist /fi "pid eq <PID>" /svc
+```
+
+示例：
+```cmd
+tasklist /fi "pid eq 5556" /svc
+```
+
+如果是 EndpointTrafficServer.exe 占用，则为正常情况。如果是其他进程（如 YunShu.exe）占用，则需要进行端口变更。
+
+## 解决办法
+
+当 9001/9002 端口被其他程序占用时，需要修改 ETS 配置文件中的端口。
+
+### 修改步骤
+
+1. **停止终端保护**（必须先停止保护才能修改配置）
+2. 打开安装目录下的配置文件：`\Endpoint\etc\EndpointTrafficServerConf.xml`
+3. 搜索 `9001`，将其修改为其他未被占用的端口（如 `9011`）
+4. **重启电脑**
+
+### 注意事项
+
+- 9002 端口是基于 9001 + 1 自动计算的
+- 例如将 9001 改为 9011，则 9002 会自动变为 9012
+- 修改前必须停止终端保护
+- 修改后需要重启电脑生效
