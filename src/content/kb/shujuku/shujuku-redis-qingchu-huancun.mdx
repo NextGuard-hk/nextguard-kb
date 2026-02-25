@@ -1,0 +1,28 @@
+---
+title: "KB-手动清除缓存方法"
+description: "Redis手动清除缓存的方法和步骤"
+---
+
+# KB-手动清除缓存方法
+
+## 操作步骤
+
+手动清除缓存方法如下：
+
+### 1. SSH登录UCSS后台
+
+切换到root用户。
+
+### 2. 进入Redis并删除缓存
+
+```bash
+redis-cli -n 1
+```
+
+进入redis后执行删除命令：
+
+```bash
+del dlp_notification_forensics_ids
+```
+
+即可解决。
