@@ -1,0 +1,41 @@
+---
+title: "UCSS页面登录关闭验证码方法"
+description: "3.16版本开启或关闭UCSS Web登录验证码的配置方法"
+---
+
+# UCSS页面登录关闭验证码方法
+
+## 问题描述
+
+用户希望UCSS登录可以支持多因素验证。
+
+## 环境要求
+
+UCSS 3.15 SP1 及以上版本支持该功能。
+
+## 解决方案
+
+从MCSS后台进行配置：
+
+```bash
+# dcin sps
+# cd /var/skyguard/sps/program-data/config/
+# cp base_config.properties base_config.properties.bak
+# vi base_config.properties
+```
+
+将以下配置项修改为 `true`：
+
+```
+mamanger_login_captcha_enable=true
+```
+
+保存后重启服务：
+
+```bash
+# service tomcat restart
+```
+
+## 关联工单
+
+EI-8763 & GAT-10327
