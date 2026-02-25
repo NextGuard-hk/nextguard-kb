@@ -1,0 +1,98 @@
+---
+title: "自动清除日志脚本相关"
+description: "APP日志自动清理、logrotate配置与磁盘清理脚本"
+section: "app"
+date: "2022-11-09"
+---
+
+# 自动清除日志脚本相关
+
+## 定时器
+
+`/etc/cron.hourly/logrotate`
+
+## Logrotate配置
+
+### APP日志轮转
+
+`/etc/logrotate.d/appliance_logrotate`
+
+```
+/var/log/skyguard/app/app.log
+/var/log/skyguard/app/cli.log
+{
+    rotate 7
+    daily
+    missingok
+    notifempty
+    size 20M
+    compress
+    delaycompress
+    create 666
+    syslog adm
+    postrotate
+        invoke-rc.d rsyslog rotate > /dev/null
+    endscript
+}
+```
+
+### Nginx日志轮转
+
+```
+/var/log/nginx/access.log
+{
+    rotate 7
+    weekly
+    missingok
+    notifempty
+    size 20M
+    compress
+    delaycompress
+    create 666 root
+    postrotate
+        docker restart nginx > /dev/null
+    endscript
+}
+```
+
+## 磁盘自动清理脚本
+
+### Cron配置
+
+`/etc/cron.d/sg_disk_check`
+
+```
+* */5 * * * root /opt/skyguard/app/bin/sg_disk_check
+```
+
+### 清理脚本路径
+
+`/opt/skyguard/app/bin/sg_disk_check`
+
+```bash
+#!/bin/bash
+
+limit_core_files()
+{
+    # if all core files bigger than 4GB
+    # remove half of them by time order, delete older files first.
+    core_size=`du -sm /var/log/cores | awk '{print $1}'`
+    if [ $core_size -gt 4096 ]; then
+        count=`ls /var/log/cores/ -l | wc -l`
+        del_count=`expr $count / 2`
+        echo "will delete $del_count core files"
+        ls -tr /var/log/cores/ | head -n $del_count | while read line;
+        do
+            rm -rf /var/log/cores/$line
+        done
+    fi
+}
+
+clean_old_core_files()
+{
+    # clean core files in ats container
+    grep -q "ats:" /etc/appliance/compose.yaml && docker exec appliance_ats_1 /bin/bash -c "rm -rf /var/local/core*"
+    # clean core files in spe container
+    docker exec appliance_spe_1 /bin/bash -c "rm -rf /var/local/core*"
+}
+```
