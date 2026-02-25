@@ -1,0 +1,25 @@
+---
+title: "KB-重启sps-incident事件和日志均无法入库/删除定时器方法"
+description: "sps-incident重启后事件和日志无法入库的排查与定时器删除方法"
+section: "ucss"
+date: "2023-10-25"
+---
+
+# KB-重启sps-incident事件和日志均无法入库
+
+## 背景
+
+客户反馈网络事件和邮件日志都无法入库，页面无法发现事件。经过初步排查，发现事件和日志都堆积到了网关，是ucss无法入库。
+
+## 原因
+
+1. 发现sps-incident.log反复报缺少pg数据库中缺少字段
+2. 证据目录中存在大量异常文件
+
+## 解决方法
+
+删除定时器并重启服务：
+```bash
+/etc/init.d/sps-incident start
+supervisorctl restart sps-incident
+```
