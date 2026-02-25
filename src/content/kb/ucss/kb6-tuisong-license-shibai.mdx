@@ -1,0 +1,38 @@
+---
+title: KB6-导入授权时提示"推送license到后台Appliance失败"
+date: 2022-06-17
+category: ucss
+tags: ["license", "授权", "推送失败", "appliance"]
+---
+
+# KB6-导入授权时提示"推送license到后台Appliance失败"
+
+## 场暯1：容器化版本
+
+UCSS设备导入授权时，提示"推送license到后台Appliance失败"
+
+### 分析
+
+查眎manager.log日志，发现报错信息。进入spe容器，发现spe-service、dlpserver无法启动。
+
+DMServer.xml配置文件大小为0kb。
+
+### 原因
+
+Appliance会把SPS推送来的License再推给后台去更新，license到后台失败。
+
+DLPServer.xml、DMServer.xml配置文件为0kb的情况，在初始化系统时，会有较大量的写入操作，操作系统会把写入放到U盘一个缓存。如果硬盘上Sync的操作没有完成，文件就会丢失。
+
+### 解决办法
+
+1. 新项目建议重新安装，由于无法快速清点影响的文件（关机、拔电、磁盘空间满会有这种情况）
+2. 虚拟化平台安装，请避免直接克隆方式部署
+   a. 创建虚拟机，导入镜像安装母版系统
+   b. 安装完成后，系统会自动重启，进入选择设备类型
+   c. 不要克隆正在运行的虚拟机
+   d. 系统初始化时会有较大量的写入操作，请不要在拔电等情况下进行
+
+查找0kb的文件：
+```
+find /opt/skyguard/ucs/etc/ -name "*.xml" -size 0
+```
