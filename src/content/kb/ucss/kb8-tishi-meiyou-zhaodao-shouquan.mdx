@@ -1,0 +1,45 @@
+---
+title: "KB8-提示没有找到授权证书/授权无效"
+date: 2022-06-17
+category: ucss
+tags: ["license", "授权", "无效", "device-id", "克隆"]
+---
+
+# KB8-提示没有找到授权证书/授权无效
+
+## 可能恧1
+
+服务器克隆过，后台device id发生变化，和第一次的不一样，要以第二次为准。
+
+通过后台命令行查看device-id：
+```
+# show device-id
+63a64d56-372f-a81b-2b5e-b8c102574...
+```
+
+也可以通过dmidecode命令查看：
+```bash
+dmidecode -s system-uuid
+```
+
+确认页面上显示的device_id和后台命令查询的是否一致。如果不一致，以后台命令查询结果为准。
+
+## 可能恧2
+
+device-id大小写问题，在页面上导出的device_id为空，在后台使用命令导出的UUID为大写，直接用大写的UUID申请的授权，设备id跟 license里不一致，应该用小写的。
+
+需要用页面下载的小写的license去申请。如果用大写的deviceid申请会有问题。
+
+## 查询服务器硬件/device id信
+
+如果丢失会导致license导入失败，提示授权无效。
+
+```bash
+dmidecode -t system   #查看所有信息
+dmidecode -s system-uuid   #查看设备device id信息
+```
+
+示例输出：
+```
+D57F716E-8520-FD7C-BA12-E2D0736DA90A
+```
