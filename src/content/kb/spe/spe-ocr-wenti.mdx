@@ -1,0 +1,66 @@
+---
+title: OCR 相关问题
+category: spe
+order: 9
+---
+
+# OCR 相关问题
+
+## OCR队列状态统计
+
+OCR队列状态统计显示当前等待处理图片数量和扫描超时图片数量的趋势。
+
+查看当前OCR的负载状态：
+- 当前OCR的负载状态：2个
+
+## OCR任务队列里积压的请求数量
+
+使用OCRUtil查看队列状态：
+
+```bash
+root@ucs [spe]:/opt/skyguard/ucs/bin# ./OCRUtil -ocr.current_load_status
+```
+
+输出示例：
+```
+ocr.current_load_status : 7
+ocr.total_available_nums : 127405
+ocr.total_received_nums : 130501
+ocr.total_timeout_nums : 2332
+ocr.total_waitting_nums : 1
+queue.free_queue_size : 249
+queue.pending_queue_size : 5
+queue.request_queue_max_size : 256
+queue.running_queue_size : 2
+slave0_restart_count : 8
+slave1_restart_count : 9
+slaves.started_slaves_nums : 2
+slaves.working_slaves_nums : 2
+```
+
+字段说明：
+- `ocr.current_load_status`: 当前负载状态
+- `ocr.total_available_nums`: 总可用数量
+- `ocr.total_received_nums`: 总接收数量
+- `ocr.total_timeout_nums`: 超时总数
+- `ocr.total_waitting_nums`: 当前等待数量
+- `queue.pending_queue_size`: 队列积压数量
+- `queue.running_queue_size`: 当前运行中的任务数
+- `slaves.working_slaves_nums`: 当前工作的slave数量
+
+## 常见问题排查
+
+### OCR伴随大量超时
+
+1. 检查slave restart次数，如果slave0/slave1重启过多，说明服务不稳定
+2. 查看队列积压情况：`queue.pending_queue_size`
+3. 考虑增加WorkersCount提高并发处理能力
+4. 检查`/opt/skyguard/ucs/tmp/ocr`分区占用情况
+
+### 如何判断OCR服务器性能是否够用
+
+通过后台统计界面查看实时OCR队列状态，包括：
+- 待处理图片数量
+- 扫描超时图片数量
+
+如果队列中长期不断积压请求，说明服务器性能不足，需要调整配置或升级硬件。
