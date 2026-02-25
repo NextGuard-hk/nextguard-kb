@@ -1,0 +1,40 @@
+---
+title: "华星光电 - IO高问题排查"
+description: "华星光电(CSOT)服务器IO高问题排查记录，包含ATOP监控数据、LVM磁盘状态分析"
+---
+
+# 华星光电 - IO高问题排查
+
+**日期**: 2024年1月9日 16:55
+
+## 问题概述
+
+华星光电服务器 WH-mdlp01 出现IO过高问题，通过ATOP工具进行排查。
+
+## ATOP监控数据
+
+- **服务器**: WH-mdlp01
+- **CPU平均负载**: avg1=4.20, avg5=3.82, avg15=2.68
+- **内存**: 总计31.3G，空闲5.9G，缓存15.8G
+- **交换分区**: 总计14.9G，空闲14.9G
+
+## LVM磁盘状态
+
+| LVM卷 | 状态 | 读取 |
+|-------|------|------|
+| p--vg-lv_app | busy 101% | read 351 |
+| --vg-lv_data | busy 82% | read 77 |
+| p--vg-lv_log | busy 30% | read 95 |
+| --vg-lv_root | busy 14% | read 116 |
+| app--vg-swap | busy 1% | read 0 |
+
+## 磁盘状态
+
+| 磁盘 | busy | 读取 |
+|------|------|------|
+| sda | 101% | 639 |
+| sdb | 2% | 1463 |
+
+## 分析结果
+
+主要IO瓶颈在 lv_app 卷，busy达到101%，对应sda磁盘。需要检查/opt/skyguard/ucs/var/cache目录下的文件堆积情况，包括Policy、ORS等相关文件。
