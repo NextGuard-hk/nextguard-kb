@@ -1,0 +1,36 @@
+---
+title: "招行2千万海量邮件日志导出方法"
+description: "使用Elasticsearch scroll API导出招行2千万海量邮件日志的方法"
+---
+
+# 招行2千万海量邮件日志导出方法
+
+## 背景
+
+招行需要导出2千万条邮件日志数据。
+
+## 导出步骤
+
+### 1. 设置滚动查询
+
+每次请求1万条邮件日志，设置滚动标识有效期60分钟：
+
+```bash
+curl -H 'Content-Type: application/json' -XPOST \
+  "http://127.0.0.1:9200/email-message*/_search?pretty&scroll=1m" \
+  -d '{"size":10000,"query":{"match_all":{}}}' > 1
+```
+
+### 2. 获取scroll_id继续查询
+
+获取上一次的scroll_id，继续查询：
+
+```bash
+curl -H 'Content-Type: application/json' -XPOST \
+  "http://127.0.0.1:9200/email-message*/_search?pretty&scroll" \
+  -d '{"scroll":"1m","scroll_id":"your_scroll_id"}' > 2
+```
+
+### 3. 重复获取
+
+重复步骤2，每次使用新的scroll_id，直到所有数据导出完成。
