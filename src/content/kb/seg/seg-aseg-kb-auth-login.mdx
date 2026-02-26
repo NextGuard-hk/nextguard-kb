@@ -1,0 +1,55 @@
+---
+title: "KB-什么情况下客户端会主动发送auth login"
+category: seg
+order: 16
+---
+
+# KB-什么情况下客户端会主动发送auth login
+
+## lab环境（3.3）测试情况
+
+### 场景1：MTA开启认证，客户端IP不在授信列表
+
+如果mta开启认证，客户端ip不在授信列表，认证环节，客户端没有主动发出auth login报文，mta就会回复：
+
+```
+5.5.2 Error: command not recognized
+```
+
+SMTP会话示例：
+
+```
+ehlo 123
+250-seg.com
+250-STARTTLS
+250-AUTH PLAIN LOGIN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 SMTPUTF8
+123
+502 5.5.2 Error: command not recognized
+```
+
+邮件连接日志中会显示连接失败。
+
+### 场景2：关闭认证，客户端主动发送auth login
+
+如果关闭认证，客户端主动发送auth login时，mta的回复是：
+
+```
+authentication not enabled
+```
+
+SMTP会话示例：
+
+```
+ehlo 123
+250-seg.com
+250-STARTTLS
+250-ENHANCEDSTATUSCODES
+250 8BITMIME
+auth login
+503 5.5.1 Error: authentication not enabled
+```
+
+注意：当认证关闭时，服务器的EHLO响应中不会包含`250-AUTH PLAIN LOGIN`行。
