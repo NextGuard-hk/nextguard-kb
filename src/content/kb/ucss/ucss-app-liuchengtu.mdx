@@ -1,0 +1,25 @@
+---
+title: "APP流程图"
+description: "APP组件架构流程图，包含nginx、ats、apache2等组件及端口关系"
+---
+
+# APP流程图
+
+## 架构概述
+
+APP组件架构如下：
+
+- **对外端口**: 9443
+- **nginx**: 作为前端反向代理
+- **对内端口**: 8885
+- **APP**: 主应用服务
+- **ats**: Traffic Server容器
+- **apache2**: Web服务器
+- **日志路径**: /var/log
+
+流程：
+1. 外部请求通过端口9443进入nginx
+2. nginx转发到内部端口8885到APP
+3. APP处理业务逻辑
+4. ats和apache2提供底层服务
+5. 日志输出到/var/log目录
