@@ -1,0 +1,61 @@
+---
+title: "3.mail.log日志分析"
+category: seg
+order: 10
+---
+
+# 3.mail.log日志分析
+
+## 开启mail.log丰富日志/针对指定投递ip开启debug日志
+
+```bash
+postconf -Pe smtp/unix/debug_peer_ist=172.20.27.123  #指定ip
+postconf -Pe smtp/unix/debug_peer_list=mx1.mail.139.com  #指定域名
+postfix reload  #加载生效
+postconf -Pe smtp/unix/debug_peer_ist=  #取消指定ip/域名的debug日志
+postfix reload  #加载生效
+```
+
+**说明：** 如果是tls加密传输，可能还需要设置在高级配置中，选择TLS强制明文。
+
+## 查看邮件原文回滚状态
+
+```bash
+tail -f /var/log/mail.log |grep cleanup
+```
+
+日志示例（cleaner进程回滚邮件原文）：
+
+```
+Sep 8 16:01:45 SEG3 cleaner[2889]: cleanup /mailarchive/2019/04/22
+Sep 8 16:01:45 SEG3 cleaner[2914]: gap_size: 31964 KB < 282336 KB, cleanup by hour begin
+Sep 8 16:01:47 SEG3 cleaner[3040]: cleanup done
+Sep 8 16:59:03 SEG3 cleaner[14467]: cur_size: 318463968 KB max_size:314572800 KB
+Sep 8 17:59:04 SEG3 cleaner[27912]: cur_size: 314570080 KB max_size:314572800 KB, cleanup skip
+```
+
+## relay、removed、delay/delays含义
+
+### relay
+
+- `relay=1.lrhealth.com[172.16.192.37]:25` 表示根据高级路由解析到下一跳的投递地址
+- `relay=mx1.mail.139.com[120.232.169.1]:25` 表示根据dns解析的139邮箱的mx记录，确定邮递下一跳的ip地址
+- `relay=none` 表示邮件延迟，进入队列，等待下一次投递。一般是上一次连接这个下一跳邮件网关报错，系统会默认对投递到下一跳的所有邮件进行延迟投递
+
+### removed
+
+- `removed` 表示投递完成，清理队列
+
+### delay/delays
+
+- `delay=419` 表示这封邮件从收到到发出总共耗时419秒
+- `delays=x1/x2/x3/x4` 4个值加起来就是delay的投递总耗时时间
+
+### delays=x1/x2/x3/x4详解
+
+| 参数 | 含义 |
+|------|------|
+| x1 | 邮件进入邮件系统后到被调度到active队列之间的时间跨度，基本可作为队列消耗时间（包括策略分析消耗的时间） |
+| x2 | 从active到被传输进程获取到任务的时间跨度，基本消耗点在内部队列，一般都很短 |
+| x3 | 进程获取到任务到开始发送mail from命令的时间跨度，主要消耗在TCP握手、建立连接 |
+| x4 | mail from命令到最终邮件传输完毕的时间跨度，主要受带宽影响 |
