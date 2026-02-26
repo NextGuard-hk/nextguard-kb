@@ -1,0 +1,97 @@
+---
+title: "02.邮件回溯"
+category: seg
+order: 9
+---
+
+# 02.邮件回溯
+
+## 流程
+
+dsg/seg 把邮件原文通过8815端口送给cae分析，同时redis中记录回溯的进度。
+
+抓包命令：
+
+```bash
+tcpdump -i eth0 host 169.254.253.8 and port 8815 -w /tmp/1600.cap
+```
+
+相关日志（UCSS）：
+
+```bash
+tail -f /opt/skyguard/sps/logs/sps-webservice/webservice.log |grep mailBack
+```
+
+## 邮件回溯对应服务
+
+```bash
+ps -ef |grep seg-mail-services
+root  406  396  0 Aug08 ?  /usr/share/seg-mail-services/mail-recheck-com 169.254.253.2 6379 Redis@SkyGuard253.2
+root  662  406  0 Aug08 ?  /usr/share/seg-mail-services/mail-recheck-com 169.254.253.2 6379 Redis@SkyGuard253.2
+```
+
+## 查看邮件回溯服务和spe的连通性
+
+```bash
+netstat -anpt |grep 8815 |grep mail
+```
+
+## 对应的配置文件
+
+```bash
+cat /usr/share/seg-mail-services/conf/mail_check.config
+```
+
+配置示例：
+
+```json
+{
+  "version": 1,
+  "work-thread": 2,
+  "every-conns": 2,
+  "expire-time": 30,
+  "keep-alive": 2,
+  "debug": 0,
+  "db-index": 0,
+  "db-ip": "169.254.253.2",
+  "db-port": 6379,
+  "db-pass": "Redis@SkyGuard253.2",
+  "server-port": 8815,
+  "server-ip": "169.254.253.7"
+}
+```
+
+## 查看待回溯任务的总邮件数量
+
+通过redis查看回溯任务列表：
+
+```bash
+redis-cli -n 6379 -a Redis@SkyGuard253.2
+llen "SEG_MAIL_RECHECK_TASK_DISPATCH_LIST"
+```
+
+## redis记录回溯进度相关信息（seg）
+
+```bash
+redis-cli -n 6379 -a Redis@SkyGuard253.2
+hgetall "SEG_MAIL_RECHECK_TASK_STATS_<uuid>"
+```
+
+Redis字段说明：
+
+| 字段 | 说明 |
+|------|------|
+| backtrackingMailLogSum | 网关设备收到的任务总数 |
+| processedMail | 回溯任务当前阶段执行完成的数量 |
+| hitPolicyMail | 命中dlp策略分析的事件数量 |
+| nonExistent | 邮件原文已经无法找到的数量 |
+
+## 邮件回溯数值说明
+
+1. 预览列表邮件数量：记录多少邮件日志满足过滤条件，并且在入库时邮件原文存放在网关设备上
+2. 网关设备Redis数据库中：backtrackingMailLogSum字段值，表示网关设备收到的任务总数
+3. 网关设备Redis数据库中：processedMail字段值，表述回溯任务当前阶段执行完成的数量
+4. 网关设备Redis数据库中：nonExistent字段值，表示邮件原文已经无法找到的数量
+5. 网关设备Redis数据库中的信息在回溯任务大的情况下会分批回传给UCSS，作为回溯进度统计数据。当processedMail/backtrackingMailLogSum等于1时，此台网关设备的回溯任务完成。
+
+**备注：** 没有邮件原文的邮件日志进行回溯时，cae会跳过，不会匹配任何策略。
