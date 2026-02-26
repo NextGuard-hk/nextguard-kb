@@ -1,0 +1,135 @@
+---
+title: "KB-ES Proxy API日志查询使用手册"
+description: "ES Proxy API日志查询使用手册，包含Check-in/Check-out认证、Index查询、Search接口及各类日志查询示例"
+---
+
+# KB-ES Proxy API日志查询使用手册
+
+## 1. 认证方式 (Check-in Check-out)
+
+### 概述
+
+在客户端访问UCSS API接口前，客户端必须向UCSS申请令牌。令牌申请需要在请求header中包含正确的用户名和密码，其中密码需要密文传送，使用3DES加密方式进行加密，加密的密钥需登录UCSS管理平台在管理员页面申请获取access-key，验证通过后即可成功申请令牌。
+
+客户端在后续请求中需将令牌返回给客户端。令牌有过期时间限制，使用过期的令牌会导致UCSS返回“无效令牌”错误，收到此错误时重新申请令牌即可。
+
+### 密码加密使用方式
+
+API认证使用DESede/ECB/PKCS5Padding加密方式，使用access-key作为加密密钥，加密admin得密码。
+
+加密工具网站：http://tool.chacuo.net/crypt3des
+
+### Check-in
+
+Request:
+```
+POST https://UCSS_IP:8443/qkact/v1/checkin HTTP/1.1
+Content-Type: application/json
+Authorization: Basic base64("admin: 3DES(passwd,access-key)") 遵照1.2节方法
+User-Agent: QKAct-External-Client
+{
+    "client-id": "5817AFB7-A263-43CA-BD2A-39C93E36210C"
+}
+```
+
+Response:
+```json
+{
+    "status": 0,
+    "client-ip": "192.168.1.11",
+    "access-token": "bcde6c8-73ec-11df-a475-0022647abcde",
+    "expiration": "Tue Oct 23 10:22:09 UTC 2018",
+    "client-id": "5817AFB7-A263-43CA-BD2A-39C93E36210C"
+}
+```
+
+### Check-out
+
+Request:
+```
+Delete https://UCSS_IP:8443/qkact/v1/checkin/{access-token} HTTP/1.1
+Content-Type: application/json
+Authorization: Basic base64("client-id:access-token")
+User-Agent: QKAct-External-Client
+```
+
+Successful Response:
+```json
+{
+    "status": 0,
+    "reason": "success",
+    "access-token": "bcde6c8-73ec-11df-a475-0022647abcde",
+    "client-id": "5817AFB7-A263-43CA-BD2A-39C93E36210C"
+}
+```
+
+Failure Response:
+```json
+{
+    "status": 1,
+    "reason": "invalid token"
+}
+```
+
+## 2. ES API查询
+
+ES API开放全部ES的功能，修改、删除、归档、快照等功能不进行开放，目前仅支持查询功能，包括index查询、文档查询、聚合。若有修改、删除等相关的请求，ES proxy将校验不通过。目前仅支持GET和POST类型请求。
+
+### Index查询接口
+
+Request:
+```
+Get https://UCSS_IP:8443/sps/v1/proxy/_cat/indices?v
+Content-Type: application/json
+Authorization: Basic base64("client-id:access-token")
+User-Agent: QKAct-External-Client
+```
+
+### Search接口
+
+Request:
+```
+Post https://UCSS_IP:8443/sps/v1/proxy/{index}/_search
+Get https://UCSS_IP:8443/sps/v1/proxy/{index}/_search?serialId=1
+```
+
+注意：{index}为2.1查询的index或者直接使用email-message。POST可以使用ES查询语句按条件搜索，GET可获取该ID的所有邮件详情信息。
+
+## 3. Index列表
+
+| Index | 描述 |
+|-------|------|
+| dlp-network, dlp-discovery, dlp-endpoint, dlp-mobile | DLP事件 |
+| swg | SWG日志 |
+| email-message | 邮件日志 |
+| connect-log | 邮件连接日志 |
+| itm-scores | ITM报告 |
+| mobile-app-incident, mobile-mag-log | 移动事件 |
+| ucwi | 行为日志 |
+| redaction | 脱敏日志 |
+| classify | 数据分类日志 |
+| dlp-watermark | 终端打印水印记录 |
+| dlp-dsag-discovery | 数据资产监控 |
+
+## 4. 示例：邮件日志查询
+
+ES中邮件日志所有字段请参考双击打开。
+
+Request:
+```
+Post https://UCSS_IP:8443/sps/v1/proxy/email-message/_search
+Content-Type: application/json
+Authorization: Basic base64("client-id:access-token")
+User-Agent: QKAct-External-Client
+{
+    //POST请求参数 是ES查询/聚合的规范
+    "from": 0, "size": 20,
+    "query": {
+        "bool": {
+            "filter": [{"terms": {"serialId": [4]}}]
+        }
+    }
+}
+```
+
+serialId为邮件日志界面中“邮件ID”字段。
