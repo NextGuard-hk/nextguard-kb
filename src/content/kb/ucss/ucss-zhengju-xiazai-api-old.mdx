@@ -1,0 +1,80 @@
+---
+title: "KB-证据下载API-old（base64加密版）"
+description: "证据下载API旧版（base64加密）接口文档，包含网络事件查询、UCWI证据下载及常见错误处理"
+---
+
+# KB-证据下载API-old（base64加密版）
+
+API实现研发：毛羚杨
+
+## 接口说明
+
+```
+POST https://{ip}:{port}/sps/v1/incident/forensics
+request headers:
+{
+  "Authorization": "Basic xxxxxxxxxx"  // 用户名密码base64编码
+}
+request body:
+{
+  "transactionId": "xxxxxxxxx",  // 流量uuid
+  "incidentType": 1  // 事件类型：1=网络事件，2=终端事件
+}
+```
+
+### 参数说明
+
+| 参数 | 说明 | 备注 |
+|------|------|------|
+| transactionId | 事件的流量uuid | |
+| incidentType | 事件类型 | 1=网络事件，2=终端事件 |
+
+## 使用方式
+
+1. 在“账户管理” > “角色”中创建一个拥有事件下载功能的角色
+2. 在“管理员”中创建一个管理员，并关联使用步骤1的角色
+3. 将创建的用户名和密码通过base64编码后放入Authorization头
+4. 根据使用接口的环境发送POST请求
+
+### curl示例
+
+```bash
+curl -X POST https://{ip}:8443/sps/v1/incident/forensics \
+  -H "Authorization: Basic YWRtaW46RmlyZXdhbGwx" \
+  -d '{"transactionId": "xxx", "incidentType": 1}'
+```
+
+## UCWI证据下载
+
+body里面换成query_id也可以。
+
+```
+GET https://{ip}:8443/sps/v1/incident/forensics
+```
+
+返回结果包含邮件原文（multipart/mixed格式，base64编码）。
+
+## 常见报错
+
+### 1. responseCode: 500
+
+密码过期或认证失败。检查用户名密码是否正确，确认base64编码无误。
+
+### 2. responseCode: 403
+
+用户无访问权限。检查用户角色是否具有事件下载权限。
+
+### 3. responseCode: 400
+
+URL错误或请求体格式不正确。检查incidentType字段是否正确。
+
+### 4. responseCode: 503
+
+用户无法访问。可能是API接口被关闭。检查配置：
+
+```bash
+grep turn /opt/skyguard/sps/apps/sps.properties
+# turnoff_rest_api_token_auth=false
+```
+
+`false`表示允许API调用，修改为`true`后就不支持API调用了。
