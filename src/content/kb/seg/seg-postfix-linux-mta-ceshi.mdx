@@ -1,0 +1,47 @@
+---
+title: "Linux平台MTA测试工具"
+category: seg
+order: 47
+---
+
+## 测试工具
+
+### swaks
+
+swaks是Linux平台常用的SMTP测试工具。
+
+#### 安装
+
+```bash
+apt-get install swaks
+# 或
+ yum install swaks
+```
+
+#### 基本用法
+
+```bash
+swaks --to user@example.com --from sender@example.com --server 127.0.0.1 --port 25
+```
+
+#### 带附件发送
+
+```bash
+swaks --to user@example.com --from sender@example.com --server 127.0.0.1 --attach /path/to/file
+```
+
+#### 带认证发送
+
+```bash
+swaks --to user@example.com --from sender@example.com --server 127.0.0.1 --auth LOGIN --auth-user username --auth-password password
+```
+
+### telnet
+
+参考《手动发邮件方法 - Telnet》文档。
+
+### mailx
+
+```bash
+echo "测试内容" | mailx -s "测试主题" user@example.com
+```
