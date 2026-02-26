@@ -1,0 +1,34 @@
+---
+title: "邮件队列生存时间相关"
+category: seg
+order: 41
+---
+
+## 队列生存时间配置
+
+邮件队列中的邮件有生存时间限制，超过时间后会被自动删除并发送退信。
+
+### 查看当前配置
+
+```bash
+postconf -h maximal_queue_lifetime
+postconf -h bounce_queue_lifetime
+```
+
+### 修改配置
+
+```bash
+# 设置最大队列生存时间为5天
+postconf -e maximal_queue_lifetime=5d
+
+# 设置退信队列生存时间为5天
+postconf -e bounce_queue_lifetime=5d
+
+# 生效
+postfix reload
+```
+
+### 默认值
+
+- `maximal_queue_lifetime`: 5d（5天）
+- `bounce_queue_lifetime`: 5d（5天）
