@@ -1,0 +1,24 @@
+---
+title: VIP无法生成
+description: VIP无法生成问题排查，VRRP广播包异常和VRID不一致导致的VIP故障
+---
+
+# VIP无法生成
+
+## 问题现象
+
+日志显示 VRRP_Instance(VI_Ngmt_2) 持续收到无效的 VRRP 广播包（bogus_VRRP packet），并提示：
+
+```
+ip address associated with VRID 2 not present in MASTER advert
+```
+
+说明当前节点（可能是 BACKUP 角色）收到的 MASTER 节点广播包中缺少预期的虚拟路由 ID（VRID 2）对应的 IP 地址。
+
+## 原因
+
+两台设备的VRID配置不一致导致。
+
+## 解决方法
+
+检查并确保两台设备的keepalived.conf中的virtual_router_id配置一致。
