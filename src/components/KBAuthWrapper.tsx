@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 
 export default function KBAuthWrapper({ children }: { children: React.ReactNode }) {
   const [isAuth, setIsAuth] = useState<boolean | null>(null)
@@ -40,7 +39,6 @@ export default function KBAuthWrapper({ children }: { children: React.ReactNode 
     }
   }
 
-  // Loading state - checking auth
   if (isAuth === null) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -49,18 +47,16 @@ export default function KBAuthWrapper({ children }: { children: React.ReactNode 
     )
   }
 
-  // Authenticated - show content
   if (isAuth) {
     return <>{children}</>
   }
 
-  // Not authenticated - show login
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">\uD83D\uDD12</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
             <h1 className="text-2xl font-bold text-white">Knowledge Base</h1>
           </div>
           <p className="text-gray-400 mb-6 text-sm">
