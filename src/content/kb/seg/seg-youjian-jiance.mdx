@@ -1,0 +1,45 @@
+---
+title: "邮件检测（rspamd、反病毒、反垃圾）"
+category: seg
+order: 62
+---
+
+## rspamd
+
+### 日志汇总
+
+```bash
+/var/log/rspamd/rspamd.log  |grep 'matched pattern'
+/var/log/rspamd/rspamd.log  |grep 'no action'
+(no action): [1.27/15.00]
+```
+
+### 二维码检测
+
+```bash
+/var/log/rspamd/rspamd.log |grep qrcode
+```
+
+### 超时汇总设置
+
+```
+/etc/rspamd/local.d/seg_antivirus.conf
+content_location = 0;
+content = "";
+max_size = 20971520;
+archive_scan = 1;
+archive_max_rec = 20;
+timeout = 30;  #默认30s
+```
+
+### rspamd接口超时配置
+
+当附件较大时，可能需要调整rspamd接口的超时时间，避免检测超时导致邮件处理失败。
+
+## 反病毒
+
+反病毒引擎负责检测邮件附件中的病毒。支持小红伞（Avira）等反病毒引擎。
+
+## 反垃圾
+
+反垃圾引擎负责检测垃圾邮件。基于评分机制判断邮件是否为垃圾邮件。
