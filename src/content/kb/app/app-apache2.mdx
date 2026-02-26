@@ -1,0 +1,21 @@
+---
+title: Apache2 日志与监控
+description: Apache2日志文件说明、监听端口排查及抓包定位方法
+---
+
+# Apache2 日志与监控
+
+## 日志文件
+
+- `/var/log/apache2/access.log` | `error.log` - 记录网关和sps的连接情况，事件证据传输情况，比如网络事件uuid查询
+- `/var/log/apache2/ssl_access.log` - 事件或者文件是否传输200ok
+- `/var/log/apache2/webService_ssl_access.log` - 容器化环境使用
+
+## 监听端口
+
+有些报错无法定位时，也可以通过抓包的方式去定位。
+
+```bash
+netstat -anpt |grep :8888
+tcp   0   0 127.0.0.1:8888   12433/apache2
+```
