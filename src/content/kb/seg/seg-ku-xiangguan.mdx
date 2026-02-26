@@ -1,0 +1,51 @@
+---
+title: "库相关组件与更新"
+category: seg
+order: 58
+---
+
+## 组件概述
+
+ats组件负责URL库更新相关。
+
+查看组件状态：
+```bash
+dcin ats
+/etc/init.d/postfix status
+/etc/init.d/rspmd status
+/etc/init.d/trafficserver status
+```
+
+后台日志排查：
+```bash
+/etc/init.d/trafficserver status  # 查看trafficserver状态
+ls -lh /etc/trafficserver/        # 查看对应的文件目录
+```
+
+## 库更新端口及地址
+
+库更新需要联网下载，确保网络连接正常。
+
+## 01.病毒库
+
+病毒库更新的常见问题包括：
+- 如何获取最新的病毒库
+- 管理口不通外网时的更新方法
+- 离线病毒库获取和更新
+- 小红伞License更新
+- 手动导入HBEDV文件
+
+## 02.URL分类概述
+
+URL分类库用于对网址进行分类检测。
+
+- ucss的URL分类更新机制
+- UCSS URL分类查询
+- 分类库更新失败问题排查
+- URL SDK并发查询问题
+
+## 03.垃圾库
+
+垃圾库更新的常见问题：
+- 垃圾库点击下载更新失败
+- 垃圾库更新失败案例分析
