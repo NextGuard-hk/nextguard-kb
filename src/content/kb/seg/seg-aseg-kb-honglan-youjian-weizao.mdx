@@ -1,0 +1,55 @@
+---
+title: "红蓝对抗之邮件伪造"
+category: seg
+order: 25
+---
+
+## 邮件传输协议简介
+
+1. **SMTP** (Simple Mail Transfer Protocol)：用于邮件发送和转发
+2. **POP3** (Post Office Protocol 3)：用于接收邮件
+3. **IMAP** (Internet Message Access Protocol)：用于在邮件服务器上存储和管理邮件
+4. **work together**：三者协同工作
+
+## 邮件伪造防护协议简介
+
+1. **SPF** (Sender Policy Framework)：以IP地址去检查该域名的spf记录，判断邮件是否伪造
+2. **DKIM** (DomainKeys Identified Mail)：将公钥设置到dns上，将邮件的签名插入邮件头中进行验证
+3. **DMARC** (0x03)：基于SPF和DKIM进一步验证
+
+## 伪造的方法总结
+
+1. 第三方SMTP服务器认证用户名与Mail From字段不一致
+2. Mail From头和From头不一样
+3. 空Mail From头
+4. 多个From头
+5. From头上写多个Email地址
+6. 解析不一致产生的攻击
+7. 字段编码产生的攻击
+8. 利用Sender头进行伪造
+9. 利用子域名未设置SPF
+10. 利用未作验证的邮件转发服务
+11. 利用转发服务器来骗一个合法的DKIM签名
+12. 利用IDN域名
+13. 利用不可见字符，截断字符影响渲染结果
+14. 控制字符串的显示顺序来影响渲染结果
+
+## SMTP基本命令
+
+```
+telnet MTAIP 25
+helo xialei.com
+mail from: <user1@segdemo.com>
+rcpt to: <out@outdemo.com>
+data
+from: Keith Ho <keithho@qdg.com>
+subject: 测试邮件
+.
+quit
+```
+
+## SEG防护建议
+
+- 启用SPF/DKIM/DMARC检查
+- 配置发件人伪造检测策略
+- 对外部邮件声称来自内部域名的进行拦截
