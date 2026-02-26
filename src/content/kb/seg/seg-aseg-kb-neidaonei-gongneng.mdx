@@ -1,0 +1,40 @@
+---
+title: "邮件内到内功能"
+category: seg
+order: 32
+---
+
+## 功能说明
+
+ASEG支持内到内（Internal-to-Internal）邮件模式，可以在初始化时选择是否开启。
+
+## 初始化时选择
+
+在SkyGuard Management Console的Step 5中，会提示：
+
+```
+Handle the internal mail mode.
+Please choose Y/N (No):N
+```
+
+- 默认是N，或者回车即可（正常模式）
+- 选择Y则开启内到内模式
+
+## 内到内模式的影响
+
+如果选择了内到内模式，正常模式下的外发邮件会显示为未分析。
+
+## 判断当前模式
+
+查看配置文件：
+
+```bash
+cat /etc/rspamd/local.d/seg_policy.conf
+```
+
+- `system_mode = 0` 表示正常模式
+- `system_mode = 1` 表示内到内模式
+
+## 切换模式
+
+如果要更换模式，需要重新初始化即可。
