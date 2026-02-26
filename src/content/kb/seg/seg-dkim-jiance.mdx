@@ -1,0 +1,33 @@
+---
+title: DKIM检测
+category: seg
+order: 70
+---
+
+# DKIM检测
+
+DKIM(DomainKeys Identified Mail)域名密钥识别邮件，用于验证邮件的真实性和完整性。
+
+## DKIM原理
+
+DKIM使用公钥/私钥加密机制：
+
+1. 发件服务器使用私钥对邮件内容进行签名
+2. 签名信息添加到邮件头中
+3. 接收服务器通过DNS查询发件域的公钥
+4. 使用公钥验证签名是否有效
+
+## 配置选项
+
+- 可设置当DKIM验证失败时的动作
+- 支持关闭、拒绝、标记等处理方式
+
+## 查询DKIM记录
+
+```bash
+nslookup -q=txt <selector>._domainkey.<域名>
+```
+
+## 说明
+
+DKIM是在发件服务器端配置的，发件时会在邮件头中添加DKIM签名。接收方通过查询DNS中的DKIM公钥记录来验证签名的有效性。
