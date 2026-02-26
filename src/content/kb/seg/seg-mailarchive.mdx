@@ -1,0 +1,41 @@
+---
+title: "邮件原文存储（mailarchive）"
+category: seg
+order: 56
+---
+
+## 查看邮件日志是否回滚
+
+```bash
+grep cleaner /var/log/mail.log
+```
+
+## 存储空间配置
+
+默认本地储存最小50G，即便F12页面修改为50G以下，也依旧按 50G生效。
+
+| 参数 | 默认值 | 说明 |
+|------|------|------|
+| 事件证据大小限制 | 100 MB | 单个事件证据文件大小限制 |
+| 邮件本地存储空间 | 50 GB | 邮件文件最大占用空间 |
+| 邮件远程存储空间 | 500 GB | 邮件文件最大占用空间 |
+
+## 邮件原文回滚周期
+
+1小时回滚一次（ATS容器中）
+
+```bash
+/opt/skyguard/www/seg/cleaner.sh
+```
+
+定时任务配置：
+
+```bash
+root@SEG3:/etc/cron.d#
+grep cleaner *
+segapi:0 * * * * root /opt/skyguard/www/seg/cleaner.sh >/dev/null 2>&1
+```
+
+seg-038之后，优化如下：
+1. 回滚设置每小时59分钟
+2. 采用du天去实现，第一次du每一天，后续每次只需要du最新的邮件目录
