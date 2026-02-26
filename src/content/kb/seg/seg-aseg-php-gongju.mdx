@@ -1,0 +1,36 @@
+---
+title: "ASEG PHP工具使用"
+category: seg
+order: 24
+---
+
+## ASEG PHP工具使用
+
+此引擎工具已合并至ASEG 3.2版本，只分析结果，不对结果做解析与统计，在ASEG后台可以直接使用。
+
+### 示例
+
+```bash
+php /opt/skyguard/www/seg/eml.php -s wqfdsjf@jtmj.com -r job@mail.nanfangdaily.com.cn -i 120.7.127.29 -f /home/skyguardts/325894.eml |json_pp
+```
+
+### 参数说明
+
+| 参数 | 说明 |
+|------|------|
+| `-h` | 打印帮助说明 |
+| `-f` | eml文件路径 |
+| `-d` | eml文件夹（会遍历文件夹里面的所有文件进行检查） |
+| `-s` | 发件人邮箱 |
+| `-r` | 收件人邮箱，以英文逗号“,”分隔 |
+| `-i` | 发件IP地址（默认为127.0.0.1） |
+| `-l` | 输出文件（默认输出至控制台） |
+| `--text` | 格式化输出json，否则一个json结果输出为一行文本 |
+| `-c` | 设置并发请求数，默认100个并发 |
+
+### JSON结果说明
+
+- `start`：开始处理时间
+- `end`：结束处理时间
+- `result`：分析结果（permit/reject/redirect/discard）
+- `rules`：命中的规则信息
