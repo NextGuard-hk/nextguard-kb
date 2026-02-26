@@ -1,0 +1,32 @@
+---
+title: "KB-如何判断网关是否进行了时间同步"
+description: "判断网关是否进行了时间同步的方法，查看定时同步日志"
+---
+
+# KB-如何判断网关是否进行了时间同步
+
+## 说明
+
+315版本开始，时间同步靠定时任务，并不会5分钟检查一次。
+
+## 定时任务配置
+
+```bash
+cat /etc/cron.d/synctime
+# 08 15 * * * root curl 127.0.0.1:8883/v2/synctime/syncTry
+```
+
+## 定时同步日志
+
+```bash
+grep syncTry /var/log/skyguard/app/lcag.log
+```
+
+日志示例：
+```
+[GIN] 2024/02/24 - 01:01:01 | 200 | "/v2/synctime/syncTry"
+[GIN] 2024/02/25 - 01:01:01 | 200 | "/v2/synctime/syncTry"
+[GIN] 2024/02/26 - 01:01:01 | 200 | "/v2/synctime/syncTry"
+```
+
+如果日志中能看到syncTry记录且返回200，说明网关已经进行了时间同步。
