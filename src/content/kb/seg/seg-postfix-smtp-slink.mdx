@@ -1,0 +1,35 @@
+---
+title: "SMTP-Slink的用法"
+category: seg
+order: 49
+---
+
+## 功能说明
+
+SMTP-Slink用于配置Postfix的邮件转发规则，可以指定特定域名的邮件转发到指定的MTA。
+
+## 配置文件
+
+```
+/etc/postfix/transport
+```
+
+## 配置示例
+
+```
+example.com    smtp:[192.168.1.100]:25
+.example.com   smtp:[192.168.1.100]:25
+*              smtp:[10.0.0.1]:25
+```
+
+## 生效配置
+
+```bash
+postmap /etc/postfix/transport
+postfix reload
+```
+
+## 注意事项
+
+- 修改transport文件后必须执行postmap
+- 方括号表示直接连接IP，不做MX查询
