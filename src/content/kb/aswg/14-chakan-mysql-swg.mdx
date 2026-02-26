@@ -1,0 +1,28 @@
+---
+title: "14、查看mysql及swg相关服务状态"
+category: aswg
+order: 13
+---
+
+# 14、查看mysql及swg相关服务状态
+
+## 查看mysql状态
+
+```bash
+systemctl status mysql
+# 或
+/etc/init.d/mysql status
+```
+
+## 查看SWG相关服务
+
+```bash
+/etc/init.d/trafficserver status
+/etc/init.d/swgtransfer status
+ps -ef | grep traffic
+```
+
+## 常见问题
+
+- mysql服务无法启动：检查磁盘空间和日志文件
+- swg服务异常：重启trafficserver服务
