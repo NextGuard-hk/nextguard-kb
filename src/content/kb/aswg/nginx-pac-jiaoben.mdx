@@ -1,0 +1,35 @@
+---
+title: "利用Nginx搭建PAC脚本服务"
+category: aswg
+order: 21
+---
+
+# 利用Nginx搭建PAC脚本服务
+
+## 背景
+
+PAC (Proxy Auto-Configuration) 脚本用于自动配置浏览器代理设置。
+
+## Nginx配置
+
+```nginx
+server {
+    listen 80;
+    server_name pac.example.com;
+
+    location /proxy.pac {
+        alias /etc/nginx/pac/proxy.pac;
+        types { application/x-ns-proxy-autoconfig pac; }
+    }
+}
+```
+
+## PAC脚本示例
+
+```javascript
+function FindProxyForURL(url, host) {
+    if (isPlainHostName(host))
+        return "DIRECT";
+    return "PROXY proxy.example.com:8080";
+}
+```
