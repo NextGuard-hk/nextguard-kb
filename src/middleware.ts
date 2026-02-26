@@ -1,39 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  // Only protect /kb routes
   const { pathname } = request.nextUrl
 
-  // Allow access to login page, API routes, and static assets
+  // Allow API routes, static assets, and non-KB pages
   if (
-    pathname === '/login' ||
+    !pathname.startsWith('/kb') ||
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/static/') ||
-    pathname.includes('.') // static files like .css, .js, .png, etc.
+    pathname.includes('.')
   ) {
     return NextResponse.next()
   }
 
-  // Check for auth cookie
+  // Check for kb_auth cookie (set by /api/kb-auth POST with value 'true')
   const authCookie = request.cookies.get('kb_auth')
-
-  if (!authCookie || authCookie.value !== 'authenticated') {
-    // Redirect to login page
-    const loginUrl = new URL('/login', request.url)
-    return NextResponse.redirect(loginUrl)
+  if (authCookie?.value === 'true') {
+    return NextResponse.next()
   }
 
+  // Not authenticated - let the page load (KBAuthWrapper will show login form)
   return NextResponse.next()
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * Match KB routes only
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/kb/:path*',
   ],
 }
