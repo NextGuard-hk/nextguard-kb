@@ -1,0 +1,125 @@
+---
+title: VIP切换相关定位
+description: VIP切换问题定位与排查方法，包括确定VIP位置、切换条件分析和时间点判断
+---
+
+# VIP切换相关定位
+
+## 确定VIP在哪台UCSS上面
+
+通过查看keepalived状态确定VIP所在节点：
+
+```bash
+# 在UCSS1上查看
+[root@UCSS1 keepalived]# service keepalived status
+# Dec 21 15:54:20 UCSS1 Keepalived_vrrp[88] for 172.22.2.19
+# 表示UCSS1处于master模式
+
+# 在UCSS2上查看
+root@UCSS2 ~]# service keepalived status
+# Dec 21 15:54:20 UCSS2 Keepalived_vrrp[31]
+# 表示UCSS2处于backup模式
+```
+
+查看详细VRRP状态：
+
+```bash
+[root@UCSS2 ~]# service keepalived status
+# Jan 10 10:57:28 UCSS2 Keepalived_vrrp[31] ens192 for 172.22.2.193
+# Jan 10 10:57:28 UCSS2 Keepalived_vrrp[31]
+# Jan 10 11:03:52 UCSS2 Keepalived_vrrp[31] ours 90
+# Jan 10 11:03:52 UCSS2 Keepalived_vrrp[31]
+# Jan 10 11:03:52 UCSS2 Keepalived_vrrp[31]
+```
+
+表示UCSS2在10:57:28时还时master，在11:03时切换了状态。
+
+## VIP切换条件
+
+keepalived配置文件中的检查脚本：
+
+```bash
+cat /etc/keepalived/keepalived.conf
+vrrp_script check_ucss {
+    script "/bin/nc -vz 169.254.253.6 8443"
+    interval 2
+}
+```
+
+### 切换条件1
+
+宿主机 `nc -vz 169.254.253.6 8443` 端口不通。
+
+**原因：** SPS容器内，apache2组件发生异常。
+
+**判断方法：**
+
+```bash
+root@UCSS1-sps:/# /etc/init.d/apache2 status
+# * apache2 is running
+
+root@UCSS1-sps:/# netstat -anpt |grep 8443
+# tcp 0 0 169.254.253.6:59422 169.x.x.x
+```
+
+如果是8443端口不通导致的ucss_master发生切换，可以通过查看apache2错误日志确认：
+
+```bash
+grep 8443 /var/log/apache2/webService_error.log
+# [Tue Jan 10 06:46:03.525653 2023] [ssl:warn] which matches the server name
+# [Tue Jan 10 10:49:35.354168 2023] [ssl:warn] which matches the server name
+```
+
+### 切换条件2
+
+UCSS2（slave）收不到UCSS1发出的VRRP组播报文。
+
+下图是正常能收到报文的情况：
+
+```bash
+[root@UCSS2 ~]# tcpdump -iany -n -nn vrrp
+# tcpdump: verbose output suppressed, use -v
+# listening on any, link-type LINUX_SLL
+# 11:18:36.176285 IP 172.22.2.191 > 224.0.0.19: V
+# 11:18:37.176430 IP 172.22.2.191 > 224.0.0.19: V
+# 11:18:38.176836 IP 172.22.2.191 > 224.0.0.19: V
+# 11:18:39.177022 IP 172.22.2.191 > 224.0.0.19: V
+```
+
+**原因：** 网络问题可能性大。
+
+### 切换条件3
+
+UCSS1和UCSS2的vip_id配置的不一样，导致两台设备互相独立运行。
+
+需要检查keepalived.conf中的virtual_router_id配置是否一致。
+
+## 判断UCSS发生切换的时间点
+
+查看日志：
+
+```bash
+/var/log/skyguard/app/app.log |grep keepalived.co
+
+# 2023-01-10T10:57:23.529606+08:00 UCSS2 agent
+grep -a3 VI_10 | grep interface | awk '{print $2}' out
+# 2023-01-10T11:03:52.720637+08:00 UCSS2 agent.
+grep -a3 VI_10 | grep interface | awk '{print $2}' out
+```
+
+查看MASTER切换日志：
+
+```bash
+/var/log/messages |grep MASTER
+
+# 2023-01-10T11:03:54.588992+08:00 UCSS1 Keepalived 172.22.2.193
+# 2023-01-10T11:03:54.589411+08:00 UCSS1 Keepalived
+# 2023-01-10T11:03:54.589722+08:00 UCSS1 Keepalived
+# 2023-01-10T11:03:54.590037+08:00 UCSS1 Keepalived
+# 2023-01-10T11:03:54.590333+08:00 UCSS1 Keepalived
+# 2023-01-10T11:03:54.751281+08:00 UCSS1 agent.p MASTER
+```
+
+时间戳就是对应的VIP发生切换的时间点。
+
+也可以通过监控系统日志界面查看相关切换记录。
