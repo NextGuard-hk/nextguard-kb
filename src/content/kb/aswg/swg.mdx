@@ -1,0 +1,106 @@
+---
+title: "SWG"
+category: aswg
+order: 3
+---
+
+# SWG
+
+## 相关日志
+
+```bash
+cat /var/log/trafficserver/traffic.out | grep -i error
+```
+
+## SWG旁路模式
+
+1. 不支持https流量解析，https是ssl加密型流量
+2. 不支持ftp、smb等协议，因为 DSG 是抓包分析，的，这个模拟不出来
+
+## SWG代理模式
+
+支持http/https/ftp/smb
+
+## 透明代理模式下证书问题
+
+透明代理模式下，无法替换客户端的证书，会出现swg似问题：
+
+解决办法：
+1. 对客户端连接的域名做ssl证文
+2. 修改客户端软件，是软件认可SWG证书
+
+## 公司专利技术
+
+实际应用场景：
+HTTPS 显示代理模式下，用户发起 CONNECT 请求到此时浏览器与显示代理之间建立的是 SSL 会话，通过在浏览器与显示代理之间存在在 SSL 会话内又嵌套一层
+
+## ASWG 3.9(非容器化)支持单网卡模式
+
+全局例外配置:
+- exception: 全局例外
+- singlenic: `<enable>|<disable>|<status>`
+- bypass: `<enable>|<disable>|<status>`
+
+## 全局例外
+
+SWG代理环境，腾讯会议无法正常登录。
+
+临时解决方法：
+1. 加全局例外（swg透明代理）
+   work.medialab.qq.com HTTPS协议
+2. 加SSL例外（swg显示代理）
+   域名 work.medialab.qq.com
+
+建议可以把腾讯会议这种主流软件预置到全局例外白名单
+
+## ASWG本地用户行为日志堆积
+
+日志路径: `/var/log/trafficserver`
+
+ASWG侧，用户行为日志上传优化：
+1. 调整ASWG发送用户行为日志进程
+
+```bash
+/etc/swg_transfer/swg_transfer.cfg  #将默认参数
+sed -i 's/instance_concurrency_0=1/instance_concurrency_0=8/g' /etc/swg_transfer/swg_transfer.cfg
+```
+
+2. 重启服务生效
+
+```bash
+/etc/init.d/swgtransfer restart
+```
+
+## 云查
+
+确认是否开启URL云查: `ping bed.skyguard.com`
+
+## ASWG中的用户目录相关信息
+
+https://wiki.skyguard.com.cn/x/xgYzAQ
+
+## 查看代理
+
+```bash
+time curl -x username:password@proxy_ip:port url
+```
+
+## 网络证据文件名称问题
+
+TS-15620
+
+所有的明文都保存为file.txt
+未知格式的保存为file.tmp
+gz压缩格式的保存为file.gz
+
+是流量就是Body.xxx，是文件就是File.xxx
+
+## 调整ATS日志目录阈值方法
+
+```bash
+traffic_ctl config get proxy.config.log.max_space_mb_for_logs
+# 调整对应的大小
+traffic_ctl config set proxy.config.log.max_space_mb_for_logs 150
+# 查看调整后的大小
+traffic_ctl config get proxy.config.log.max_space_mb_for_logs
+```
