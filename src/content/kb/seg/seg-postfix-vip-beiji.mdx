@@ -1,0 +1,24 @@
+---
+title: "VIP飘到备机后连接异常"
+category: seg
+order: 42
+---
+
+## 问题描述
+
+VIP飘到备机后，邮件连接出现异常。
+
+## 原因分析
+
+VIP飘移后，备机的Postfix配置可能与主机不一致，导致邮件投递异常。
+
+## 解决方案
+
+1. 检查备机的Postfix配置是否与主机一致
+2. 确认备机的mynetworks配置正确
+3. 确认备机的relay_domains配置正确
+4. 重启备机的Postfix服务
+
+```bash
+postfix reload
+```
