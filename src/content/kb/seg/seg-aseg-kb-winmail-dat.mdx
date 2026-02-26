@@ -1,0 +1,21 @@
+---
+title: "KB-邮件日志中显示的附件名称是winmail.dat"
+category: seg
+order: 14
+---
+
+# KB-邮件日志中显示的附件名称是winmail.dat
+
+## 问题描述
+
+邮件日志中显示的附件名称为winmail.dat，但是网络事件显示的文件名是正常的，且可以正常下载。
+
+## 原因分析
+
+下载查看邮件原文，用notepad或者记事本打开，查看attachment字段，说明客户端发出来的附件命中就已经是winmail.dat，这是Outlook客户端产生的问题。
+
+## 说明
+
+- winmail.dat是Outlook使用TNEF（Transport Neutral Encapsulation Format）格式发送邮件时生成的附件
+- 这是Outlook客户端行为，与网关设备无关
+- 网络事件能正确显示文件名是因为它解析了TNEF包装后的实际文件名
