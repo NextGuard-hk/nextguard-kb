@@ -1,0 +1,44 @@
+---
+title: DNS记录与RBL/DBL/DWL/SPF
+category: seg
+order: 75
+---
+
+# DNS记录与RBL/DBL/DWL/SPF
+
+本文介绍连接检测中涉及的DNS记录类型及实时黑名单相关概念。
+
+## CNAME记录
+
+CNAME(别名记录)用于将一个域名指向另一个域名。在邮件系统中常用于配置邮件服务器的别名。
+
+```bash
+nslookup -q=cname <域名>
+```
+
+## A记录
+
+A记录将域名指向IPv4地址，是最基本的DNS记录类型。
+
+```bash
+nslookup <域名>
+```
+
+## RBL/DBL/DWL/SPF检查
+
+| 类型 | 说明 |
+|------|------|
+| RBL | 实时黑名单(Realtime Blackhole List)，基于IP地址 |
+| DBL | 域名黑名单(Domain Blacklist)，基于域名 |
+| DWL | 域名白名单(Domain Whitelist) |
+| SPF | 发件人策略框架，基于DNS的邮件认证 |
+
+## KB-PBL、ROKSO、SBL
+
+- **PBL** (Policy Block List)：策略封锁列表，包含不应该直接发送邮件的IP地址范围
+- **ROKSO** (Register of Known Spam Operations)：已知垃圾邮件操作注册表
+- **SBL** (Spamhaus Block List)：Spamhaus封锁列表，包含已知的垃圾邮件来源IP
+
+### PBL查询
+
+如果发件IP在PBL中，表示该IP属于家庭用户或动态IP范围，不应该直接发送邮件。需联系ISP或邮件服务提供商解除。
