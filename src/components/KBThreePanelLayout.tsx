@@ -93,7 +93,7 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
                   alt="Nextguard"
                   width={140}
                   height={35}
-                  className="brightness-200"
+                  className="mix-blend-screen brightness-110"
                 />
               </Link>
               <span className="text-gray-500">/</span>
