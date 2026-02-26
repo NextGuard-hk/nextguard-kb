@@ -1,0 +1,101 @@
+---
+title: "邮件退信报错汇总"
+category: seg
+order: 51
+---
+
+## 1. 收件人邮箱空间不足
+
+| 退信信息 |
+|------|
+| mail size or count over quota |
+| Mailbox has exceeded the limit |
+| quota exceeded |
+| Mailbox Is Full |
+
+退信实例：mail size/count over quota
+
+其他系统退信实例：
+- `***@pa.inter.net mailbox is full (MTA-imposed quota exceeded while writing)`
+- `<*****@tom.com>: the message to ***@tom.com is bounced back`
+- `<*****@email.com>: host …… said: 552 This person's account is over quota`
+- `<*****@hotmail.com>:……: exceeded storage allocation`
+
+## 2. 收件人地址有错误
+
+| 退信信息 |
+|------|
+| User not found |
+| Recipient address rejected: Quota exceeded |
+| Mailbox not found |
+| This user doesn't have a valid mailbox |
+| The email account that you tried to reach does not exist |
+| mailbox unavailable |
+| user not exist |
+| User unknown in local recipient table |
+| Invalid User |
+
+以及出现以下类似关键字：No such user、user unknown、unknown、found、Invalid address、invalid recipient、not a valid mailbox
+
+退信实例：no mailbox here by that name
+
+其他系统退信实例：
+- `***@yahoo.com, 554 delivery error: dd This user doesn't have a yahoo.com account`
+- `550 Invalid recipient: <***@index.com.jo>`
+- `550 ***@szonline.net unknown user account`
+- `550 5.1.1 <***@melco.com.hk>... User unknown`
+- `<*****@eyou.com>:…… invalid address`
+- `<*****@126.com>: host ……said: 550 5.7.1 Unable to relay for ***`
+- `<*****@china.com>: host smtp.china.com said: invalid mailbox`
+- `<*****@hotmail.com>:……user account inactive`
+- `<*****@zjuem.zju.edu.cn>:…… unknown or illegal alias`
+- `<*****@163.net>: User ***@163.net is not found in Server`
+- `<*****@263.net.cn>: host ……said: 550 Invalid recipient`
+
+## 3. 邮件大小超出限制
+
+| 退信信息 |
+|------|
+| message size xxxx exceeds size limit |
+| mail size or count over quota |
+| Your message attachment exceeds the limit |
+
+以及可能出现以下关键字：exceeds、maximum、size limit
+
+退信实例：sorry, the message size exceeds databytes limit
+
+其他系统退信实例：
+- `<*****@brilliantprint.com.hk>: host …… said:552 Message size exceeds fixed maximum message size`
+- `<*****@pub.xaonline.com>: host smtp.xaonline.com said: message too large`
+
+## 4. 邮件被对方服务器拒绝
+
+| 退信信息 |
+|------|
+| this mail is blocked by kl |
+| sender rejected |
+| Service unavailable |
+| Your access to this mail system has been rejected |
+| Too many concurrent SMTP connections |
+
+以及可能出现的以下关键字：banned、isn't in my list of allowed、Connection refused、Relaying denied
+
+退信实例：553 sorry, you don't authenticate or the domain isn't in my list
+
+其他退信实例：
+- `50 5.7.1 <******@kalmarlighting.com>... Relaying denied`
+- `<*****@weefth.com>: host……said: 571 ****@21cn.com... from yourlocal admin`
+- `<*****@tom.COM>: host ……said: 553 sorry, that domain isn't in my list`
+- `<*****@cbnweb.com>: host …… said: 550 relaying denied`
+- `550 5.7.1 <****@mail1.rayson.com>... Relaying denied`
+- `connect to mf2.***.com: Connection refused`
+
+## 5. 邮件服务器服务异常
+
+| 退信信息 | 错误类型 |
+|------|------|
+| System busy now, please come back later | 451 |
+
+解决方案：在系统发送邮件时收到对方邮件服务器的回应，即对方服务器暂时繁忙，需确认是网络连接不正常还是对方服务器故障。通常该问题会被自动发现和恢复，所以可以等待重试。
+
+确定您的机器名称和IP地址配置正确，邮件服务器的DNS设置正确。
