@@ -1,0 +1,35 @@
+---
+title: DMARC检测
+category: seg
+order: 71
+---
+
+# DMARC检测
+
+DMARC(Domain-based Message Authentication, Reporting & Conformance)基于域名的邮件认证报告和一致性协议。
+
+## DMARC原理
+
+DMARC建立在SPF和DKIM基础之上，提供统一的邮件认证策略：
+
+1. 检查邮件是否通过SPF验证
+2. 检查邮件是否通过DKIM验证
+3. 检查域名对齐(Alignment)
+4. 根据DMARC策略执行相应动作
+
+## DMARC策略
+
+- `p=none` - 仅监控，不采取动作
+- `p=quarantine` - 将可疑邮件放入隔离区
+- `p=reject` - 拒绝不符合的邮件
+
+## 查询DMARC记录
+
+```bash
+nslookup -q=txt _dmarc.<域名>
+```
+
+## 配置选项
+
+- 可设置当DMARC验证失败时的动作
+- 支持关闭、拒绝、标记等处理方式
