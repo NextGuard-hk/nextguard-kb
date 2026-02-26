@@ -1,0 +1,43 @@
+---
+title: "Exchange 2013部署指南"
+category: seg
+order: 34
+---
+
+## 安装前置条件
+
+安装包路径：`\\tsfiles.skyguardmis.com\TSFiles\wanghao`
+
+需要安装以下组件：
+
+- Microsoft 统一通信托管 API 4.0 核心运行时 (64位)
+- .NET Framework 4.7.2
+- 适用于 Visual Studio 2012 的 Visual C++ 可再发行组件
+- 适用于 Visual Studio 2013 的 Visual C++ 可再发行组件
+- Exchange2013-x64-cu23
+
+## 安装步骤
+
+### 1、安装.NET 4.7.2
+
+运行 `ndp472-kb4054530-x86-x64-allos-enu` 安装包。
+
+### 2、安装Exchange2013-x64-cu23
+
+运行Exchange 2013 CU23安装包。
+
+### 3、安装远程工具管理包
+
+打开PowerShell，运行以下命令：
+
+```powershell
+Install-WindowsFeature RSAT-ADDS
+```
+
+### 4、在邮箱服务器上安装邮箱服务角色
+
+按照Exchange安装向导完成安装。
+
+### 5、配置邮件转发
+
+配置Exchange将邮件通过SEG网关进行转发。
