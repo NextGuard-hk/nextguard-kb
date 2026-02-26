@@ -1,0 +1,56 @@
+---
+title: "Postfix配置指南"
+category: seg
+order: 37
+---
+
+## SEG的FQDN配置
+
+SEG的FQDN是运营商那边去配置的，和DSN服务器没有关系。最好和服务器出口IP的PTR一致。
+
+## Postfix配置文件路径
+
+```
+/etc/postfix/main.cf
+```
+
+## 配置Postfix
+
+```bash
+postconf -e
+engine_timeout=60s
+postfix reload  #立即生效
+```
+
+## 读取Postfix配置
+
+```bash
+postconf -h
+postconf -h encrypt_section  #也可以直接查看
+#engine_timeout 引擎超时
+#encrypt_section 0附件加密，1附件加密
+```
+
+## 后台查看授信列表
+
+```bash
+postconf -h mynetworks
+# 127.0.0.1,$mta_manage_address,172.22.2.193,cidr:/etc/postfix/mynetworks
+# 172.22.2.193为默认添加的本机地址
+```
+
+## 常用维护命令
+
+```bash
+# 查看邮件队列
+mailq
+
+# 删除所有队列中的邮件
+postsuper -d ALL
+
+# 重新发送队列中的邮件
+postfix flush
+
+# 查看邮件日志
+tail -f /var/log/mail.log
+```
