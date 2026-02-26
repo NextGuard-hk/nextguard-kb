@@ -1,0 +1,51 @@
+---
+title: "标记邮件如何发送到运营平台"
+category: seg
+order: 13
+---
+
+# 标记邮件如何发送到运营平台
+
+## 功能说明
+
+在邮件日志中选择邮件，可以“标记邮件”并发送至运营平台供分析。
+
+操作路径：监控 > 邮件监控 > 邮件日志 > 选择邮件 > 标记邮件
+
+## 后台逻辑
+
+DSG/SEG-MTA通过本地的28端口向以下两个邮箱地址发送邮件样本，供平台分析：
+
+- spam-ts@labs.skyguard.net
+- no-spam@labs.skyguard.net
+
+投递域名：`mail.labs.skyguard.net[49.4.30.131]`
+
+mail.log日志示例：
+
+```
+postfix/smtp[35865]: 4KYJNF6m4MzZcFq: to=<spam-ts@labs.skyguard.net>,
+  relay=mail.labs.skyguard.net[49.4.30.131],
+  delays=0/0.01/0.23/0.03, dsn=2.0.0, status=sent
+```
+
+## 后台修改投递地址
+
+配置文件路径：
+
+```bash
+/etc/segapi/post_mail.conf
+```
+
+修改投递地址：
+
+```
+mailto = "no-spam-ts@labs.skyguard.net"  #修改为指定地址
+```
+
+修改后重启服务：
+
+```bash
+ps -ef |grep post_mail.py
+kill -9 <pid>  #杀掉该进程，重启postfix后生效
+```
