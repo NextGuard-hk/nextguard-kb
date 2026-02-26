@@ -1,0 +1,32 @@
+---
+title: "邮件原文编码分析"
+category: seg
+order: 57
+---
+
+## 附件名称编码
+
+name/filename字段中Content-Disposition头表示附件名称。
+
+```
+------= 002_NextPart40352262507 =-----
+Content-Type: image/png;
+  name="image(05-11-15-1(05-13-10-30-38).png"
+Content-Transfer-Encoding: base64
+Content-ID: <_Foxmail.1@b9706017-3a4e-708b-...>
+```
+
+## 主题编码
+
+```
+To: out <out@outdemo.com>
+Subject: =?utf-8?B?5rWL6K+V5Lit5paH5Y+R5Lu25Y+R...
+```
+
+表示主题是用base64编码的字体。
+
+解码方法：
+```bash
+echo 5rWL6K+V5Lit5paH5Y+R5Lu25Lq6 | base64 -d
+# 输出: 测试中文发件人
+```
