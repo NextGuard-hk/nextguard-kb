@@ -1,0 +1,29 @@
+---
+title: "如何判断邮件原文中是否包含附件"
+category: seg
+order: 28
+---
+
+## 问题描述
+
+经过回碰到客户反馈，为什么邮件发送设置的策略是删除附件，但是附件未被删除。或者为什么接受到的邮件突然多了很多附件。
+
+## 原因分析
+
+outlook收邮件和foxmail接受邮件对附件的理解不一样。outlook会把邮件原文中filename后面对应的图片作为内嵌图片显示，而foxmail会直接以附件的形式进行显示。
+
+## 判断方法
+
+查看邮件原文中是否包含以下关键字段：
+
+```
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="..."
+```
+
+如果原文中包含`Content-Disposition: attachment`字段，则说明邮件包含附件。
+
+如果原文中只有`Content-Disposition: inline`字段，则说明该内容是内嵌图片，不是附件。
+
+不同邮件客户端对这两种字段的解析方式不同，导致显示结果不一致。
