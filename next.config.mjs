@@ -9,6 +9,11 @@ const nextConfig = {
         hostname: 'raw.githubusercontent.com',
         pathname: '/NextGuard-hk/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'next-guard.com',
+        pathname: '/images/**',
+      },
     ],
   },
 }
