@@ -1,0 +1,45 @@
+---
+title: "退信"
+category: seg
+order: 11
+---
+
+# 退信（Bounce Mail）
+
+## 邮件退信配置
+
+退信配置包含以下字段：
+
+- **退信发件人：** 不指定退信发件人，退信通知发件人地址为MAILER-DAEMON@主机名
+- **指定退信收件人：** 多个用英文逗号分隔
+- **正文：** 退信邮件正文内容
+
+## 退信的信封发件人
+
+退信的信封发件人默认为空（行业通用手法），邮件上看的是发件人。
+
+SMTP会话示例：
+
+```
+C: MAIL FROM:<>
+S: 250 OK
+C: RCPT TO:<user1@segdemo.com>
+S: 250 OK
+C: DATA
+S: 354 OK, send.
+```
+
+退信邮件示例：MAILER-DAEMON发给user1，主题为 "Undelivered Mail Returned to Sender"。
+
+## mail.log日志示例
+
+```
+2023-04-10T11:52:16 DSG-MTA postfix/cleanup[18521]: 4Pvw5r5xXXz22lX5: message-id=<4Pvw5r5xXXz22lX5@DSG>
+2023-04-10T11:52:16 DSG-MTA postfix/bounce[18519]: 4Pvw5r3P84z23w6k: sender non-delivery notification: 4Pvw5r5xXXz22lX5
+2023-04-10T11:52:16 DSG-MTA postfix/smtp[18516]: 4Pvw5r5xXXz22lX5:
+  to=<user1@segdemo.com>,
+  relay=1.segdemo.com[192.168.4.200]:25, delay=0.03, delays=0.01/0/0.01/0.02, dsn=2.0.0, status=sent
+2023-04-10T11:52:16 DSG-MTA postfix/qmgr[22350]: 4Pvw5r5xXXz22lX5: removed
+```
+
+**说明：** bounce进程生成退信邮件（sender non-delivery notification），然后通过smtp投递给收件人。
