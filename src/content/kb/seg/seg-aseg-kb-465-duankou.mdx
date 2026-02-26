@@ -1,0 +1,73 @@
+---
+title: "KB-ASEG如何打开465端口做客户端代理认证"
+category: seg
+order: 17
+---
+
+# KB-ASEG如何打开465端口做客户端代理认证
+
+## 背景
+
+某些用户场景下用户的邮件客户端在使用465端口来发送邮件，如果使用了ASEG以后则客户端会将邮件发送至ASEG的465端口进行代理认证，默认ASEG的465端口是关闭的，需要在后台手动打开才可以。
+
+## 端口说明
+
+- **25端口**：默认启用，简单邮件传输协议，如今绝大多数邮件服务器都使用该协议，用于邮件服务器和网关之间的邮件发送服务。
+- **465端口**：默认关闭，是SSL/TLS通讯协议，内容一开始就被保护起来，看不到原文，在ASEG默认关闭，用于客户端至邮件服务器之间发送邮件。
+- **587端口**：默认启用，是STARTTLS协议，属于TLS通讯协议，只是它是在STARTTLS命令执行后才对之后的原文进行保护的，用于客户端至邮件服务器之间发送邮件。
+
+从实际使用场景来看基本上通过465端口发送邮件的方式已经比较少，所以465端口默认关闭，需要通过下面的方法打开。
+
+## 分步指南
+
+### 1. 登录ASEG后台
+
+root权限登录ASEG后台命令行，获取Root权限的方法请联系技术支持团队。
+
+### 2. 备份配置文件
+
+```bash
+cp /etc/postfix/master.cf /etc/postfix/master.cf.bak
+```
+
+### 3. 编辑配置文件
+
+```bash
+vi /etc/postfix/master.cf
+```
+
+### 4. 取消注释
+
+查找如下几行并删除前面的注释号（#）：
+
+```
+smtps     inet  n       -       n       -       -       smtpd
+  -o syslog_name=postfix/smtps
+  -o smtpd_tls_wrappermode=yes
+  -o smtpd_sasl_auth_enable=yes
+  -o smtpd_relay_restrictions=permit_sasl_authenticated,reject
+```
+
+### 5. 重新加载postfix服务
+
+```bash
+postfix reload
+```
+
+输出：
+```
+postfix/postfix-script: refreshing the Postfix mail system
+```
+
+### 6. 确认465端口已打开
+
+```bash
+netstat -ln | grep 465
+```
+
+输出：
+```
+tcp        0      0 0.0.0.0:465             0.0.0.0:*               LISTEN
+```
+
+看到以上输出表示465端口已经成功打开。
