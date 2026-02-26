@@ -1,0 +1,104 @@
+---
+title: "SWG加域配置"
+category: aswg
+order: 26
+---
+
+# SWG加域
+
+## 加域
+
+### 软件安装
+
+```bash
+yum install -y samba samba-winbind samba-winbind-clients krb5-config krb5-user
+```
+
+### 编辑文件 /etc/samba/smb.conf
+
+```ini
+[global]
+kerberos method = system keytab
+workgroup = WLINUX           # WLINUX为域控中的工作组
+security = ADS
+passdb backend = tdbsam
+realm = wlinux.com.cn        # 域控的 Kerberos REALM
+password server = *
+log level = 3
+debug pid = yes
+winbind use default domain = yes
+winbind max domain connections = 10
+```
+
+### 编辑文件 /etc/krb5.conf
+
+```ini
+[logging]
+default = FILE:/var/log/krb5libs.log
+kdc = FILE:/var/log/krb5kdc.log
+admin_server = FILE:/var/log/kadmin.log
+
+[libdefaults]
+default_realm = WLINUX.COM.CN       # 域控的 Kerberos REALM
+dns_lookup_realm = true
+dns_lookup_kdc = true
+ticket_lifetime = 24h
+renew_lifetime = 7d
+forwardable = true
+allow_weak_crypto = true             # 允许使用弱加密
+rdns = false
+pkinit_anchors = FILE:/etc/pki/tls/certs/ca-bundle.crt
+default_ccache_name = KEYRING:persistent:%{uid}
+
+[realms]
+WLINUX.COM.CN={
+}
+```
+
+### 编辑hosts
+
+```bash
+echo "127.0.0.1 bs-server2.wlinux.com.cn bs-server2" >> /etc/hosts
+```
+
+> bs-server2为hostname
+
+### 执行加域动作
+
+```bash
+net ads join -U administrator
+```
+
+非交互模式加域：
+
+```bash
+net ads join -U yangbiao%yangbiao
+```
+
+### 检查加域状态
+
+```bash
+wbinfo -t
+```
+
+## 退域
+
+### 手动退域
+
+```bash
+net ads leave -U yangbiao
+```
+
+### 非交互模式退域
+
+```bash
+net ads leave -U yangbiao%yangbiao
+```
+
+## 加域成功后验证
+
+在ats容器里面执行：
+
+```bash
+wbinfo -t
+```
