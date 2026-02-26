@@ -1,0 +1,43 @@
+---
+title: "ASEG病毒引擎测试方法"
+category: seg
+order: 23
+---
+
+## ASEG病毒引擎测试方法
+
+### 1. 小红伞病毒引擎测试
+
+说明：默认小红伞引擎自动开启，测试时先进行小红伞测试，直接发送病毒样本测试即可。
+
+测试步骤：
+
+1. 从外网邮箱发送病毒附件邮件到内网邮箱
+2. 查看邮件日志
+3. 查看邮件详情，确认病毒引擎检测结果
+
+【测试结论】：证明小红伞病毒引擎工作正常。
+
+### 2. 双病毒引擎测试
+
+为了测试ASEG双病毒引擎的工作状态，需要将默认开启的小红伞引擎关闭，以便使用第二个引擎做测试。
+
+操作步骤：
+
+1. 进入ASEG的后台
+2. 编辑配置文件：
+
+```bash
+vi /opt/skyguard/ucs/etc/ContentAnalysisEngine.xml
+```
+
+3. 搜索关键字 `AviraLib`
+4. 找到配置项：`<engine name="AviraLib">`，将`<enabled>true</enabled>`修改为`false`
+5. 保存退出
+6. 重启 dlpserver 服务：
+
+```bash
+/etc/init.d/dlpserver restart
+```
+
+7. 再次发送测试邮件验证
