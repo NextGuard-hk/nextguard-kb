@@ -1,0 +1,111 @@
+---
+title: "KB-调用ES API抽取固定终端固定日期的事件"
+description: "通过ES API抽取指定终端和日期范围的DLP事件，使用POST方法调用SPS Proxy接口"
+---
+
+# KB-调用ES API抽取固定终端固定日期的事件
+
+## 说明
+
+通过调用ES API可以抽取指定终端在指定日期范围内的DLP事件数据。
+
+注意：记得用POST，不是 GET。
+
+## API地址
+
+```
+POST https://<UCSS_IP>:8443/sps/v1/proxy/dlp-endpoint/_search
+```
+
+## 请求Body示例
+
+### 按日期范围查询
+
+```json
+{
+  "from": 0,
+  "size": 20,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "detectDateTime": {
+              "from": "2025-04-07T16:00:00.000+0000",
+              "to": "2025-04-08T15:59:59.999+0000",
+              "include_lower": true,
+              "include_upper": true,
+              "boost": 1.0
+            }
+          }
+        },
+        {
+          "term": {
+            "isIgnored": {
+              "value": false,
+              "boost": 1.0
+            }
+          }
+        },
+        {
+          "terms": {
+            "isVisible": [true],
+            "boost": 1.0
+          }
+        }
+      ],
+      "should": [
+        {
+          "terms": {
+            "isOrdinary": [true],
+            "boost": 1.0
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "exists": {
+            "field": "isOrdinary",
+            "boost": 1.0
+          }
+        }
+      ],
+      "adjust_pure_negative": true,
+      "boost": 1.0
+    }
+  },
+  "_source": {
+    "includes": [],
+    "excludes": ["matchedPolicies.matchedRules.matchedConditions"]
+  },
+  "sort": [
+    {
+      "detectDateTime": {
+        "order": "desc"
+      }
+    }
+  ],
+  "track_total_hits": 2147483647
+}
+```
+
+### 按终端serialId查询
+
+```json
+{
+  "from": 0,
+  "size": 1,
+  "query": {
+    "term": {
+      "serialId": {
+        "value": 6083
+      }
+    }
+  },
+  "track_total_hits": 2147483647
+}
+```
+
+## 响应说明
+
+响应会返回匹配的事件详细信息，包括操作类型、设备类型、企业类型、操作系统、主机名、设备ID、DM设备名称、排序时间等字段。
