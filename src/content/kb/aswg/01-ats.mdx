@@ -1,0 +1,53 @@
+---
+title: "01.ATS"
+category: aswg
+order: 5
+---
+
+# 01.ATS
+
+## 用户行为日志/报告
+
+- 用户行为报告来源于用户行为日志
+- 流量日志来源于dlp
+- 用户行为日志来源于swg
+
+ATS/trafficserver服务作用：处理协议分析（特别是HTTPS流量的解密和解析）
+
+## 查看ATS进程是否正常
+
+```bash
+/etc/init.d/trafficserver status
+# traffic_cop is running
+ps -eo etime,cmd |grep traffic_server
+```
+
+## 关键进程
+
+- `traffic_server`: 代理主进程
+- `traffic_manager`: 代理管理进程
+- `traffic_cop`: 代理启动以及监控进程
+- `skg_auth_agent`: 认证代理进程
+
+```bash
+top -Hp `pidof traffic_server`  #查看cpu内存占用
+```
+
+## 判断swg是否产生用户行为日志
+
+```bash
+tail -f /var/log/trafficserver/policy.send.log
+ls /var/log/trafficserver/policy_send |
+wc -l
+```
+
+## ATS日志路径
+
+`/var/log/trafficserver/traffic.out` #开启的服务相关日志
+
+## ATS开启debug命令
+
+```bash
+traffic_ctl config set proxy.config.diags.debug.enabled 1
+traffic_ctl config set proxy.config.diags.debug.tags "http|ssl"
+```
