@@ -1,0 +1,40 @@
+---
+title: "手动发邮件方法 - Telnet"
+category: seg
+order: 39
+---
+
+## Telnet发件测试
+
+通过telnet确定SEG会通过下一跞邮件网关投递邮件。当ehlo后，对方如果回复了250-STARTTLS，则表示支持TLS。
+
+## Telnet发邮件步骤
+
+敢错时使用 `ctrl+backspace`
+
+```bash
+telnet MTAIP 25
+helo xialei.com                              # ehlo E声明自己的域名
+mail from: <user1@segdemo.com>                # 信封发件人
+rcpt to: <out@outdemo.com>                    # 信封收件人
+data                                          # 开始传送邮件正文
+From: "user1@segdemo.com" <user1@segdemo.com>
+To: out <out@outdemo.com>
+subject: 测试邮件                            # 主题
+机密，秘密，天空卫士                     # 正文
+.                                             # 黏贴通知邮件正文结束
+quit                                          # 断开连接
+```
+
+## 同一连接发送多封邮件
+
+如果希望一个连接同时发两封邮件，“.”之后不要quit：
+
+```bash
+mail from: <user1@segdemo.com>
+rcpt to: <15013735119@139.com>
+data
+黏贴正常邮件正文所有内容
+.
+quit
+```
