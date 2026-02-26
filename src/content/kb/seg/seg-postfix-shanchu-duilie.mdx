@@ -1,0 +1,37 @@
+---
+title: "如何删除邮件队列中的邮件"
+category: seg
+order: 40
+---
+
+## 查看邮件队列
+
+```bash
+mailq
+postqueue -p
+```
+
+## 删除指定邮件
+
+```bash
+postsuper -d <queue_id>
+```
+
+## 删除所有队列邮件
+
+```bash
+postsuper -d ALL
+```
+
+## 删除deferred队列邮件
+
+```bash
+postsuper -d ALL deferred
+```
+
+## 重新发送队列中的邮件
+
+```bash
+postfix flush
+postqueue -f
+```
