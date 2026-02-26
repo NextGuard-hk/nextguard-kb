@@ -1,0 +1,41 @@
+---
+title: "Exchange 2016部署指南"
+category: seg
+order: 35
+---
+
+## 参考文档
+
+https://www.cnblogs.com/dennisdong/p/15107983.html
+
+## 安装步骤
+
+### 1、安装.NET Framework 4.8
+
+下载链接：https://dotnet.microsoft.com/download/dotnet-framework
+
+### 2、安装Windows组件
+
+```powershell
+Install-WindowsFeature NET-Framework-45-Features, RPC-over-HTTP-proxy,
+RSAT-Clustering, RSAT-Clustering-CmdInterface, RSAT-Clustering-Mgmt,
+RSAT-Clustering-PowerShell, WAS-Process-Model, Web-Asp-Net45,
+Web-Client-Auth, Web-Digest-Auth, Web-Dir-Browsing, Web-Dyn-Compression,
+Web-Http-Errors, Web-Http-Logging, Web-Http-Redirect, Web-Http-Tracing,
+Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Lgcy-Mgmt-Console, Web-Metabase,
+Web-Mgmt-Console, Web-Mgmt-Service, Web-Net-Ext45, Web-Request-Monitor,
+Web-Server, Web-Stat-Compression, Web-Static-Content, Web-Windows-Auth,
+Web-WMI, Windows-Identity-Foundation
+```
+
+### 3、安装Visual C++ Redistributable Package
+
+https://www.microsoft.com/en-us/download/details.aspx?id=30679
+
+### 4、安装Microsoft统一通信托管API 4.0核心运行时
+
+https://www.microsoft.com/en-US/download/details.aspx?id=34992
+
+### 5、安装Exchange 2016
+
+按照Exchange 2016安装向导完成部署。
