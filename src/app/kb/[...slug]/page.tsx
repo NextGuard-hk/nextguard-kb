@@ -24,12 +24,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (params.slug.length === 1) {
     const category = getCategoryById(params.slug[0])
     if (category) {
-      return { title: `${category.label} | Nextguard KB`, description: `${category.labelZh} - Knowledge Base articles` }
+            return { title: category.label, description: `${category.labelZh} - Knowledge Base articles` }
     }
   }
   const article = getArticleContent(params.slug)
   if (!article) return { title: 'Not Found' }
-  return { title: `${article.frontmatter.title} | Nextguard KB`, description: article.frontmatter.description }
+    return { title: article.frontmatter.title, description: article.frontmatter.description }
 }
 
 export default function KBPage({ params }: Props) {
