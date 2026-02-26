@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useLanguage } from './LanguageContext';
+import LanguageToggle from './LanguageToggle';
 
 interface NavItem {
   slug: string;
@@ -47,12 +49,18 @@ interface Props {
 
 export default function KBThreePanelLayout({ categories, initialSection, initialArticle, articleHtml }: Props) {
   const router = useRouter();
+  const { convert } = useLanguage();
   const [selectedSection, setSelectedSection] = useState<string>(initialSection || categories[0]?.id || '');
   const [selectedArticleSlug, setSelectedArticleSlug] = useState<string>(initialArticle || '');
   const [articleContent, setArticleContent] = useState<string>(articleHtml || '');
   const [isLoading, setIsLoading] = useState(false);
 
   const currentCategory = categories.find(c => c.id === selectedSection);
+
+  const convertedContent = useMemo(() => {
+    if (!articleContent) return '';
+    return convert(articleContent);
+  }, [articleContent, convert]);
 
   const handleSectionClick = (sectionId: string) => {
     setSelectedSection(sectionId);
@@ -71,28 +79,28 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
         const data = await res.json();
         setArticleContent(data.html);
       } else {
-        setArticleContent('<p class="text-red-500">Failed to load article</p>');
+        setArticleContent('<p>Failed to load article</p>');
       }
     } catch {
-      setArticleContent('<p class="text-red-500">Failed to load article</p>');
+      setArticleContent('<p>Failed to load article</p>');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
-        <div className="px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <Link href="/" className="flex items-center">
                 <Image
                   src="/nextguard-logo.svg"
                   alt="Nextguard"
-                  width={140}
-                  height={35}
+                  width={160}
+                  height={40}
                   className=""
                 />
               </Link>
@@ -102,6 +110,7 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
               </Link>
             </div>
             <div className="flex items-center gap-4 text-sm">
+              <LanguageToggle />
               <a href="https://next-guard.com" className="text-gray-300 hover:text-white">nextguard.com</a>
             </div>
           </div>
@@ -109,97 +118,78 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
       </header>
 
       {/* Three Panel Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex h-[calc(100vh-64px)]">
         {/* Left Panel - Sections */}
-        <div className="w-56 bg-gray-100 border-r border-gray-300 overflow-y-auto flex-shrink-0">
-          <div className="p-3">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">Sections</h2>
-          </div>
-          <nav className="px-2 pb-4">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => handleSectionClick(cat.id)}
-                className={`w-full text-left px-3 py-2.5 rounded-lg mb-0.5 flex items-center gap-2.5 transition-all text-sm ${
-                  selectedSection === cat.id
-                    ? 'bg-white shadow-sm text-gray-900 font-medium'
-                    : 'text-gray-600 hover:bg-white/60 hover:text-gray-900'
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${SECTION_COLORS[cat.id] || 'bg-gray-400'}`} />
-                <span className="truncate">{cat.label}</span>
-                <span className="ml-auto text-xs text-gray-400">{cat.items.length}</span>
-              </button>
-            ))}
-          </nav>
+        <div className="w-56 shrink-0 bg-gray-100 border-r border-gray-200 overflow-y-auto p-3">
+          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">
+            Sections
+          </h2>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => handleSectionClick(cat.id)}
+              className={`w-full text-left px-3 py-2.5 rounded-lg mb-0.5 flex items-center gap-2.5 transition-all text-sm ${
+                selectedSection === cat.id
+                  ? 'bg-white shadow-sm text-gray-900 font-medium'
+                  : 'text-gray-600 hover:bg-white/60 hover:text-gray-900'
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${SECTION_COLORS[cat.id] || 'bg-gray-400'}`} />
+              {convert(cat.label)}
+              <span className="ml-auto text-xs text-gray-400">{cat.items.length}</span>
+            </button>
+          ))}
         </div>
 
         {/* Middle Panel - Pages */}
-        <div className="w-72 bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0">
+        <div className="w-80 shrink-0 border-r border-gray-200 overflow-y-auto bg-white">
           {currentCategory && (
             <>
-              <div className="p-4 border-b border-gray-200 bg-gray-50">
-                <h3 className="font-semibold text-gray-900">{currentCategory.label}</h3>
-                <p className="text-xs text-gray-500 mt-0.5">{currentCategory.labelZh} - {currentCategory.items.length} articles</p>
+              <div className="p-4 border-b border-gray-100">
+                <h3 className="font-semibold text-gray-900">{convert(currentCategory.label)}</h3>
+                <p className="text-sm text-gray-500 mt-0.5">
+                  {convert(currentCategory.labelZh)} - {currentCategory.items.length} articles
+                </p>
               </div>
-              <div className="divide-y divide-gray-100">
-                {currentCategory.items.map((item) => (
-                  <button
-                    key={item.slug}
-                    onClick={() => handleArticleClick(item.slug)}
-                    className={`w-full text-left px-4 py-3 transition-all ${
-                      selectedArticleSlug === item.slug
-                        ? 'bg-blue-50 border-l-2 border-blue-500'
-                        : 'hover:bg-gray-50 border-l-2 border-transparent'
-                    }`}
-                  >
-                    <span className={`text-sm block ${
-                      selectedArticleSlug === item.slug
-                        ? 'text-blue-700 font-medium'
-                        : 'text-gray-700'
-                    }`}>{item.title}</span>
-                  </button>
-                ))}
-              </div>
+              {currentCategory.items.map((item) => (
+                <button
+                  key={item.slug}
+                  onClick={() => handleArticleClick(item.slug)}
+                  className={`w-full text-left px-4 py-3 transition-all ${
+                    selectedArticleSlug === item.slug
+                      ? 'bg-blue-50 border-l-2 border-blue-500'
+                      : 'hover:bg-gray-50 border-l-2 border-transparent'
+                  }`}
+                >
+                  <span className="text-sm text-gray-700">{convert(item.title)}</span>
+                </button>
+              ))}
             </>
           )}
         </div>
 
         {/* Right Panel - Content */}
-        <div className="flex-1 overflow-y-auto bg-white">
+        <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto" />
-                <p className="text-sm text-gray-500 mt-3">Loading article...</p>
-              </div>
+              <p className="text-gray-400">Loading article...</p>
             </div>
-          ) : articleContent ? (
-            <div className="max-w-4xl mx-auto px-8 py-8">
-              <div
-                className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-img:rounded-lg prose-pre:bg-gray-50"
-                dangerouslySetInnerHTML={{ __html: articleContent }}
-              />
-            </div>
+          ) : convertedContent ? (
+            <div
+              className="prose prose-gray max-w-none p-8"
+              dangerouslySetInnerHTML={{ __html: convertedContent }}
+            />
           ) : selectedSection && !selectedArticleSlug ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center max-w-md">
-                <div className="text-6xl mb-4">📄</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {currentCategory?.label} - {currentCategory?.labelZh}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Select an article from the list to read its content.
-                </p>
-              </div>
+            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+              <div className="text-6xl mb-4">{String.fromCodePoint(0x1F4C4)}</div>
+              <h3 className="text-lg font-medium">{convert(currentCategory?.label || '')} - {convert(currentCategory?.labelZh || '')}</h3>
+              <p className="text-sm mt-1">Select an article from the list to read its content.</p>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center max-w-md">
-                <div className="text-6xl mb-4">📚</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">NextGuard Knowledge Base</h3>
-                <p className="text-sm text-gray-500">Select a section and article to get started.</p>
-              </div>
+            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+              <div className="text-6xl mb-4">{String.fromCodePoint(0x1F4DA)}</div>
+              <h3 className="text-lg font-medium">NextGuard Knowledge Base</h3>
+              <p className="text-sm mt-1">Select a section and article to get started.</p>
             </div>
           )}
         </div>
