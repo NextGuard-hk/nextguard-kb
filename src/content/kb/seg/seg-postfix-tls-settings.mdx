@@ -1,0 +1,53 @@
+---
+title: "SEG/MTA TLS相关配置"
+category: seg
+order: 44
+---
+
+## TLS配置概述
+
+SEG/MTA支持TLS加密传输，可以通过Postfix配置启用或禁用TLS。
+
+## 查看TLS状态
+
+```bash
+postconf -h smtpd_tls_security_level
+postconf -h smtp_tls_security_level
+```
+
+## TLS级别说明
+
+| 级别 | 说明 |
+|------|------|
+| none | 不使用TLS |
+| may | 可选TLS，支持则使用 |
+| encrypt | 强制TLS |
+
+## 配置TLS
+
+```bash
+# 服务端（接收邮件时）
+postconf -e smtpd_tls_security_level=may
+
+# 客户端（发送邮件时）
+postconf -e smtp_tls_security_level=may
+
+postfix reload
+```
+
+## TLS证书配置
+
+```bash
+postconf -h smtpd_tls_cert_file
+postconf -h smtpd_tls_key_file
+```
+
+## 常见问题
+
+- TLS握手失败可能是证书过期或不匹配
+- 某些旧版本邮件服务器不支持TLS
+- 可以在日志中查看TLS协商详情
+
+```bash
+grep TLS /var/log/mail.log
+```
