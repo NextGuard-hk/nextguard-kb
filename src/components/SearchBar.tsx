@@ -15,6 +15,7 @@ export default function SearchBar() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -42,6 +43,7 @@ export default function SearchBar() {
         const data = await res.json();
         setResults(data.results || []);
         setIsOpen(true);
+        setSelectedIndex(-1);
       } catch (error) {
         console.error('Search error:', error);
       } finally {
@@ -59,57 +61,67 @@ export default function SearchBar() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && results.length > 0) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(prev => Math.min(prev + 1, results.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(prev => Math.max(prev - 1, -1));
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      handleSelect(results[selectedIndex].slug);
+    } else if (e.key === 'Enter' && results.length > 0) {
       handleSelect(results[0].slug);
-    }
-    if (e.key === 'Escape') {
+    } else if (e.key === 'Escape') {
       setIsOpen(false);
     }
   };
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-xl">
+    <div ref={searchRef} className="relative w-full max-w-2xl mx-auto mt-6 mb-4">
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg
-            className="h-5 w-5 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
+        <svg
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Search knowledge base..."
-          className="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          placeholder="搜索知識庫文章... Search articles..."
+          className="block w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm shadow-sm transition-shadow hover:shadow-md"
         />
         {isLoading && (
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
             <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full" />
           </div>
         )}
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
+          <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-100">
+            {results.length} 筆結果
+          </div>
           {results.map((result, index) => (
             <button
               key={index}
               onClick={() => handleSelect(result.slug)}
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0"
+              className={`w-full text-left px-4 py-3 border-b border-gray-50 last:border-0 transition-colors ${
+                index === selectedIndex ? 'bg-blue-50' : 'hover:bg-gray-50'
+              }`}
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
                   {result.category}
                 </span>
               </div>
@@ -121,10 +133,8 @@ export default function SearchBar() {
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && !isLoading && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-          <div className="px-4 py-8 text-center text-gray-500 text-sm">
-            No results found for &ldquo;{query}&rdquo;
-          </div>
+        <div className="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-200 p-6 text-center">
+          <div className="text-gray-400 text-sm">找不到「{query}」的相關結果</div>
         </div>
       )}
     </div>
