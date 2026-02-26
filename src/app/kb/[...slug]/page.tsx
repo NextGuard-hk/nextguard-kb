@@ -18,7 +18,18 @@ function getArticleContent(slugArr: string[]) {
 }
 
 function mdxToHtml(content: string, frontmatter: Record<string, any>): string {
-  let html = content
+  // Step 1: Extract fenced code blocks FIRST to protect them from markdown parsing
+  const codeBlocks: string[] = []
+  let html = content.replace(/```[\s\S]*?```/g, (m) => {
+    const c = m.replace(/```\w*\n?/, '').replace(/```$/, '')
+    const escaped = c.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    const index = codeBlocks.length
+    codeBlocks.push('<pre><code>' + escaped + '</code></pre>')
+    return `%%CODEBLOCK_${index}%%`
+  })
+
+  // Step 2: Now apply all markdown transformations (code blocks are safely replaced with placeholders)
+  html = html
     .replace(/^######\s+(.+)$/gm, '<h6>$1</h6>')
     .replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>')
     .replace(/^####\s+(.+)$/gm, '<h4>$1</h4>')
@@ -28,10 +39,6 @@ function mdxToHtml(content: string, frontmatter: Record<string, any>): string {
     .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/```[\s\S]*?```/g, (m) => {
-      const c = m.replace(/```\w*\n?/, '').replace(/```$/, '')
-      return '<pre><code>' + c.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code></pre>'
-    })
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>')
     .replace(/!\[([^\]]*?)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="max-w-full rounded-lg" />')
@@ -41,6 +48,14 @@ function mdxToHtml(content: string, frontmatter: Record<string, any>): string {
     .replace(/\n{2,}/g, '\n')
 
   html = html.replace(/(<li>.*?<\/li>\n?)+/g, '<ul class="list-disc pl-6 my-2">$&</ul>')
+
+  // Step 3: Restore code blocks from placeholders
+  codeBlocks.forEach((block, i) => {
+    html = html.replace(`%%CODEBLOCK_${i}%%`, block)
+  })
+
+  // Sometimes placeholders get wrapped in <p> tags - clean that up
+  html = html.replace(/<p><pre>/g, '<pre>').replace(/<\/pre><\/p>/g, '</pre>')
 
   const titleHtml = frontmatter.title ? '<h1 class="text-2xl font-bold text-gray-900 mb-2">' + frontmatter.title + '</h1>' : ''
   const descHtml = frontmatter.description ? '<p class="text-gray-500 mb-6">' + frontmatter.description + '</p>' : ''
