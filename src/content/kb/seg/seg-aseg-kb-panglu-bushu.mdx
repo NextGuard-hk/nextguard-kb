@@ -1,0 +1,115 @@
+---
+title: "ASEG旁路部署问题汇总"
+category: seg
+order: 20
+---
+
+## ASEG旁路部署问题汇总
+
+### 注意事项
+
+1. 一旦切换到旁路，就不支持切换回mta了，只能重装
+2. SEG旁路模式写死的使用eth1口作为流量入口，如果流量走的不是eth1口需要先确认
+3. 库更新：ATS里面有路由指向了宿主机的管理口，默认管理口要能访问外网
+4. ASEG旁路方案是bro+ATS+SEG实现的
+
+### 旁路模式处理特点
+
+1. 不支持TLS的流量，原始客户端和原始服务端之间直接通信
+2. 不支持认证，原始服务可能支持的认证方式千奇百怪
+3. 流量过大，会有监控不到的情况发生，BRO会丢包
+4. 对于出向必须将待监控源的IP添加到SEG的授信地址
+5. SEG监听在lo口上配置的172.31.255.200地址
+
+### 切换方法
+
+3.3版本需要打上hotfix-app-3.3.0-HF：
+
+```bash
+/bin/bash /opt/skyguard/www/app/switch_to_span.sh
+```
+
+这个脚本会配置bro一些参数，并且会调用ATS提供的脚本。
+
+3.15后旁路切换脚本位置变更如下：
+
+```bash
+/bin/bash /opt/skyguard/app/bin/switch_to_span.sh
+```
+
+### 基本检查
+
+bro进程正常：
+
+```bash
+/usr/local/bro/bin/broctl status
+```
+
+traffic_server进程正常运行：
+
+```bash
+/etc/init.d/trafficserver status
+```
+
+postfix进程正常：
+
+```bash
+postfix status
+```
+
+iptables规则检查：
+
+```bash
+-A OUTPUT -s 172.31.255.200/32 -p tcp -m tcp --dport 25 -j ACCEPT
+```
+
+lo口上地址检查：
+
+```bash
+ip addr | grep lo
+# 应该看到 inet 172.31.255.200/32
+```
+
+### 业务相关配置
+
+```
+/etc/trafficserver/records.config
+  CONFIG proxy.config.smtp.relay.enabled
+  CONFIG proxy.config.smtp.relay.server_addr
+
+/etc/trafficserver/smtp_cmd_control.conf
+  src_ip=0.0.0.0-255.255.255.255 action=control
+```
+
+当172.31.255.200和其他临时地址冲突时，修改方法：
+
+```bash
+/etc/trafficserver/seg_span.sh
+/bin/bash /etc/trafficserver/seg_span.sh
+/etc/init.d/trafficserver stop
+/etc/init.d/trafficserver start
+```
+
+### 遇到问题汇总
+
+#### 一、没有连接日志，没有邮件日志的情况
+
+1. 在ASEG上抓包，如果没有抓到包，原因是镜像的流量有问题，需要和客户确认流量是否打到了ASEG
+
+#### 二、bro启动异常
+
+原因：spe-full容器虽然做了持久化，但是compose配置中没有挂载到宿主机。需要重新把映射配置上。
+
+#### 三、bro正常，但依旧没有日志
+
+通过下述命令检查是否有smtp通道的流量产生：
+
+```bash
+/usr/local/bro/logs/current/smtp.log
+```
+
+查看ATS进程的状态。如果ATS一直在重启，pid一直在变化，检查：
+
+```bash
+/var/log/trafficserver/traffic.out
+```
