@@ -1,0 +1,28 @@
+---
+title: "拒绝非指定Hostname连接"
+category: seg
+order: 48
+---
+
+## 功能说明
+
+配置Postfix拒绝非指定hostname的连接，用于增强邮件安全。
+
+## 配置方法
+
+```bash
+postconf -e smtpd_helo_required=yes
+postconf -e smtpd_helo_restrictions=permit_mynetworks,reject_invalid_helo_hostname
+postfix reload
+```
+
+## 参数说明
+
+- `smtpd_helo_required=yes`: 强制要求HELO/EHLO
+- `reject_invalid_helo_hostname`: 拒绝无效的HELO主机名
+- `permit_mynetworks`: 允许授信网络
+
+## 注意事项
+
+- 确保授信网络已正确配置
+- 可能会影响某些不规范的邮件服务器连接
