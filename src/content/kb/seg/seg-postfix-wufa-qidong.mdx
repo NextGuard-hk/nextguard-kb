@@ -1,0 +1,42 @@
+---
+title: "Postfix无法启动排查"
+category: seg
+order: 38
+---
+
+## 常见原因
+
+### 1、License过期
+
+License过期会导致Postfix无法启动。
+
+### 2、Apache2无法启动
+
+查看错误日志：
+
+```bash
+/var/log/apache2/error.log
+```
+
+常见错误：
+
+```
+[alert] (EAI) unable to find IPv4 address of "SEG39-ats"
+Configuration Failed
+```
+
+**原因：** `/etc/hosts` 中 `127.0.0.1` 没有指定hostname名称。
+
+**解决办法：** 在 `/etc/hosts` 中 `127.0.0.1` 行新增主机名：
+
+```
+127.0.0.1  localhost SEG39-ats
+```
+
+### 3、端口冲突
+
+查看25端口是否被占用：
+
+```bash
+netstat -tlnp | grep 25
+```
