@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const KB_PASSWORD = process.env.KB_PASSWORD || 'NextGuard123'
+const KB_PASSWORD = process.env.KB_ACCESS_PASSWORD || 'NextGuard123'
 
 export async function POST(req: NextRequest) {
   try {
