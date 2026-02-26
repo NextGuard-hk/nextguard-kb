@@ -30,15 +30,16 @@ export default function KBPage({ params }: Props) {
   const article = getArticleContent(params.slug)
   const category = getCategoryById(params.slug[0])
 
+  // Section landing page (e.g. /kb/app)
   if (params.slug.length === 1) {
     if (!category) return notFound()
     return (
       <div className="min-h-screen bg-gray-50">
         <KBHeader />
         <div className="max-w-4xl mx-auto px-4 py-10">
-          <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: category.label }]} />
+          <Breadcrumb items={[{ label: 'KB', href: '/kb' }, { label: category.label }]} />
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{category.label}</h1>
-          <p className="text-gray-500 mb-8">{category.labelZh}</p>
+          <p className="text-gray-500 mb-8">{category.labelZh} - {category.items.length} articles</p>
           <div className="grid gap-3">
             {category.items.map(item => (
               <Link key={item.slug} href={`/kb/${item.slug}`}
@@ -58,57 +59,76 @@ export default function KBPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gray-50">
       <KBHeader />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex gap-8">
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-24">
-              {category && (
-                <nav className="space-y-1">
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">{category.label}</p>
-                  {category.items.map(item => (
-                    <Link key={item.slug} href={`/kb/${item.slug}`}
-                      className={`block px-3 py-2 rounded-lg text-sm ${
-                        item.slug === slugStr ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'
-                      }`}>
-                      {item.title}
-                    </Link>
-                  ))}
-                </nav>
-              )}
+      <div className="flex max-w-7xl mx-auto">
+        {/* Sidebar */}
+        {category && (
+          <aside className="hidden lg:block w-64 flex-shrink-0 border-r border-gray-200 bg-white min-h-screen">
+            <div className="sticky top-16 p-4 overflow-y-auto max-h-[calc(100vh-4rem)]">
+              <Link href={`/kb/${category.id}`} className="font-bold text-gray-900 mb-3 block">
+                {category.label}
+              </Link>
+              <nav className="space-y-1">
+                {category.items.map(item => (
+                  <Link key={item.slug} href={`/kb/${item.slug}`}
+                    className={`block text-sm px-3 py-2 rounded-md transition-colors ${
+                      item.slug === slugStr
+                        ? 'bg-blue-50 text-blue-700 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}>
+                    {item.title}
+                  </Link>
+                ))}
+              </nav>
             </div>
           </aside>
-          <main className="flex-1 min-w-0">
-            <Breadcrumb items={[
-              { label: 'Home', href: '/' },
-              { label: category?.label || '', href: `/kb/${params.slug[0]}` },
-              { label: article.frontmatter.title }
-            ]} />
-            <article className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
-              <header className="mb-8 pb-6 border-b border-gray-100">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {article.frontmatter.tags?.map((t: string) => (
-                    <span key={t} className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full">{t}</span>
-                  ))}
-                  {article.frontmatter.version && (
-                    <span className="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full">v{article.frontmatter.version}</span>
-                  )}
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{article.frontmatter.title}</h1>
-                {article.frontmatter.description && <p className="text-gray-500">{article.frontmatter.description}</p>}
-                {article.frontmatter.lastUpdated && (
-                  <p className="text-xs text-gray-400 mt-2">Updated: {new Date(article.frontmatter.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                )}
-              </header>
-              <div className="prose prose-blue max-w-none">
-                <MDXRemote source={article.content} />
-              </div>
-            </article>
-            <div className="mt-6 flex justify-between text-sm">
-              <Link href={`/kb/${params.slug[0]}`} className="text-gray-500 hover:text-blue-600">&larr; Back to {category?.label}</Link>
-              <a href="mailto:support@nextguard.com?subject=KB Feedback" className="text-gray-400 hover:text-blue-600">Send feedback</a>
-            </div>
-          </main>
-        </div>
+        )}
+
+        {/* Article Content */}
+        <main className="flex-1 min-w-0 px-4 sm:px-8 py-10">
+          <Breadcrumb items={[
+            { label: 'KB', href: '/kb' },
+            { label: category?.label || '', href: `/kb/${category?.id}` },
+            { label: article.frontmatter.title }
+          ]} />
+
+          <div className="flex flex-wrap gap-2 mb-4">
+            {article.frontmatter.tags?.map((t: string) => (
+              <span key={t} className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded">{t}</span>
+            ))}
+            {article.frontmatter.section && (
+              <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-0.5 rounded">{article.frontmatter.section}</span>
+            )}
+            {article.frontmatter.date && (
+              <span className="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded">{article.frontmatter.date}</span>
+            )}
+          </div>
+
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{article.frontmatter.title}</h1>
+          {article.frontmatter.description && (
+            <p className="text-lg text-gray-600 mb-6 border-l-4 border-blue-200 pl-4">{article.frontmatter.description}</p>
+          )}
+
+          <article className="prose prose-gray max-w-none
+            prose-headings:text-gray-900
+            prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
+            prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
+            prose-p:text-gray-700 prose-p:leading-7
+            prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+            prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-lg
+            prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+            prose-table:border-collapse
+            prose-th:border prose-th:border-gray-300 prose-th:px-4 prose-th:py-2 prose-th:bg-gray-50
+            prose-td:border prose-td:border-gray-300 prose-td:px-4 prose-td:py-2
+            prose-li:text-gray-700">
+            <MDXRemote source={article.content} />
+          </article>
+
+          <div className="mt-12 pt-6 border-t border-gray-200 flex justify-between items-center text-sm">
+            <Link href={`/kb/${category?.id}`} className="text-blue-600 hover:text-blue-800">
+              &larr; Back to {category?.label}
+            </Link>
+          </div>
+        </main>
       </div>
     </div>
   )
@@ -116,25 +136,29 @@ export default function KBPage({ params }: Props) {
 
 function KBHeader() {
   return (
-          <header className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
-        <Link href="/" className="flex items-center">
+    <header className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center">
               <Image
                 src="https://raw.githubusercontent.com/NextGuard-hk/nextguard-website/main/public/images/nextguard-logo.png"
                 alt="Nextguard"
                 width={160}
                 height={40}
-                className="h-8 w-auto mix-blend-screen"
-                unoptimized
+                className="brightness-200"
               />
             </Link>
-            <span className="text-gray-400 mx-1 hidden sm:inline">/</span>
-            <span className="text-gray-300 text-sm hidden sm:inline">Knowledge Base</span>
-        <nav className="hidden md:flex gap-5 text-sm">
-          {NAV_STRUCTURE.slice(0,6).map(c => (
-            <Link key={c.id} href={`/kb/${c.id}`} className="text-gray-600 hover:text-blue-600">{c.label.split(' ')[0]}</Link>
-          ))}
-        </nav>
+            <span className="text-gray-500">/</span>
+            <Link href="/kb" className="text-white font-medium hover:text-blue-400">
+              Knowledge Base
+            </Link>
+          </div>
+          <div className="flex items-center gap-4 text-sm">
+            <Link href="/kb" className="text-gray-300 hover:text-white">Browse All</Link>
+            <a href="https://next-guard.com" className="text-gray-300 hover:text-white">nextguard.com</a>
+          </div>
+        </div>
       </div>
     </header>
   )
@@ -142,11 +166,15 @@ function KBHeader() {
 
 function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
   return (
-    <nav className="text-sm text-gray-500 mb-6 flex items-center gap-1 flex-wrap">
+    <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
       {items.map((item, i) => (
-        <span key={i} className="flex items-center gap-1">
+        <span key={i} className="flex items-center gap-2">
           {i > 0 && <span>/</span>}
-          {item.href ? <Link href={item.href} className="hover:text-blue-600">{item.label}</Link> : <span className="text-gray-900">{item.label}</span>}
+          {item.href ? (
+            <Link href={item.href} className="hover:text-blue-600">{item.label}</Link>
+          ) : (
+            <span className="text-gray-900">{item.label}</span>
+          )}
         </span>
       ))}
     </nav>
