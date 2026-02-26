@@ -1,0 +1,24 @@
+---
+title: "Postfix对PIX（恩斯盾）的配置"
+category: seg
+order: 45
+---
+
+## 问题描述
+
+当下游邮件服务器是PIX（恩斯盾）时，需要对Postfix做特殊配置。
+
+## 配置方法
+
+需要在transport_maps中配置指定域名的邮件转发规则。
+
+## 相关配置文件
+
+```
+/etc/postfix/transport
+```
+
+## 注意事项
+
+- 确保PIX服务器的SMTP端口可达
+- 注意检查防火墙规则是否允许25端口通信
