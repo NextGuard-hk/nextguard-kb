@@ -1,0 +1,41 @@
+---
+title: "encfs服务/tomcat无法启动"
+description: "encfs加密服务异常导致tomcat无法启动的问题分析及手动挂载解决方案"
+---
+
+# encfs服务/tomcat无法启动
+
+## 问题描述
+
+encfs服务是用于加密挂载下述SPS文件夹路径的，如果encfs服务异常，可能导致tomcat等服务无法启动。
+
+## 解决办法
+
+### 方法1：重启SPS容器
+
+```bash
+dcin sps
+supervisorctl restart all
+```
+
+### 方法2：手动挂载
+
+```bash
+encfs --public /opt/skyguard/.tomcat /opt/skyguard/tomcat
+encfs --public /opt/skyguard/.sps-pem /opt/skyguard/sps-pem
+encfs --public /opt/skyguard/sps/.apps /opt/skyguard/sps/apps
+encfs --public /opt/skyguard/sps/.help /opt/skyguard/sps/help
+```
+
+### 验证步骤
+
+```bash
+ls /opt/skyguard/tomcat/
+ls /opt/skyguard/.tomcat/
+mount
+umount /opt/skyguard/tomcat
+ls /opt/skyguard/tomcat/
+encfs --public /opt/skyguard/.tomcat /opt/skyguard/tomcat
+```
+
+确认挂载成功后检查服务是否正常启动。
