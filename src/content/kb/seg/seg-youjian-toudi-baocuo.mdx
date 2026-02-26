@@ -1,0 +1,29 @@
+---
+title: "邮件投递报错汇总"
+category: seg
+order: 50
+---
+
+## 常见报错类型
+
+| 序号 | 报错类型 | 原因 |
+|------|----------|------|
+| 1 | 5.7.0 Authentication required | 外部邮件伪造内部域名进行投递，认证失败。未添加授信IP |
+| 2 | 5.7.1 Relay access denied | 未添加授信IP，该报错在连接层面，只会生成邮件连接日志 |
+| 3 | 4.7.1 Relay access denied | 同上，临时拒绝 |
+| 4 | Connection timed out | 连接超时，检查网络连通性 |
+| 5 | Host not found | DNS解析失败，检查MX记录 |
+
+## 邮件退信报错汇总
+
+| 类型 | 说明 |
+|------|------|
+| 5xx | 永久性错误，邮件不会重试 |
+| 4xx | 临时性错误，邮件会重试 |
+
+## 排查思路
+
+1. 查看邮件日志：`/var/log/mail.log`
+2. 查看邮件队列：`mailq`
+3. 检查网络连接：`telnet target_ip 25`
+4. 检查DNS解析：`nslookup -type=mx domain.com`
