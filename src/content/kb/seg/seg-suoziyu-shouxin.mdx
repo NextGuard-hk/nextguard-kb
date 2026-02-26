@@ -1,0 +1,30 @@
+---
+title: "梭子鱼添加授信"
+category: seg
+order: 61
+---
+
+## 场景说明
+
+SEG投递到梭子鱼（Barracuda）时，梭子鱼需要信任SEG的IP地址。
+
+## 配置方法
+
+在Barracuda Spam & Virus Firewall 400管理界面中配置：
+
+### 基本外发中继设定
+
+- **外发SMTP主机（Smart host）**：填写SEG的IP地址
+- **用户名**：admin
+- **强制使用TLS**：是/否
+
+### 中继认证
+
+启用 SASL/SMTP 认证，配置认证代理方式：
+- SMTP 认证代理
+- LDAP
+- 把目标邮件服务器当做SMTP认证代理
+
+### 信任转发 IP 区域
+
+添加SEG服务器的IP地址到信任转发IP列表中，子网掩码设置为255.255.255.255。
