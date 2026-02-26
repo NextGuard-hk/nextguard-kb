@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Only protect /kb routes
   const { pathname } = request.nextUrl
 
-  // Allow API routes, static assets, and non-KB pages
+  // Allow API routes, static assets, login page, and non-KB pages
   if (
     !pathname.startsWith('/kb') ||
     pathname.startsWith('/api/') ||
@@ -15,14 +14,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check for kb_auth cookie (set by /api/kb-auth POST with value 'true')
+  // Check for kb_auth cookie (accepts both 'true' and 'authenticated')
   const authCookie = request.cookies.get('kb_auth')
-  if (authCookie?.value === 'true') {
+  if (authCookie?.value === 'true' || authCookie?.value === 'authenticated') {
     return NextResponse.next()
   }
 
-  // Not authenticated - let the page load (KBAuthWrapper will show login form)
-  return NextResponse.next()
+  // Not authenticated - redirect to login page
+  const loginUrl = new URL('/login', request.url)
+  loginUrl.searchParams.set('from', pathname)
+  return NextResponse.redirect(loginUrl)
 }
 
 export const config = {
