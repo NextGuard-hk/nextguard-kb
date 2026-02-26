@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { NAV_STRUCTURE } from '@/lib/navigation'
+import SearchBar from '@/components/SearchBar'
 
 const SECTION_COLORS: Record<string, string> = {
   'bangong': 'border-l-yellow-500',
@@ -57,6 +58,8 @@ export default function KBHomePage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Knowledge Base</h1>
         <p className="text-gray-500 mb-8">{totalArticles} articles across {NAV_STRUCTURE.length} sections</p>
+
+                  <SearchBar />
 
         <div className="space-y-2">
           {NAV_STRUCTURE.map((category) => (
