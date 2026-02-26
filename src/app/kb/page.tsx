@@ -39,7 +39,7 @@ export default function KBHomePage() {
                   alt="Nextguard"
                   width={160}
                   height={40}
-                  className="brightness-200"
+                  className="mix-blend-screen brightness-110"
                 />
               </Link>
               <span className="text-gray-500">/</span>
