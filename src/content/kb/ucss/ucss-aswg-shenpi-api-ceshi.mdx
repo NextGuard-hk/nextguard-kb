@@ -1,0 +1,108 @@
+---
+title: "KB-ASWG审批API测试"
+description: "ASWG网络审批API说明及测试文档，包含策略通道配置和Body字段解析"
+---
+
+# KB-ASWG审批API测试
+
+## 网络审批API说明及测试文档
+
+适用场景如下：
+新建一个关键字策略，发送敏感文件，默认会被阻断。通过这个API可以实现先审批通过后再进行CAE检查，审批放行后将不会触发CAE检测。如针对某些领导在一个固定的时间段发送文件时不进行DLP检查等。
+
+## Body字段解析
+
+```json
+{"data":[{
+    "approver":"审批人（可为邮箱）",
+    "submitter_name":"提交人",
+    "submitter_ip":"1.1.1.1",  //针对这个源IP做限制
+    "submitter_email":"qingbo1@sky.com",
+    "submitter_fqdn":"www.sky.com",
+    "file_size":1245,  //提交的敏感文件的大小（字节为单位），大小必须精确
+    "file_md5":"文件的md5值",  //提交的敏感文件的MD5值
+    "file_name":"文件名称",
+    "channel":[1,2,3],  //起作用的通道
+    "approved_time":158936353862,  //起作用的时间点
+    "expired_time":158936535862,  //过期的时间点（必须以时间戳形式体现）
+    "max_num":10,  //在起作用的时间点可以发送敏感文件的次数，超过就阻断
+    "forensic":1  //是否记录事件，0-不记录；1-记录
+}]}
+```
+
+备注：如果对应的配置项填写了，那么就必须要匹配上才可以命中这个API。
+
+## 策略通道
+
+| 编号 | 通道 |
+|------|------|
+| 1 | HTTP |
+| 2 | HTTPS |
+| 3 | FTP |
+
+以上通道针对网络设备。
+
+## 测试步骤
+
+发送敏感文件被阻断，使用Postman调用审批API。
+
+API地址：`POST https://<ASWG_IP>:8443/qkact/v0/dlp/incident/approval`
+
+请求Body示例：
+```json
+{"data":[{
+    "approver":"bobo",
+    "submitter_name":"",
+    "submitter_ip":"172.18.0.108",
+    "submitter_email":"",
+    "submitter_fqdn":"",
+    "file_size":13946,
+    "file_md5":"62df7dcab91d4249ce569023b50a07c8",
+    "file_name":"api.docx",
+    "channel":[1,2,3],
+    "approved_time":1595326996,
+    "expired_time":1595413396,
+    "max_num":10,
+    "forensic":1
+}]}
+```
+
+Response：
+```json
+{
+    "status": 0,
+    "reason": "Success"
+}
+```
+
+## 通道开启配置
+
+默认情况下，针对终端的API开关是打开的，而针对HTTP通道及其他通道是没有开启的，需要进入到DSG后台手工进行开启。
+
+```bash
+vi /opt/skyguard/ucs/etc/ContentAnalysisEngine.xml
+```
+
+搜索：channel
+
+将对应通道中的：
+```xml
+<ApprovalMode>0</ApprovalMode>
+```
+
+修改为：（0-关闭；1-开启）
+```xml
+<ApprovalMode>1</ApprovalMode>
+```
+
+修改后需要重启服务：
+```bash
+dcin spe
+/etc/init.d/dlpserver restart
+```
+
+## 查看网络事件
+
+在ASWG上查看网络事件，确认审批记录已生成。
+
+在UCSS上查看审批记录，确认审批状态正确。
