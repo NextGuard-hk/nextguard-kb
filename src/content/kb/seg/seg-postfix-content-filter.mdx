@@ -1,0 +1,34 @@
+---
+title: "Postfix连接与内容过滤"
+category: seg
+order: 46
+---
+
+## 内容过滤配置
+
+Postfix通过content_filter将邮件转发给SEG进行内容分析。
+
+## 查看当前配置
+
+```bash
+postconf -h content_filter
+```
+
+## 连接类型
+
+### 转发模式
+
+```bash
+postconf -e content_filter=smtp-amavis:[127.0.0.1]:10024
+```
+
+### 直连模式
+
+```bash
+postconf -e content_filter=
+```
+
+## 注意事项
+
+- 修改后需要执行 `postfix reload` 生效
+- 内容过滤异常时可以临时清空content_filter实现bypass
