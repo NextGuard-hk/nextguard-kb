@@ -1,0 +1,15 @@
+---
+title: "邮件投递常见小问题"
+category: seg
+order: 52
+---
+
+## 1、手动投递失败，重投失败
+
+邮件日志中没有信封发件人的邮件，不支持重投，手动投递也不生效。
+
+目前3.3-3.9版本有此问题，修改方法：
+
+```
+/opt/skyguard/www/seg/forensics_daemon.php 第32行 修改 $task[from] 即可
+```
