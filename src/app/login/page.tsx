@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -15,14 +16,15 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/kb-auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
       })
 
       if (res.ok) {
-        router.push('/')
+        const from = searchParams.get('from') || '/kb'
+        router.push(from)
         router.refresh()
       } else {
         const data = await res.json()
@@ -64,10 +66,7 @@ export default function LoginPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-300 mb-2"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
                 Password
               </label>
               <input
@@ -83,25 +82,21 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-lg px-4 py-3">
-                {error}
-              </div>
+              <p className="text-red-400 text-sm">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-500 disabled:bg-cyan-800 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-200"
+              className="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white font-medium rounded-lg transition-colors"
             >
               {loading ? 'Verifying...' : 'Access Knowledge Base'}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
-              This knowledge base is restricted to authorized partners and staff.
-            </p>
-          </div>
+          <p className="text-xs text-gray-500 text-center mt-6">
+            This knowledge base is restricted to authorized partners and staff.
+          </p>
         </div>
       </div>
     </div>
