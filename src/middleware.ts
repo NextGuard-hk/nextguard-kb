@@ -29,8 +29,9 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match KB routes only
+     * Match KB routes including /kb itself
      */
+    '/kb',
     '/kb/:path*',
   ],
 }
