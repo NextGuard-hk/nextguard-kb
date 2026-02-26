@@ -89,11 +89,11 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
             <div className="flex items-center gap-3">
               <Link href="/" className="flex items-center">
                 <Image
-                  src="https://raw.githubusercontent.com/NextGuard-hk/nextguard-website/main/public/images/nextguard-logo.png"
+                  src="/nextguard-logo.svg"
                   alt="Nextguard"
                   width={140}
                   height={35}
-                  className="mix-blend-screen brightness-110"
+                  className=""
                 />
               </Link>
               <span className="text-gray-500">/</span>
