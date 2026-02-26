@@ -35,11 +35,11 @@ export default function KBHomePage() {
             <div className="flex items-center gap-3">
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/nextguard-logo.svg"
+                  src="/nextguard-logo.png"
                   alt="Nextguard"
                   width={160}
                   height={40}
-                  className=""
+                                      className="mix-blend-screen"
                 />
               </Link>
               <span className="text-gray-500">/</span>
