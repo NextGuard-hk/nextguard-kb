@@ -1,0 +1,26 @@
+---
+title: "SWG策略"
+category: aswg
+order: 4
+---
+
+# SWG策略
+
+## 策略逻辑
+
+策略路径: `/etc/trafficserver/swg/policy/`
+
+## swg策略查看
+
+```bash
+mysql -uroot -pMysql@SkyGuard253.3
+mysql> use cert_server;
+mysql> select * from mod_version where moduleID='policy';
+```
+
+## swg策略同步相关的进程
+
+```bash
+Dcin ats
+ps -ef | grep sync
+```
