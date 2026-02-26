@@ -1,0 +1,35 @@
+---
+title: "邮件一键Bypass"
+category: seg
+order: 43
+---
+
+## 功能说明
+
+当SEG出现异常时，可以使用一键Bypass功能跳过SEG的策略分析，确保邮件正常投递。
+
+## 使用场景
+
+- SEG策略引擎异常
+- 需要紧急放行所有邮件
+- 排查问题时临时绕过SEG
+
+## 操作方法
+
+在Postfix配置中移除content_filter：
+
+```bash
+postconf -e content_filter=
+postfix reload
+```
+
+## 恢复正常
+
+恢复时重新设置content_filter：
+
+```bash
+postconf -e content_filter=smtp-amavis:[127.0.0.1]:10024
+postfix reload
+```
+
+> 注意：Bypass后邮件将不会经过SEG策略分析，请尽快恢复。
