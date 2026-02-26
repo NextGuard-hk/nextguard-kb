@@ -1,0 +1,98 @@
+---
+title: "SEG策略同步与故障排查"
+category: seg
+order: 31
+---
+
+## UCSS与ASEG之间SEG策略同步原理
+
+1. UCSS先发通知给SEG的09443端口，通知SEG策略有更新
+2. SEG调用SPS的webservice接口的8443端口拉取策略
+3. ATS容器里面的apache2的8888端口负责接收宿主机的策略同步请求
+
+## 策略文件路径
+
+```
+/etc/rspamd/local.d/seg_policy.json
+```
+
+## 查看SEG策略版本
+
+### 方法1：通过API查询
+
+```bash
+curl http://127.0.0.1:8888/seg/v1/device
+# mod_type: "19" 表示SEG策略
+```
+
+返回示例：
+
+```json
+{
+  "current_time": "2024-04-30 17:02:48",
+  "mod_type": "19",
+  "next_time": "2024-04-30 18:02:48",
+  "sync_status": 1,
+  "version": "101"
+}
+```
+
+### 方法2：直接查看文件
+
+```bash
+cat /etc/rspamd/local.d/seg_policy.json
+# 查看 version 字段
+```
+
+## 策略同步失败排查
+
+### 可能性1：ATS配置文件为空
+
+```bash
+cat /etc/trafficserver/ucssrvinfo
+```
+
+如果该文件为空，还会导致swgtransfer传输无法启动。
+
+**解决方法：** 重新注册，不行的话，先初始化再注册。
+
+### 可能性2：MySQL未启动
+
+策略存储在MySQL中，如果MySQL未启动则无法同步。
+
+```bash
+/etc/init.d/mysql start
+/etc/init.d/mysql status
+```
+
+拉起后查询policy同步详情：
+
+```bash
+dcin mysql
+mysql -usecgator -pSECGATOR@SkyGuard405.
+mysql -u segapi -psegapi
+use segapi
+show tables;
+select * from mod_version where moduleID='policy';
+```
+
+### 可能性3：hostname不一致
+
+修改了机器名，导致hostname和/etc/hosts不一致。
+
+### 可能性4：邮件转发服务异常
+
+看不到邮件转发服务，库更新页面报错，SEG策略同步失败。
+
+**判断思路：**
+
+1. `ps -ef | grep php` 查看sync_settings.php、version进程
+2. 查看MySQL数据库是否正常
+3. 查看Apache服务状态
+
+```bash
+/etc/init.d/apache2 status
+ps -ef | grep apache
+/var/log/apache2/access.log
+/var/log/apache2/error.log
+```
