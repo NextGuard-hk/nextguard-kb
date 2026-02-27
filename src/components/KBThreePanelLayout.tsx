@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from './LanguageContext';
 import LanguageToggle from './LanguageToggle';
+import SearchBar from './SearchBar';
 
 interface NavItem {
   slug: string;
@@ -110,6 +111,9 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
               </Link>
             </div>
             <div className="flex items-center gap-4 text-sm">
+              <div className="w-64">
+                <SearchBar />
+              </div>
               <LanguageToggle />
               <a href="https://next-guard.com" className="text-gray-300 hover:text-white">nextguard.com</a>
             </div>
