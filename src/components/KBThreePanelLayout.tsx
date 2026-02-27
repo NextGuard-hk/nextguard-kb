@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from './LanguageContext';
 import LanguageToggle from './LanguageToggle';
 import SearchBar from './SearchBar';
+import DownloadProgressPanel, { useDownloadManager } from './DownloadManager';
 
 interface NavItem {
   slug: string;
@@ -48,6 +49,13 @@ interface Props {
   articleHtml?: string;
 }
 
+const FILE_EXTENSIONS = ['.pdf', '.zip', '.exe', '.msi', '.tar', '.gz', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.iso', '.dmg', '.pkg', '.deb', '.rpm', '.rar', '.7z', '.csv', '.cap', '.pcap'];
+
+function isFileUrl(url: string): boolean {
+  const lower = url.toLowerCase();
+  return FILE_EXTENSIONS.some(ext => lower.includes(ext));
+}
+
 export default function KBThreePanelLayout({ categories, initialSection, initialArticle, articleHtml }: Props) {
   const router = useRouter();
   const { convert } = useLanguage();
@@ -55,6 +63,9 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
   const [selectedArticleSlug, setSelectedArticleSlug] = useState<string>(initialArticle || '');
   const [articleContent, setArticleContent] = useState<string>(articleHtml || '');
   const [isLoading, setIsLoading] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const { downloads, startDownload, dismissDownload } = useDownloadManager(selectedArticleSlug);
 
   const currentCategory = categories.find(c => c.id === selectedSection);
 
@@ -62,6 +73,30 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
     if (!articleContent) return '';
     return convert(articleContent);
   }, [articleContent, convert]);
+
+  // Intercept clicks on file links in article content
+  useEffect(() => {
+    const container = contentRef.current;
+    if (!container) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      if (!anchor) return;
+
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+
+      if (isFileUrl(href)) {
+        e.preventDefault();
+        e.stopPropagation();
+        startDownload(href);
+      }
+    };
+
+    container.addEventListener('click', handleClick);
+    return () => container.removeEventListener('click', handleClick);
+  }, [convertedContent, startDownload]);
 
   const handleSectionClick = (sectionId: string) => {
     setSelectedSection(sectionId);
@@ -116,7 +151,7 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
               </div>
               <LanguageToggle />
               <a href="https://next-guard.com" className="text-gray-300 hover:text-white">nextguard.com</a>
-                            <button
+              <button
                 onClick={async () => {
                   await fetch('/api/auth/logout', { method: 'POST' });
                   window.location.href = '/login';
@@ -194,6 +229,7 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
             </div>
           ) : convertedContent ? (
             <div
+              ref={contentRef}
               className="prose prose-gray max-w-none p-8"
               dangerouslySetInnerHTML={{ __html: convertedContent }}
             />
@@ -212,6 +248,9 @@ export default function KBThreePanelLayout({ categories, initialSection, initial
           )}
         </div>
       </div>
+
+      {/* Download Progress Panel */}
+      <DownloadProgressPanel downloads={downloads} onDismiss={dismissDownload} />
     </div>
   );
 }
