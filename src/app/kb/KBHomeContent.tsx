@@ -60,6 +60,20 @@ export default function KBHomeContent({ categories, totalArticles }: { categorie
             <div className="flex items-center gap-4 text-sm">
               <LanguageToggle />
               <a href="https://next-guard.com" className="text-gray-300 hover:text-white">nextguard.com</a>
+              <button
+                onClick={async () => {
+                  await fetch('/api/auth/logout', { method: 'POST' });
+                  window.location.href = '/login';
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+                title="Logout"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -69,9 +83,7 @@ export default function KBHomeContent({ categories, totalArticles }: { categorie
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{convert('Knowledge Base')}</h1>
         <p className="text-gray-500 mb-6">{totalArticles} {convert('articles across')} {categories.length} {convert('sections')}</p>
-
         <SearchBar />
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
           {categories.map((category) => (
             <Link
